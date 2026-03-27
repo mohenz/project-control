@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Control"
+  short_description: "Switch and manage multi-project workspaces"
+  default_prompt: "Use $project-control to switch projects, restore context from state files, and continue the requested work."

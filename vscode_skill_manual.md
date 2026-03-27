@@ -5,7 +5,8 @@
 - 프로젝트별 재분석 시간을 줄이고 `project_control` 기준으로 작업을 이어갑니다.
 
 ## 전제 조건
-- skill 설치 경로: `C:\Users\mohen\.codex\skills\project-control`
+- 저장소 내 배포본: `D:\Workspace\project_control\project-control`
+- 로컬 설치 경로: `C:\Users\mohen\.codex\skills\project-control`
 - 워크스페이스 기준 폴더: `D:\Workspace\project_control`
 - 프로젝트 등록 기준표: `D:\Workspace\project_control\project_registry.md`
 
@@ -13,6 +14,7 @@
 - VSCode에서는 가능하면 skill을 명시적으로 호출합니다.
 - 권장 형식은 `$project-control` 뒤에 `/project ...` command를 붙이는 방식입니다.
 - 프로젝트 식별은 자연어 추측이 아니라 `project_registry.md`의 `aliases`를 기준으로 합니다.
+- 저장소에 있는 배포본을 기준으로 다른 PC의 skills 경로에 복사해 설치할 수 있습니다.
 
 ## VSCode에서 사용하는 순서
 1. VSCode에서 작업할 워크스페이스 루트를 엽니다.

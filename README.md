@@ -25,6 +25,7 @@
 - `project_selection_prompt_list.md`
 - `vscode_skill_manual.md`
 - `portable_standard_prompt.md`
+- `project-control/` actual skill package
 - `templates/project_state_template.md`
 - `states/*.md`
 - `scripts/switch-project.ps1`
@@ -42,6 +43,14 @@ project_control/
   project_governance_rules.md
   project_registry.md
   project_switch_workflow.md
+  project-control/
+    SKILL.md
+    agents/
+      openai.yaml
+    references/
+      command-spec.md
+      workflow-map.md
+      state-update-rules.md
   templates/
     project_state_template.md
   states/
