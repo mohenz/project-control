@@ -23,6 +23,7 @@
 - `project_registry.md`
 - `project_switch_workflow.md`
 - `project_selection_prompt_list.md`
+- `skill_install_manual.md`
 - `vscode_skill_manual.md`
 - `portable_standard_prompt.md`
 - `project-control/` actual skill package
@@ -43,6 +44,7 @@ project_control/
   project_governance_rules.md
   project_registry.md
   project_switch_workflow.md
+  skill_install_manual.md
   project-control/
     SKILL.md
     agents/

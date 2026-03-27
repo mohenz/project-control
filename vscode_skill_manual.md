@@ -113,6 +113,7 @@ $project-control /project use n8n
 - 작업이 끝나면 `/project update` 또는 `/project close`로 상태 파일을 갱신합니다.
 
 ## 관련 문서
+- `skill_install_manual.md`
 - `project_selection_prompt_list.md`
 - `project_switch_workflow.md`
 - `portable_standard_prompt.md`
