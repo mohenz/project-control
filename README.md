@@ -26,10 +26,12 @@
 - `skill_install_manual.md`
 - `vscode_skill_manual.md`
 - `portable_standard_prompt.md`
+- `install-project-control-skill.cmd`
 - `project-control/` actual skill package
 - `templates/project_state_template.md`
 - `states/*.md`
 - `scripts/switch-project.ps1`
+- `scripts/install-project-control-skill.ps1`
 
 ## 현재 등록 프로젝트
 - `defect_manage`
@@ -45,6 +47,7 @@ project_control/
   project_registry.md
   project_switch_workflow.md
   skill_install_manual.md
+  install-project-control-skill.cmd
   project-control/
     SKILL.md
     agents/
@@ -61,5 +64,6 @@ project_control/
     auth_pro_current.md
     project_04_placeholder.md
   scripts/
+    install-project-control-skill.ps1
     switch-project.ps1
 ```
