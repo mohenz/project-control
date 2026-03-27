@@ -1,0 +1,51 @@
+# defect_manage Current State
+
+## 기본 정보
+- project_key: `defect_manage`
+- last_updated: `2026-03-27`
+- owner_request: defect manage 기능 개선 및 배포 반영
+- current_status: 활성 운영 프로젝트
+
+## 현재 목표
+- 결함 관리 웹앱의 개선 작업을 빠르게 이어갈 수 있도록 현재 상태를 유지한다.
+
+## 진행 중 작업
+- 현재 세션 기준 긴급 미완료 작업은 없음
+
+## 최근 완료 작업
+- 조치 결과 저장 후 결함 목록 자동 이동 반영
+- `결함 조치 현황`에서 미배정 결함 클릭 동선 추가
+- 검색 패널의 `미배정만 조회` 체크박스 제거
+- 카드 라벨을 `집계 대상 결함 수`로 변경
+- 대시보드 진입 시 불필요한 `defects select(*)` 조회 제거
+- 목록 조회에서 `screenshot` 제외 명시 컬럼 조회로 튜닝
+- CHANGELOG 기록 및 GitHub Pages 배포 완료
+
+## 다음 작업
+- `screenshot` 컬럼에 과거 base64 데이터가 남아 있는지 점검 가능
+- 대시보드 체감 성능을 실측하고 필요 시 추가 쿼리 분리 검토
+
+## 실행 / 검증
+- run_command: `npm.cmd start`
+- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`
+- port_or_runtime: `localhost:3000`
+- deploy_method: `git push origin main` 후 GitHub Pages Actions
+
+## 핵심 경로
+- project_root: `D:\Workspace\defect_manage`
+- key_docs:
+  - `README.md`
+  - `docs/README_ko.md`
+  - `docs/CHANGELOG.md`
+- key_files:
+  - `js/app.js`
+  - `js/storage.js`
+  - `index.html`
+
+## 리스크 / 주의사항
+- 로컬 `server.js` 실행은 세션 환경에 따라 백그라운드 유지가 불안정할 수 있음
+- GitHub Pages 배포본과 로컬 Node 서버 동작은 별도로 확인 필요
+
+## 인수인계 메모
+- 다음 시작 시 먼저 볼 것: `docs/CHANGELOG.md`, `js/app.js`, `js/storage.js`
+- 확인이 필요한 미결사항: 대시보드와 목록의 실제 쿼리 시간 비교
