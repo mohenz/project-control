@@ -43,7 +43,7 @@ function Test-SkillPackage {
     foreach ($entry in $requiredFiles) {
         $path = Join-Path $RootPath $entry
         if (-not (Test-Path $path)) {
-            throw "필수 파일이 없습니다: $path"
+            throw "Required file is missing: $path"
         }
     }
 }
@@ -84,7 +84,7 @@ switch ($Action) {
         Install-SkillPackage -SourceRoot $sourceSkillRoot -DestinationRoot $installRoot
         Test-SkillPackage -RootPath $installRoot
 
-        Write-Output "project-control skill 설치 완료"
+        Write-Output "project-control skill install completed"
         Write-Output "Source      : $sourceSkillRoot"
         Write-Output "Destination : $installRoot"
     }
@@ -96,23 +96,23 @@ switch ($Action) {
         Install-SkillPackage -SourceRoot $sourceSkillRoot -DestinationRoot $installRoot
         Test-SkillPackage -RootPath $installRoot
 
-        Write-Output "project-control skill 업데이트 완료"
+        Write-Output "project-control skill update completed"
         Write-Output "Source      : $sourceSkillRoot"
         Write-Output "Destination : $installRoot"
     }
     'Remove' {
         if (Test-Path $installRoot) {
             Remove-Item -LiteralPath $installRoot -Recurse -Force
-            Write-Output "project-control skill 제거 완료"
+            Write-Output "project-control skill removal completed"
             Write-Output "Removed     : $installRoot"
         }
         else {
-            Write-Output "제거 대상이 없습니다: $installRoot"
+            Write-Output "Nothing to remove: $installRoot"
         }
     }
     'Verify' {
         Test-SkillPackage -RootPath $installRoot
-        Write-Output "project-control skill 검증 완료"
+        Write-Output "project-control skill verification completed"
         Write-Output "Verified    : $installRoot"
     }
 }

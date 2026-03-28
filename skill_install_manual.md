@@ -30,6 +30,7 @@ scripts/install-project-control-skill.ps1
 - `CODEX_HOME`이 있으면 `CODEX_HOME\skills\project-control`에 설치
 - 없으면 `%USERPROFILE%\.codex\skills\project-control`에 설치
 - 설치 시 `SKILL.md`, `agents`, `references`만 교체
+- `.cmd`와 설치 스크립트 출력 메시지는 Windows 콘솔 코드페이지 차이로 인한 한글 깨짐을 피하기 위해 ASCII로 유지
 
 ## 2. 수동 설치
 1. 이 저장소를 로컬 PC에 받습니다.

@@ -7,11 +7,11 @@ set "EXIT_CODE=%ERRORLEVEL%"
 
 echo.
 if not "%EXIT_CODE%"=="0" (
-    echo project-control skill 설치에 실패했습니다.
+    echo project-control skill install failed.
     pause
     exit /b %EXIT_CODE%
 )
 
-echo project-control skill 설치가 완료되었습니다.
+echo project-control skill install completed.
+echo If the skill does not appear, open a new Codex chat first.
 pause
-
