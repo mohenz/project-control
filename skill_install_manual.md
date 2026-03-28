@@ -80,8 +80,14 @@ Get-ChildItem (Join-Path $skillsRoot "project-control") -Recurse
 powershell -ExecutionPolicy Bypass -File .\scripts\install-project-control-skill.ps1 -Action Verify
 ```
 
+## 4-1. VSCode 반영 순서
+- 설치 직후 현재 열려 있는 Codex 채팅에서는 새 skill이 바로 보이지 않을 수 있습니다.
+- 먼저 VSCode에서 새 Codex 채팅을 열고 다시 호출합니다.
+- 그래도 인식되지 않으면 `Developer: Reload Window`를 실행합니다.
+- 그다음에도 인식되지 않으면 VSCode를 재실행합니다.
+
 ## 5. VSCode에서 사용 확인
-설치 후 VSCode의 Codex 채팅에서 아래처럼 호출합니다.
+설치 후 가능하면 새 Codex 채팅에서 아래처럼 호출합니다.
 
 ```text
 $project-control /project use n8n
@@ -109,8 +115,10 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-project-control-skill
 2. 설치 위치가 `skills` 바로 아래인지 확인합니다.
 3. `SKILL.md`가 폴더 루트에 있는지 확인합니다.
 4. VSCode에서 새 채팅을 열고 다시 호출합니다.
-5. 워크스페이스 안에 `project_control` 폴더와 `project_registry.md`가 있는지 확인합니다.
-6. `install-project-control-skill.cmd`를 일반 권한으로 다시 실행해 봅니다.
+5. 새 채팅에서도 안 되면 `Developer: Reload Window`를 실행합니다.
+6. 그래도 안 되면 VSCode를 재실행합니다.
+7. 워크스페이스 안에 `project_control` 폴더와 `project_registry.md`가 있는지 확인합니다.
+8. `install-project-control-skill.cmd`를 일반 권한으로 다시 실행해 봅니다.
 
 ## 관련 문서
 - `README.md`
