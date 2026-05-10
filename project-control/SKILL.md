@@ -59,6 +59,11 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 ### `/project deploy <alias>`
 - Follow the deploy method recorded in the registry or state file.
 
+### `/project sync <alias> [--in|--out]`
+- Trigger cloud synchronization for the matched project.
+- Use `--in` to download latest data from cloud.
+- Use `--out` to upload local changes to cloud.
+
 ### `/project register <project_key> --path "<path>" --aliases "<a,b,c>"`
 - Add a registry entry.
 - Create a state file from the template before starting project work.

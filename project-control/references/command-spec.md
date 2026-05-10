@@ -15,6 +15,7 @@
 - `fix`
 - `start`
 - `deploy`
+- `sync`
 - `register`
 
 ## Common options
@@ -53,6 +54,10 @@
 
 ### `deploy`
 - Use the registered deploy method.
+
+### `sync`
+- Synchronize project data with cloud storage (e.g., GCS).
+- Options: `--in` (download), `--out` (upload).
 
 ### `register`
 - Add a new project entry and create a state file.

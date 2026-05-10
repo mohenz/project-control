@@ -31,6 +31,7 @@
 
 ## 리스크 / 주의사항
 - 
+- 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것:
