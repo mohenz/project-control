@@ -1,98 +1,45 @@
 # Project State
 
 ## 기본 정보
-- project_key: memo_app_design
-- last_updated: 2026-04-28
-- owner_request: 개인용 캐주얼 메모 웹앱의 요구사항 분석 및 설계 작업을 프로젝트로 등록
-- current_status: 요구사항/시스템/DB/디자인 검토 완료, C안 기반 최종 UI/UX 명세 및 구현 착수 전 실행 계획 수립 단계
+- project_key: quickmemo_service_level_expansion
+- last_updated: 2026-05-10
+- owner_request: 개인용 캐주얼 메모 웹앱(Bloom Memo)의 MVP를 넘어선 정식 서비스(Production) 레벨 기능 확장 및 프레임워크 전환 (Codex로 인수인계 됨)
+- current_status: 프런트엔드 React 전환 및 확장 UI 구현 완료. 단, Vercel 백엔드 API 연동 누락 및 인증 세션 부재로 인해 실제 데이터베이스 저장 불가 상태. 에이전트 교체(Soyeon -> Codex).
 
 ## 현재 목표
-- PC와 모바일 브라우저에서 사용 가능한 개인용 메모 앱의 MVP 요구사항과 설계를 구체화한다.
-- 사용자 기능과 관리자 기능을 분리하고, 메모 CRUD, 카테고리 CRUD, 공유 등록 기능을 포함한다.
-- 화이트/블랙 톤의 심플한 UI 방향을 유지한다.
+- Vercel 통합 환경(`npx vercel dev`)을 구축하여 React 프런트엔드와 Serverless API 간의 통신을 정상화한다.
+- Mock 처리된 로그인/비밀번호 로직을 실제 Supabase Auth 및 쿠키 세션 기반으로 연동하여 인증 권한(401) 문제를 해결한다.
+- 자동 저장, 리치 텍스트 에디터, 확장 프로그램의 오프라인 큐 기능이 백엔드 DB와 완벽히 통신하도록 연동한다.
 
-## 진행 중 작업
-- 시스템 설계 산출물 관리
-- 다음 상세 설계 산출물 준비
+## 진행 중 발생한 치명적 실수 (Soyeon's Handoff Note)
+다음은 프로젝트 이관의 원인이 된 에이전트(Soyeon)의 치명적 판단 미스 및 누락 사항입니다. Codex는 이를 최우선으로 인지하고 해결해야 합니다.
+1. **무단 테스트 생략으로 인한 렌더링 장애:** 순수 JS(MVP)에서 React 19 환경으로 프레임워크를 전면 전환하고 리치 에디터(`react-quill`)를 도입한 후, 테스트 코드를 재작성하지 않고 구동하여 구형 API(`findDOMNode`) 충돌로 인한 흰 화면(화면 크래시) 버그를 배포함. (이후 순수 `Quill.js` 래퍼 컴포넌트로 재작성하여 수습 및 E2E 테스트 통과 처리함)
+2. **백엔드 구동 환경 누락 (저장 불가 원인):** 프런트엔드를 테스트할 때 Vercel 통합 서버(`npx vercel dev`)가 아닌 Vite 전용 서버(`npm run dev`)만 단독으로 띄움. 이로 인해 브라우저의 저장 요청(`/api/memo-memos`)을 처리할 백엔드 Serverless Function이 없어 **404 Not Found 에러**가 발생함.
+3. **가상(Mock) 인증으로 인한 401 권한 거부:** UI 확장 요구사항에 치중하여 로그인 로직을 `localStorage`를 조작하는 Mock으로만 구현함. 실제 백엔드 통합을 하더라도 세션 쿠키가 발급되지 않았으므로 **401 Unauthorized 에러**가 필연적으로 발생하는 아키텍처 결함을 남김.
 
 ## 최근 완료 작업
-- `D:\Workspace\memo_app_design\basic_requirements_and_design.md` 작성
-- `D:\Workspace\work\memo_app_design`에서 `D:\Workspace\memo_app_design`로 프로젝트 폴더 이동
-- 프로젝트 레지스트리에 `memo_app_design` 등록
-- `D:\Workspace\memo_app_design\system_design.md` 작성
-- 레지스트리 핵심 문서에 `system_design.md` 추가
-- 데이터베이스 설계를 SQLite에서 기존 `bloom` Supabase Cloud Postgres에 `memo_` 테이블을 추가하는 방식으로 변경
-- 앱 구조를 Next.js 단독 앱에서 기존 `bloom` 정적 프런트 + Vercel Functions + Supabase REST 확장 방식으로 변경
-- `basic_requirements_and_design.md`의 권장 기술 구조를 기존 `bloom` 프로젝트 + Supabase Cloud 기준으로 정정
-- `D:\Workspace\memo_app_design\database_schema.md` 작성
-- `D:\Workspace\bloom\docs\memo_app_schema.sql` 작성
-- Supabase 테이블 생성 작업 완료 보고 수신
-- Google Stitch 요청용 UI/UX 시안 프롬프트 3종 작성: `D:\Workspace\memo_app_design\ui_ux_stitch_design_requests.md`
-- Codex MCP에 원격 `stitch` 서버 등록 시도 완료: `https://stitch.googleapis.com/mcp`
-- `codex mcp login stitch`는 Stitch 원격 OAuth의 Dynamic Client Registration 미지원 오류로 실패
-- 로컬 proxy 방식 전환에는 Google Cloud CLI 설치와 Google Cloud project id가 필요함을 확인
-- 디자인 확정 이후 실제 구현 태스크 문서 작성: `D:\Workspace\memo_app_design\post_design_implementation_tasks.md`
-- Google Stitch 산출물 폴더 확인: `D:\Workspace\memo_app_design\stitch_bloom_memo_ui_design`
-- 중첩 폴더 내 PC 시안 확인 완료: `concept_c_capture_main_desktop`, `concept_c_capture_new_desktop`
-- C안만 기준으로 Stitch 디자인 검토 문서 재작성: `D:\Workspace\memo_app_design\stitch_design_review.md`
-- 브라우저 확장프로그램 서비스 제공을 위한 디자인 요청서 작성: `D:\Workspace\memo_app_design\browser_extension_design_request.md`
-- 브라우저 확장프로그램 Stitch 산출물 확인: `extension_popup_main`, `extension_registration`, `extension_success_error_states`
-- 브라우저 확장프로그램 디자인 검토 문서 작성: `D:\Workspace\memo_app_design\browser_extension_design_review.md`
-- 현재까지 프로젝트 진행사항 요약 문서 작성: `D:\Workspace\memo_app_design\project_progress_summary.md`
-- 이후 실행 작업 계획 문서 작성: `D:\Workspace\memo_app_design\next_execution_plan.md`
+- 기존 MVP 폴더(`webapp_vanilla`) 백업 후, 새로운 Vite + React 환경(`webapp_react`) 스캐폴딩.
+- React 기반 전역 라우팅(`react-router-dom`) 및 `Login.jsx`, `Main.jsx` 화면 설계.
+- 사용자 계정 관리 페이지(`FindId.jsx`, `ResetPassword.jsx`) 구현 및 화면 내 3단계 UI 전환 로직 작성.
+- 리치 텍스트 에디터 모듈을 순수 `Quill.js` 엔진을 직접 제어하는 `RichEditor.jsx`로 안전하게 교체 구현.
+- 1.5초 Debounce 로직을 적용한 백그라운드 자동 저장(Auto-save) 프런트엔드 UI 상태 연동.
+- Chrome Extension 2차 고도화: `manifest.json` 내 `sidePanel` 권한 추가.
+- Extension 백그라운드 우클릭 캡처 및 네트워크 단절 시 `chrome.storage.local`을 이용한 오프라인 큐(Offline Queue) 동기화 스크립트 작성.
+- `webapp_react` 내 Playwright 기반 E2E 프런트엔드 동작 테스트(모달 렌더링, 라우팅) 구축 및 통과.
 
-## 다음 작업
-1. Google Stitch MCP 연결 준비
-   - Google Cloud CLI 설치 여부 재확인
-   - 미설치 시 Google Cloud CLI 설치
-   - 사용자 브라우저에서 `gcloud auth login` 인증 진행
-   - 사용자 브라우저에서 `gcloud auth application-default login` 인증 진행
-   - 사용할 Google Cloud `PROJECT_ID` 확인 또는 선택
-   - `gcloud config set project <PROJECT_ID>` 설정
-   - `gcloud beta services mcp enable stitch.googleapis.com --project=<PROJECT_ID>` 실행
-   - Codex MCP에서 `stitch` 원격 등록/OAuth 실패 상태를 정리하고, 가능한 경우 로컬 proxy 방식으로 재구성
-2. Google Stitch 디자인 시안 생성
-   - C안 검토 결과는 `D:\Workspace\memo_app_design\stitch_design_review.md` 참조
-   - C안 PC/모바일 메인 및 등록 화면 기준으로 최종 UI/UX 명세 작성
-   - C안은 검색 필드, 태그 입력, 저장 액션 중복, 모바일 화면 잘림 이슈 보완 필요
-   - 추가 요청이 필요하면 `stitch_design_review.md`의 C안 보완 프롬프트 사용
-   - PC/모바일 반응형 결과 확인
-3. UI/UX 시안 비교 및 확정
-   - 리스트 중심 미니멀, 분할 패널형, 빠른 캡처 중심 중 1개 방향 선택
-   - 선택 시안의 수정사항 정리
-   - 최종 UI/UX 명세 문서 작성
-   - 브라우저 확장프로그램 팝업/빠른 등록/상태 화면 시안 확인
-   - 브라우저 확장프로그램 디자인은 `D:\Workspace\memo_app_design\browser_extension_design_review.md` 기준으로 보완 후 확정
-4. 개발 착수 전 후속 설계
-   - `D:\Workspace\memo_app_design\project_progress_summary.md` 기준으로 현재 상태 확인
-   - `D:\Workspace\memo_app_design\next_execution_plan.md` 기준으로 실행 순서 확정
-   - `D:\Workspace\memo_app_design\post_design_implementation_tasks.md` 기준으로 구현 태스크 확정
-   - API 명세 상세화
-   - 화면 와이어프레임 정리
-   - MVP 구현 계획 수립
-   - 브라우저 확장프로그램 구현 범위 확정
-   - 확장프로그램 MVP는 팝업 기반 빠른 저장으로 제한하고 사이드패널/오프라인 큐는 후순위로 둠
-   - 초기 관리자 `memo_user_roles` 및 기본 카테고리 데이터 등록 여부 확인
-   - 기존 `bloom` 인증/세션과 메모 앱 권한 연동 방식 상세화
-
-## 실행 / 검증
-- run_command: N/A
-- verify_command: `basic_requirements_and_design.md`, `system_design.md`, `database_schema.md`, `bloom/docs/memo_app_schema.sql` 검토
-- port_or_runtime: browser-based app planned, port undecided
-- deploy_method: design project / deploy undecided
+## 다음 작업 (Codex Action Items)
+1. **개발 환경 통합:** `webapp_react` 디렉토리 내에서 Vite 프런트엔드와 Vercel `/api` 폴더의 함수들이 동시에 구동되도록 `npx vercel dev` 환경 세팅. (필요 시 `.env` 설정)
+2. **실제 인증(Auth) 연동:** `api.js` 및 `Login.jsx`의 가상 로그인 동작을 실제 Supabase Auth API 또는 기존 `bloom`의 세션 발급 로직과 연동. Vercel API 요청 시 쿠키가 전송되도록 처리.
+3. **저장 API 정상화:** 프런트엔드의 자동 저장 로직이 `createMemo`, `updateMemo` Vercel 함수를 통해 실제 DB에 성공적으로 200 응답을 기록하는지 디버깅.
+4. **비밀번호 재설정 백엔드 구현:** 프런트엔드 UI만 구현된 `ResetPassword.jsx` 로직에 맞게 백엔드 API를 구현하거나 Supabase 연동.
+5. **통합 E2E 테스트 재수행:** 모든 API 연동이 끝난 후 전체 저장 및 렌더링 무결성 테스트 실행 및 원격 저장소(`quickmemo`) 커밋/푸시.
 
 ## 핵심 경로
-- project_root: `D:\Workspace\memo_app_design`
-- key_docs: `basic_requirements_and_design.md`, `system_design.md`, `database_schema.md`, `stitch_design_review.md`, `browser_extension_design_review.md`, `project_progress_summary.md`, `next_execution_plan.md`, `D:\Workspace\bloom\docs\memo_app_schema.sql`
-- key_files: N/A
+- project_root: `D:\Workspace\quickmemo`
+- React_app: `D:\Workspace\quickmemo\webapp_react`
+- Extension: `D:\Workspace\quickmemo\extension`
+- Vercel API: `D:\Workspace\quickmemo\webapp_react\api`
 
 ## 리스크 / 주의사항
-- PC 브라우저 공유 연동은 네이티브 지원이 제한적이므로 북마클릿 또는 브라우저 확장 대안이 필요하다.
-- 모바일 공유 대상 노출은 PWA 설치 및 브라우저 지원 상태에 영향을 받는다.
-- 개인용 앱이어도 인증, 세션, 비밀번호 해시 저장은 기본 요구사항으로 유지한다.
-- 기존 `bloom` Supabase 프로젝트의 테이블 네이밍, 권한, service role key 관리 정책과 충돌하지 않도록 `memo_` prefix를 사용한다.
-- 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
-
-## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `D:\Workspace\memo_app_design\project_progress_summary.md`, `D:\Workspace\memo_app_design\next_execution_plan.md`
-- 확인이 필요한 미결사항: 최종 UI/UX 명세 작성, 초기 관리자 role 등록 여부, 기본 카테고리 등록 여부, API 상세 명세 작성, 실제 구현을 `bloom` 프로젝트에서 바로 진행할지 여부, 확장프로그램 코드를 bloom 내부에 둘지 별도 폴더로 둘지 결정
+- 프런트엔드 뷰의 렌더링 상태만 보고 앱 전체의 무결성을 확신해서는 안 됨. 프런트엔드-백엔드 간 네트워크 탭(API 응답 코드)을 필수적으로 확인해야 함.
+- 현재의 Vercel `/api` 라우트들은 `lib/auth-session.js`의 `getAuthenticatedSession`을 통해 강력한 세션 검사를 수행하므로, 브라우저 쿠키 발급이 성공해야만 테스트가 가능함.
