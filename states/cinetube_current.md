@@ -42,6 +42,7 @@
 - 모든 공개 화면 및 관리자 화면의 사이드바 내에 안전한 로그아웃(Sign Out) 기능을 추가하고 `assets/js/shared/ui.js`에 공통 핸들러 바인딩 완료.
 - 변경된 프론트엔드 전방위 가드 UI 및 연동 스키마를 Git에 커밋하고 원격지에 최종 PUSH 완료: `c1ca353 Prevent unauthenticated content flash with blocking head auth guard`.
 - 사이드바 하단 데이터베이스 연결 상태 문구 및 ok/off 표시 색상을 제거하고, 가운데 정렬 형태의 세련된 static "Bloom Universe" 브랜드 워터마크로 전면 교체 완료 (9개 HTML 파일, `styles.css`, `ui.js` 수정 및 푸시 완료).
+- 홈 화면 상단 툴바의 '신규 등록' 링크를 Crimson 레드 브랜드 액센트 컬러의 프리미엄 입체 버튼 스타일(`primary-button`)로 변경하고, 마우스 호버 시 입체적이고 역동적인 글로우 섀도우 애니메이션 효과를 설계 및 적용 완료.
 - Supabase 설정 예시와 `supabase/schema.sql` 작성.
 - 모바일 반응형 CSS 및 파비콘 추가.
 
