@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-05-31
+- last_updated: 2026-06-01
 - owner_request: `D:\workspace\cinetube\cinetube 기본요구사항.txt`와 `stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
 - current_status: 신규 등록, 이미지 관리 및 전 화면 폐쇄형 인증 시스템 구축 완료. bloom 프로젝트 계정 연동 및 루트 경로 login.html을 통한 전원 차단 완료. Vercel 원격 배포 및 Git 동기화 완료.
 
@@ -10,8 +10,16 @@
 - CineTube 영화정보 허브 웹사이트를 완벽한 비공개(Closed-Access) 개인 사이트로 전면 개편.
 - bloom 프로젝트 로그인 API와 연동하여 동일한 계정 정보로 로그인/로그아웃하도록 구현.
 
+## 프로젝트 고유 운영 규칙
+- Supabase 정책(RLS, Supabase Auth, storage policy)을 CineTube의 운영 권한 제어 수단으로 사용하지 않는다.
+- 플랫폼 종속성을 피하기 위해 인증/권한 판단은 Bloom/CineTube 자체 API 계층에서 처리한다.
+- Supabase는 교체 가능한 저장소로만 취급하며, 프론트엔드가 Supabase에 직접 write/delete/upload하는 구조는 최종 구조로 채택하지 않는다.
+- 관리자 등록/수정/삭제/이미지 업로드는 서버 API가 Bloom 계정/권한을 확인한 뒤 저장소에 반영하는 구조로 설계한다.
+- Supabase RLS는 운영 권한 모델이 아니라 저장소 측 보조 안전장치가 필요한 경우에만 최소 범위로 둔다.
+
 ## 진행 중 작업
 - Vercel 배포 환경 기준 bloom 연동 실데이터 로그인 및 데이터 조회 흐름 검증 대기.
+- URL+배우명 기반 영화/배우/카테고리 자동 등록 흐름 검증 중. 첫 대상은 `https://javtiful.com/kr/actress/yatsugake-umi` / `Yatsugake Umi`.
 
 ## 최근 완료 작업
 - project-control 레지스트리에 `cinetube` 프로젝트 등록.
@@ -45,32 +53,89 @@
 - 공개 화면(홈, 주연배우, 카테고리, 평가등급) 및 관리자 화면(메인, 영화정보, 카테고리, 배우, 등급 관리) 전체의 상단 툴바 주요 액션 링크들을 일괄적으로 세련된 Crimson 레드 액센트 컬러의 프리미엄 입체 버튼 스타일(`primary-button`)로 교체 및 일관된 호버 글로우 섀도우 효과 적용 완료.
 - Supabase 설정 예시, `supabase/schema.sql` (익명 쓰기 RLS 지원) 및 대규모 고품질 실존 명작 데이터 입력을 위한 `supabase/seed.sql` 설계 및 작성 완료.
 - 모바일 반응형 CSS 및 파비콘 추가.
+- `Yatsugake Umi` 등록용 일회성 스크립트 `scripts/import_yatsugake_umi.ps1` 추가.
+- Supabase SQL Editor에서 바로 실행 가능한 `supabase/import_yatsugake_umi.sql` 추가. 포함 항목: 카테고리 `prestige-exclusive`, 배우 `Yatsugake Umi`, 작품 `ABF-270`, `ABF-260`, `ABF-251`, `ABF-241`, `ABF-231`, `ABF-109`.
+- Supabase REST anon 등록 시도 결과 RLS 정책에 의해 `categories` insert가 차단됨을 확인.
+- 포스터 카드 클릭 시 영화정보 상세 화면으로 이동하도록 공통 카드 렌더러에 링크 동작 추가.
+- `movie.html` 및 `assets/js/pages/movie-detail.js` 신규 추가. `movie.html?code=<movie_code>` 기준으로 영화 상세정보, 배우, 카테고리, 등급, 출시년월, 제작사, 추천점수, 키워드, 원본 링크를 표시.
+- UI 수정 커밋/푸시 완료: `d9c16cb Add movie detail navigation`.
+- 주연배우 등록 시 `new row violates row-level security policy` 오류 발생. Bloom 로그인은 Supabase Auth 세션이 아니므로 Supabase 요청은 `anon` 역할로 처리되는 것이 원인.
+- Supabase RLS/정책을 운영 권한 제어 수단으로 쓰면 안 된다는 프로젝트 규칙 확정.
+- 잘못된 방향의 `supabase/allow_anon_admin_writes.sql` 파일 제거.
+- `Yatsugake Umi` 등록 데이터의 `video_url`이 배우 페이지로 잘못 들어간 문제 확인.
+- Javtiful 배우 페이지 검색 쿼리(`?q=<movie_code>`)로 실제 개별 영상 링크 확인 완료: `ABF-270`, `ABF-260`, `ABF-251`, `ABF-241`, `ABF-231`, `ABF-109`.
+- `supabase/import_yatsugake_umi.sql` 및 `scripts/import_yatsugake_umi.ps1`의 `video_url`을 실제 개별 영상 URL로 수정.
+- 기존 DB 데이터 보정용 `supabase/update_yatsugake_umi_video_urls.sql` 추가.
+- `Yatsugake Umi` 정보도 `Hatsumi Nanoka` 등록 방식처럼 Javtiful 실제 카드 제목과 개별 원본링크 기준으로 보정. Javtiful이 해당 6개 카드의 썸네일을 placeholder로 내려줘서 포스터 URL은 강제 입력하지 않음.
+- `supabase/update_yatsugake_umi_video_urls.sql`을 제목/원본링크/설명 보정 SQL로 확장.
+- `Yatsugake Umi` 개별 Javtiful 영상 페이지의 메타 이미지 확인 후 `poster_url` 6건 반영.
+- `supabase/import_yatsugake_umi.sql`, `scripts/import_yatsugake_umi.ps1`, `supabase/update_yatsugake_umi_video_urls.sql`에 `poster_url` 반영 완료.
+- `D:\workspace\std.png` 기준 가로형 영화 썸네일 비율(`312 / 183`)을 CSS 변수 `--movie-image-ratio`로 추가하고, 영화 카드/상세/이미지 스트립/관리 미리보기/관리 테이블 썸네일에 공통 적용.
+- 주연배우 화면을 “선택 필터 + 즉시 작품 조회” 구조에서 “전체 배우 리스트 → 배우 상세 화면” 구조로 변경.
+- `actors.html`은 전체 배우 카드 목록과 검색/페이지네이션을 표시하고, 각 배우 카드는 `actor.html?id=<actor_id>`로 이동.
+- `actor.html` 및 `assets/js/pages/actor-detail.js` 신규 추가. 배우 기본정보와 해당 배우의 출연 작품 목록을 표시.
+- 관리자 공통 목록에 삭제 버튼 추가. `assets/js/shared/store.js`에 `remove()` 추가, `assets/js/shared/admin-page.js`에서 삭제 확인 후 레코드 및 연결 이미지 자산 삭제 처리.
+- 홈 화면 추천/랭킹 구조 개선. `맞춤추천 8개`는 `click_count` 높은 순으로, `카테고리별 평가등급 상위 8개`는 `ranking_score` 높은 순으로 정렬하도록 변경.
+- `movies` 테이블에 `ranking_score`, `click_count` 컬럼을 추가하는 스키마 변경 및 기존 DB용 `supabase/movie_ranking_clicks_migration.sql` 추가.
+- 영화 카드 클릭 시 클릭수를 기록하도록 `CineTubeStore.recordMovieClick()` 및 카드 클릭 핸들러 연결. DB 컬럼/쓰기 권한이 없을 때도 브라우저 로컬 클릭 캐시로 정렬 반영.
+- 관리자 영화정보 화면에 `랭킹점수`, `클릭수` 입력/표시 컬럼 추가.
+- 주연배우 삭제 확인 메시지를 개선해 연결된 영화정보 개수와 삭제 후 영향 안내를 표시.
+- `Hatsumi Nanoka` / `https://javtiful.com/kr/actress/hatsumi-nanoka` 기준 reducing-mosaic 작품만 추출.
+- `supabase/import_hatsumi_nanoka_reducing.sql` 추가. 포함 항목: 배우 `Hatsumi Nanoka`, 카테고리 `reducing-mosaic`, 작품 `SNOS-242`, `SNOS-201`, `SNOS-173`, `SNOS-121`, `SNOS-101`, `SNOS-042`, `SONE-996`, `SONE-962`.
+- `Hatsumi Nanoka` 배우정보 업데이트 SQL `supabase/update_hatsumi_nanoka_actor.sql` 추가. 반영 정보: 나이 20, 신장 157cm, 신체사이즈 `E cup / W57`, 데뷔년도 2025, Javtiful 대표 이미지.
+- `supabase/import_hatsumi_nanoka_reducing.sql`의 배우 upsert 정보도 동일한 배우정보로 보강.
+- `Koumura Izuki` / `https://javtiful.com/kr/actress/koumura-izuki` 기준 reducing-mosaic 작품만 추출.
+- `supabase/import_koumura_izuki_reducing.sql` 추가. 포함 항목: 배우 `Koumura Izuki`, 카테고리 `reducing-mosaic`, 작품 `NACT-132`, `PRED-866`, `MFYD-140`, `APNS-409`, `FTHTD-198`, `CAWD-983`, `PFES-122`, `CAWD-957`, `ADN-762`.
+- `Koumura Izuki` 배우정보 업데이트 SQL `supabase/update_koumura_izuki_actor.sql` 추가. 반영 정보: 나이 25, 신장 156cm, 신체사이즈 `B83(D)-W58-H85`, 데뷔년도 2025, Javtiful 대표 이미지.
+- `supabase/import_koumura_izuki_reducing.sql`의 배우 upsert 정보도 동일한 배우정보로 보강.
+- Supabase SQL Editor에서 `Koumura Izuki` 배우정보 업데이트 SQL 실행 및 조회 검증 완료. 조회 결과: `age=25`, `height_cm=156`, `body_size=B83(D)-W58-H85`, `debut_year=2025`.
+- 로컬 PC 전용 PostgreSQL 16 기반 DB 구동 방식으로 전환 완료.
+- `scripts/start_local_db.ps1`, `scripts/stop_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql` 추가. 로컬 DB는 `localhost:54322`, 로컬 API는 `localhost:3001` 사용.
+- `assets/js/shared/store.js`에 `CINETUBE_LOCAL_API` 우선 모드를 추가하고 전체 HTML 진입점에 `assets/js/local-db-config.js` 로드 추가.
+- Supabase 클라우드 데이터 백업 및 로컬 마이그레이션 완료. 로컬 적재 결과: `media_assets=5`, `categories=3`, `actors=8`, `rating_grades=5`, `movies=66`.
+- 백업 파일 생성: `local/backups/supabase_export_20260601_051412.json`, `local/backups/supabase_to_local_import_20260601_051412.sql`.
+- 마이그레이션 검증 후 Supabase 클라우드 테이블 데이터 초기화 완료. 클라우드 `movies` 조회 결과 `[]`, 기본 `rating_grades` 5건 재생성.
+- 로컬 `http://localhost:8080/login.html`에서 `admin/admin` 로그인 후 홈 화면이 `localhost:3001` API를 호출해 데이터를 렌더링하는 것 확인. 브라우저 콘솔 오류 없음.
+- 로컬 웹서비스를 더블클릭 또는 짧은 명령으로 실행할 수 있도록 런처 추가 완료. 추가 파일: `start-cinetube.cmd`, `ct.cmd`, `stop-cinetube.cmd`, `scripts/launch_cinetube.ps1`.
+- `scripts/start_local_db.ps1`를 idempotent하게 보강해 PostgreSQL이 이미 실행 중이면 재시작하지 않고 통과하도록 수정.
+- `scripts/stop_local_db.ps1`가 `python -m http.server 8080` 웹서버도 함께 종료하도록 보강.
+- `scripts/launch_cinetube.ps1` 실행 검증 완료. DB/API/웹서버 준비 후 브라우저가 `http://localhost:8080/login.html`로 열림. 콘솔 오류 없음.
+- 로컬 전용 운영 기준으로 로그인/세션 보안 기능 해제 완료.
+- 전체 공개/관리 HTML의 헤드 인증 가드와 사이드바 로그아웃 버튼 제거.
+- `CineTubeStore.load()`의 인증 리다이렉트 제거, `isAuthenticated()`는 항상 true 반환하도록 변경.
+- `scripts/launch_cinetube.ps1` 기본 오픈 URL을 `login.html`에서 `index.html`로 변경.
+- `http://localhost:8080/index.html?nocache=1`, `http://localhost:8080/admin/actors.html?nocache=1` 직접 접속 검증 완료. 로그인 리다이렉트 없음, 콘솔 오류 없음.
 
 ## 다음 작업
-- Vercel 배포 URL 및 로컬 호스트 환경에서 bloom 연동 로그인 및 폐쇄형 전방위 차단 가드 실제 작동 테스트.
-- 로그인 완료 후 Supabase 테이블 실 데이터 조회 및 이미지 등록/수정/삭제 연동 최종 검증.
-- Vercel 배포 URL 기준 카테고리/배우/영화 데이터 초기 입력.
+- 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
+- Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
+- 클라우드 Storage 객체(`cinetube-images`)도 비울지 별도 결정. 이번 작업은 테이블 데이터 초기화만 수행.
 
 ## 실행 / 검증
-- run_command: `python -m http.server 8080`
-- verify_command: `node --check assets/js/shared/*.js`, `node --check assets/js/pages/*.js`, browser inspect 주요 페이지, 화면별 script 로드 확인, Vercel URL console error 확인
-- port_or_runtime: `8080`, static web app
+- run_command: `start-cinetube.cmd` 또는 `.\ct` (`http://localhost:8080/index.html` 자동 오픈)
+- manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
+- stop_command: `.\scripts\stop_local_db.ps1`
+- verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
+- port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
 ## 핵심 경로
 - project_root: `D:\Workspace\cinetube`
 - key_docs: `cinetube 기본요구사항.txt`, `stitch_cinetube_movie_hub\cinematic_archive_system\DESIGN.md`
-- key_files: `index.html`, `actors.html`, `categories.html`, `ratings.html`, `admin/*.html`, `assets/css/styles.css`, `assets/js/shared/*.js`, `assets/js/pages/home.js`, `assets/js/pages/actors.js`, `assets/js/pages/categories.js`, `assets/js/pages/ratings.js`, `assets/js/pages/admin-*.js`, `assets/js/supabase-config.example.js`, `supabase/schema.sql`
+- key_files: `index.html`, `actors.html`, `categories.html`, `ratings.html`, `admin/*.html`, `assets/js/shared/store.js`, `assets/js/local-db-config.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `scripts/migrate_supabase_to_local.ps1`, `local/schema.sql`, `supabase/schema.sql`
 
 ## 리스크 / 주의사항
 - 사용자가 Supabase 테이블 생성 완료를 확인했다.
 - 사용자가 Vercel 배포 완료를 확인했다. 배포 URL: `https://cinetube-gray.vercel.app`
 - Supabase URL / anon key는 `D:\workspace\cinetube\assets\js\supabase-config.js`에 등록 완료.
+- 로컬 모드에서는 `assets/js/local-db-config.js`가 우선되어 Supabase 대신 `http://localhost:3001`을 사용한다.
+- `local/postgres-data/`, `local/backups/`, `local/*.log`, `local/.schema_applied`는 Git 추적 제외.
+- 클라우드 테이블 데이터는 초기화 완료했지만 Supabase Storage 객체 삭제는 수행하지 않았다.
 - Vercel URL 확인 결과 Supabase 연결 상태가 표시되며, 영화 데이터가 없는 상태에서도 홈/관리 화면 콘솔 오류 없음.
 - `media_assets` 테이블/Storage 정책 미적용 상태에서는 이미지 업로드를 차단하도록 방어 처리됨.
-- 관리자 저장 정책은 `authenticated` 쓰기 기준으로 작성했으므로 실제 운영 전 Supabase Auth 연결이 필요하다.
+- Supabase Auth/RLS 기반 관리자 저장 정책은 사용하지 않는다. 관리자 쓰기는 Bloom/CineTube 자체 API에서 권한 확인 후 처리해야 한다.
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `assets/js/shared/admin-page.js`, `supabase/schema.sql`
-- 확인이 필요한 미결사항: `media_assets` 마이그레이션 적용 여부, Storage 쓰기 정책, 관리자 인증 범위, Vercel 기준 실제 이미지 업로드/수정/삭제 동작
+- 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql`
+- 확인이 필요한 미결사항: 관리자 로컬 CRUD 전체 회귀, 로컬 이미지 저장 정책(data URL 유지 여부), Vercel/클라우드 운영 지속 여부, Supabase Storage 객체 정리 여부
