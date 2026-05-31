@@ -7,8 +7,7 @@
 
 ## 2. 적용 범위
 - `D:\Workspace` 내 병행 운영 프로젝트 전체
-- 현재 등록 프로젝트 4개
-- 향후 추가될 신규 프로젝트
+- 현재 등록 프로젝트와 placeholder는 `project_registry.md` 기준
 
 ## 3. 중앙 기준 문서
 - 프로젝트 식별 기준: `project_registry.md`

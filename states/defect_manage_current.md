@@ -66,6 +66,15 @@
 - 이번 변경 기준 `npm.cmd run check:syntax`, `npm.cmd run test:unit` 재검증 통과
 - 로컬 작업본과 GitHub `origin/main` 비교 후 원격 최신 커밋 `4d04027` 기준으로 fast-forward 동기화 완료
 - 동기화 직후 `npm.cmd run check:syntax`, `npm.cmd run test:unit` 검증 통과
+- Chrome extension 전용 거미 아이콘 세트를 생성하고 manifest에 연결
+- 최신 위젯과 테스트 벤치의 캡처 엔진을 `html2canvas-pro 2.0.2`로 교체하고 기존 CORS 회피 보정 로직 유지
+- 세션이 있는 상태에서 신규 결함 등록 실행 시 로그인 화면이 먼저 보이는 깜빡임 보정
+- 모바일 등록 화면 문구를 `모바일 결함 등록`, `결함 발생 화면` 기준으로 정리
+- 신규 결함 등록 시 `심각도=Minor`, `우선순위=Medium` 기본 선택값 보정
+- `standalone/mobile` 신규 결함 등록 진입 시 로그인 검증 강화 및 세션 복구 보강
+- `docs/defectflow_report_widget_latest.js` 캡처 품질 보정 로직 추가
+- `docs/bug-reporter.js` 대안 버그 리포터 스크립트 추가
+- 모바일 테스트용 연동 메뉴얼과 사용자 메뉴얼 작성
 - 테스트 페이지 상품 목록 100건 확장
 - 신규 결함 등록의 이미지 직접 업로드 기능 복구 및 이미지 최적화 처리 추가
 - 외부 위젯/연동 스크립트의 화면 캡처 품질 개선
@@ -100,6 +109,12 @@
 - `결함 조치 현황` 하단 패널의 실제 운영 데이터 노출 및 클릭 동선 확인 가능
 - 배포본에서 관리자 로그인 후 `결함조치재확인` 탭의 실제 조회 결과를 한 번 더 확인 가능
 - 관리자 화면 `결함조치재확인` 탭의 실제 운영 데이터 노출 여부를 브라우저에서 한 번 더 점검 가능
+- Chrome extension reload 후 브라우저 툴바와 확장 목록에서 새 아이콘 표시 확인
+- 운영 페이지에서 `html2canvas-pro` 적용 후 최신 CSS/외부 이미지 캡처 품질 회귀 확인
+- 배포본에서 세션 유지 상태로 신규 등록 실행 시 로그인 화면 생략 여부 확인
+- 배포본에서 모바일 등록 문구 변경과 신규 등록 기본 선택값 반영 여부 확인
+- Chrome 확장 오버레이에서 비로그인 진입 → 로그인 → 등록 화면 자동 복귀 흐름 실기기 확인
+- `bug-reporter.js` 적용 범위와 기존 최신 위젯 병행 전략 정리 필요
 - `screenshot` 컬럼에 과거 base64 데이터가 남아 있는지 점검 가능
 - 완료율 신호등 색상 기준에 대한 사용자 피드백 반영 가능
 - 외부 사이트 이미지 미표시 시 CORS 제약 여부 확인 필요
@@ -131,6 +146,7 @@
 - 로컬 `server.js` 실행은 세션 환경에 따라 백그라운드 유지가 불안정할 수 있음
 - GitHub Pages 배포본과 로컬 Node 서버 동작은 별도로 확인 필요
 - GitHub Pages workflow가 현재 Node.js 20 기반 action 경고를 출력하므로 추후 workflow action 버전 점검 필요
+- 샌드박스 환경에서는 `npm.cmd run check:syntax`, `npm.cmd run test:unit`가 하위 프로세스 spawn 제한으로 실패할 수 있어 직접 `node --check` 확인이 필요할 수 있음
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `docs/CHANGELOG.md`, `js/app.js`, `js/storage.js`

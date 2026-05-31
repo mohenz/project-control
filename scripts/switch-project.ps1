@@ -33,6 +33,46 @@ $registry = @(
         Verify = 'review index.html / js/app.js / css/style.css'
         Port = '-'
         Docs = @('index.html', 'js\app.js', 'css\style.css')
+    },
+    @{
+        Key = 'makeyourtoday'
+        Aliases = @('makeyourtoday', 'make your today', 'make-your-today')
+        Path = 'D:\Workspace\makeyourtoday'
+        StateFile = 'D:\Workspace\project_control\states\makeyourtoday_current.md'
+        Run = 'N/A'
+        Verify = 'review planning docs'
+        Port = '-'
+        Docs = @('범용_멀티에이전트_운영체계.md', 'MBDP_요구사항정의서_v1.0.md', 'pm_도구_ai_에이전트_전체_설계서_mvp_포함.md')
+    },
+    @{
+        Key = 'trinity_room'
+        Aliases = @('trinity_room', 'trinity room', 'trinity meeting room', 'trinity soul shell')
+        Path = 'D:\Workspace\trinity_room'
+        StateFile = 'D:\Workspace\project_control\states\trinity_room_current.md'
+        Run = 'npm.cmd run preview:web'
+        Verify = 'npm.cmd run build / npm.cmd run check:types'
+        Port = '4317'
+        Docs = @('trinity_meeting_room_plan.md', 'room_protocol.md', 'trinity_soul_shell_architecture.md', 'trinity_room_work_plan_checklist.md')
+    },
+    @{
+        Key = 'ui_code_helper'
+        Aliases = @('ui_code_helper', 'ui code helper', 'ui-code-helper', 'ui markdown capture')
+        Path = 'D:\Workspace\ui_code_helper'
+        StateFile = 'D:\Workspace\project_control\states\ui_code_helper_current.md'
+        Run = 'load unpacked extension in Chrome'
+        Verify = 'npm.cmd run check:syntax'
+        Port = '-'
+        Docs = @('README.md', 'docs\mvp_spec.md', 'docs\사용자_매뉴얼.md', 'docs\다중선택_UX_설계안.md', 'manifest.json')
+    },
+    @{
+        Key = 'unit_test'
+        Aliases = @('unit_test', 'unit test', 'unit-test')
+        Path = 'D:\Workspace\unit_test'
+        StateFile = 'D:\Workspace\project_control\states\unit_test_current.md'
+        Run = 'N/A'
+        Verify = 'review README.md / docs / SKILL.md'
+        Port = '-'
+        Docs = @('README.md', 'docs\unit_test_workflow.md', 'docs\unit_test_rules.md', 'docs\common_checklist_master.md', 'SKILL.md')
     }
 )
 

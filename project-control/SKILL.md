@@ -64,6 +64,17 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Use `--in` to download latest data from cloud.
 - Use `--out` to upload local changes to cloud.
 
+### `/project mail <alias>`
+- Resolve the alias in `project_registry.md`.
+- Read the matched state file.
+- Build a work summary from:
+  - current goal
+  - recent completed work
+  - next work
+  - risks or notes
+- If available, include recent Git commit summary from the project path.
+- Use the workspace mail helper script or equivalent local SMTP workflow.
+
 ### `/project register <project_key> --path "<path>" --aliases "<a,b,c>"`
 - Add a registry entry.
 - Create a state file from the template before starting project work.

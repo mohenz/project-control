@@ -47,6 +47,14 @@
 /project use auth_pro
 ```
 
+```text
+/project use ui_code_helper
+```
+
+```text
+/project use unit_test
+```
+
 ### 3-2. 프로젝트 전환 + 상태 요약
 ```text
 /project use n8n --summary
@@ -56,6 +64,14 @@
 /project use "defect manage" --summary
 ```
 
+```text
+/project use ui_code_helper --summary
+```
+
+```text
+/project use unit_test --summary
+```
+
 ### 3-3. 프로젝트 전환 + 최소 점검
 ```text
 /project use n8n --check
@@ -63,6 +79,14 @@
 
 ```text
 /project use "defect manage" --check
+```
+
+```text
+/project use ui_code_helper --check
+```
+
+```text
+/project use unit_test --check
 ```
 
 ### 3-4. 프로젝트 전환 + 바로 작업 시작
@@ -76,6 +100,14 @@
 
 ```text
 /project use auth_pro --do "로그인 UI 수정"
+```
+
+```text
+/project use ui_code_helper --do "선택 모드 UX 점검"
+```
+
+```text
+/project use unit_test --do "defect_manage 신규 등록 화면 결과서 작성"
 ```
 
 ---
@@ -149,6 +181,15 @@
 /project deploy n8n
 ```
 
+### 5-5. 작업 메일 발송
+```text
+/project mail bloom --to "me@example.com"
+```
+
+```text
+/project mail "defect manage" --preview
+```
+
 ---
 
 ## 6. 신규 프로젝트 등록 Command
@@ -191,6 +232,48 @@
 /project status auth_pro
 ```
 
+### makeyourtoday
+```text
+/project use makeyourtoday
+/project use makeyourtoday --summary
+/project use makeyourtoday --do "문서 구조 정리"
+/project status makeyourtoday
+```
+
+### trinity_room
+```text
+/project use trinity_room
+/project use trinity_room --summary
+/project use trinity_room --do "UI 전환 작업 정리"
+/project status trinity_room
+```
+
+### ui_code_helper
+```text
+/project use ui_code_helper
+/project use ui_code_helper --summary
+/project use ui_code_helper --do "Chrome 확장 동선 점검"
+/project status ui_code_helper
+```
+
+### unit_test
+```text
+/project use unit_test
+/project use unit_test --summary
+/project use unit_test --do "대상 기능 DEV_TS_0003 결과서 작성"
+/project status unit_test
+```
+
+### bloom
+```text
+/project use bloom
+/project use bloom --summary
+/project use bloom --do "프롬프트 생성기 작업내용"
+/project status bloom
+/project mail bloom --preview
+/project deploy bloom
+```
+
 ---
 
 ## 8. 에이전트 내부 해석 규칙
@@ -217,6 +300,11 @@
 ### `/project deploy <alias>`
 - 상태 파일에 등록된 배포 방식을 우선 적용
 
+### `/project mail <alias>`
+- 상태 파일과 Git 요약을 기반으로 메일 본문 생성
+- `--preview`면 발송 없이 본문만 확인
+- 실제 발송은 `scripts/send-work-summary.ps1` 같은 로컬 메일 워크플로우 사용
+
 ---
 
 ## 9. 가장 짧게 쓰는 추천 Command
@@ -231,4 +319,12 @@
 
 ```text
 /project status auth_pro
+```
+
+```text
+/project status ui_code_helper
+```
+
+```text
+/project use unit_test --do "작업내용"
 ```

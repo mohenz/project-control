@@ -69,6 +69,8 @@ Supported command style:
 - /project fix <alias> --task "<task>"
 - /project start <alias> --task "<task>"
 - /project deploy <alias>
+- /project mail <alias> --to "<mail1,mail2>"
+- /project mail <alias> --preview
 - /project register <project_key> --path "<path>" --aliases "<alias1,alias2>"
 
 Command handling rules:
@@ -98,6 +100,11 @@ Command handling rules:
 
 - `/project deploy <alias>`
   - follow the deploy method recorded in the registry or state file
+
+- `/project mail <alias>`
+  - read the state file and build a work summary
+  - include recent completed work, next work, risks, and Git summary when available
+  - use the local mail helper workflow for preview or SMTP send
 
 Output behavior:
 - Be concise and operational.

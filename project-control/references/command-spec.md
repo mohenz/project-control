@@ -16,6 +16,7 @@
 - `start`
 - `deploy`
 - `sync`
+- `mail`
 - `register`
 
 ## Common options
@@ -28,6 +29,10 @@
 - `--verify "<verify>"`
 - `--path "<path>"`
 - `--aliases "<a,b,c>"`
+- `--to "<mail1,mail2>"`
+- `--cc "<mail1,mail2>"`
+- `--subject "<subject>"`
+- `--preview`
 
 ## Meaning
 
@@ -58,6 +63,9 @@
 ### `sync`
 - Synchronize project data with cloud storage (e.g., GCS).
 - Options: `--in` (download), `--out` (upload).
+
+### `mail`
+- Create or send a work summary mail for the matched project.
 
 ### `register`
 - Add a new project entry and create a state file.

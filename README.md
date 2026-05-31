@@ -26,17 +26,24 @@
 - `skill_install_manual.md`
 - `vscode_skill_manual.md`
 - `portable_standard_prompt.md`
+- `mail_workflow_guide.md`
 - `install-project-control-skill.cmd`
 - `project-control/` actual skill package
 - `templates/project_state_template.md`
 - `states/*.md`
 - `scripts/switch-project.ps1`
+- `scripts/send-work-summary.ps1`
 - `scripts/install-project-control-skill.ps1`
 
 ## 현재 등록 프로젝트
 - `defect_manage`
 - `n8n_defect_automation`
 - `auth_pro`
+- `makeyourtoday`
+- `trinity_room`
+- `bloom`
+- `ui_code_helper`
+- `unit_test`
 - `project_04` placeholder
 
 ## 폴더 구조
@@ -62,6 +69,11 @@ project_control/
     defect_manage_current.md
     n8n_defect_automation_current.md
     auth_pro_current.md
+    makeyourtoday_current.md
+    trinity_room_current.md
+    bloom_current.md
+    ui_code_helper_current.md
+    unit_test_current.md
     project_04_placeholder.md
   scripts/
     install-project-control-skill.ps1
