@@ -43,7 +43,7 @@
 - 변경된 프론트엔드 전방위 가드 UI 및 연동 스키마를 Git에 커밋하고 원격지에 최종 PUSH 완료: `c1ca353 Prevent unauthenticated content flash with blocking head auth guard`.
 - 사이드바 하단 데이터베이스 연결 상태 문구 및 ok/off 표시 색상을 제거하고, 가운데 정렬 형태의 세련된 static "Bloom Universe" 브랜드 워터마크로 전면 교체 완료 (9개 HTML 파일, `styles.css`, `ui.js` 수정 및 푸시 완료).
 - 공개 화면(홈, 주연배우, 카테고리, 평가등급) 및 관리자 화면(메인, 영화정보, 카테고리, 배우, 등급 관리) 전체의 상단 툴바 주요 액션 링크들을 일괄적으로 세련된 Crimson 레드 액센트 컬러의 프리미엄 입체 버튼 스타일(`primary-button`)로 교체 및 일관된 호버 글로우 섀도우 효과 적용 완료.
-- Supabase 설정 예시, `supabase/schema.sql` 및 대규모 초기 데이터 입력을 위한 `supabase/seed.sql` 설계 및 작성 완료.
+- Supabase 설정 예시, `supabase/schema.sql` (익명 쓰기 RLS 지원) 및 대규모 고품질 실존 명작 데이터 입력을 위한 `supabase/seed.sql` 설계 및 작성 완료.
 - 모바일 반응형 CSS 및 파비콘 추가.
 
 ## 다음 작업
