@@ -41,6 +41,7 @@
 - 로그인하지 않은 브라우저로 직접 URL 복사 접근 시, 바디 렌더링이 시작되기 전에 HTML 구성을 숨기고 즉시 튕겨내는 **동기식 블로킹 헤드 인증 가드(FOUC 방지)**를 9개 전체 HTML 파일 `<head>`에 전면 설계 및 이식 완료.
 - 모든 공개 화면 및 관리자 화면의 사이드바 내에 안전한 로그아웃(Sign Out) 기능을 추가하고 `assets/js/shared/ui.js`에 공통 핸들러 바인딩 완료.
 - 변경된 프론트엔드 전방위 가드 UI 및 연동 스키마를 Git에 커밋하고 원격지에 최종 PUSH 완료: `c1ca353 Prevent unauthenticated content flash with blocking head auth guard`.
+- 사이드바 하단 데이터베이스 연결 상태 문구 및 ok/off 표시 색상을 제거하고, 가운데 정렬 형태의 세련된 static "Bloom Universe" 브랜드 워터마크로 전면 교체 완료 (9개 HTML 파일, `styles.css`, `ui.js` 수정 및 푸시 완료).
 - Supabase 설정 예시와 `supabase/schema.sql` 작성.
 - 모바일 반응형 CSS 및 파비콘 추가.
 
