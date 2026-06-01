@@ -132,6 +132,7 @@
 - 2026-06-01: 관리자 영화정보 화면에서 `메인전시 여부` 저장 시 로컬 API가 `UPDATE ... RETURNING`을 일반 서브쿼리로 감싸 PostgreSQL 문법 오류가 발생하던 문제 수정. `scripts/local_api.py`의 쓰기 SQL 응답 래핑을 명시적 CTE 경로로 고정하고 세미콜론 정규화 추가. 로컬 API 재기동 후 `movies.id=138`의 `is_main` PATCH true/false 왕복 검증 완료.
 - 2026-06-01: 홈 메인전시 영역이 메인전시 영화의 포스터 이미지를 우선 노출하도록 수정. `CineTubeUI.movieImageUrl()` 공통 헬퍼를 추가해 `poster_url`, `poster_asset.public_url`, `capture_url`, `capture_asset.public_url`, `snapshot_url`, `snapshot_asset.public_url` 순서로 이미지를 선택. 홈 히어로와 관리자 영화 목록 썸네일에 동일 기준 적용. 브라우저 검증 결과 `TEAM-066` 히어로 배경이 포스터 URL로 설정되고 콘솔 오류 없음.
 - 2026-06-01: 영화 상세 화면에 `영화정보 삭제` 버튼 추가. 확인창 승인 시 `Store.remove("movies", id)`로 영화정보를 삭제하고 연결된 poster/capture/snapshot media asset도 정리한 뒤 홈으로 이동. 임시 영화 `UI-DELETE-TEST-*` 생성 후 상세 화면 삭제 버튼으로 삭제, 로컬 API 조회에서 미존재 확인, 콘솔 오류 없음.
+- 2026-06-01: `Aoi Tsukasa` 요청 작품 3건 등록 완료. 대상: `SSNI-987` Javtiful, `SSNI-346` Javtiful, `SNIS-675` Supjav. 추가 SQL: `supabase/import_aoi_tsukasa_requested_works.sql`. 배우 id `13`, 프로필 반영값: 나이 35, 신장 163cm, 신체사이즈 `B85(D)-W58-H88`, 데뷔년도 2010. 로컬 검증 결과 3개 작품 모두 `reducing-mosaic`, 포스터 있음. 브라우저 `http://localhost:8080/pages/movie.html?code=SSNI-987` 표시 및 콘솔 오류 없음.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
