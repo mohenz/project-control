@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: `defect_manage2`
-- last_updated: `2026-04-30`
+- last_updated: `2026-05-21`
 - owner_request: `defect_manage` 운영본의 개선 및 추가 기능을 분석해 `defect_manage2`에 반영
-- current_status: 주요 구조 개선과 자동 검증 정리가 완료되어, 다음은 실제 수동 로컬 테스트를 수행하는 단계
+- current_status: `defect_manage` 운영본과 기능 차이 재점검 후 누락된 `조치예정일(action_due_date)` 기능 및 GitHub Pages workflow action 버전 차이를 `defect_manage2`에 반영 완료
 
 ## 현재 목표
 - `defect_manage` 원본은 유지하고 `defect_manage2`에서 실행 파일 경량화와 프론트엔드 구조 분해를 안전하게 진행한다.
@@ -13,6 +13,7 @@
 
 ## 진행 중 작업
 - `defect_manage` 운영본 최신 개선사항 분석 및 `defect_manage2` 반영 진행
+- `defect_manage` / `defect_manage2` 기능 차이 비교 및 누락 기능 보정 완료
 - 개선 범위와 초기 작업 기준 정리 완료
 - 파악된 사실과 운영 결정사항 문서 기록 완료
 - 1차 구조 개선 배치 완료
@@ -24,6 +25,18 @@
 - 7차 로컬 테스트 준비 배치 완료
 
 ## 최근 완료 작업
+- 2026-05-21: `defect_manage`와 `defect_manage2`의 최근 운영 기능 키워드 및 코드 구조를 비교해 기능 차이 확인
+- 2026-05-21: 대시보드 전체 페이지 조회, 조치 미완료 카드/필터, 조치완료율 표시, 결함조치재확인, 결함관리번호 복사 기능은 `defect_manage2`에 이미 반영되어 있음을 확인
+- 2026-05-21: `defect_manage`의 2026-04-07 기능인 `조치예정일(action_due_date)`이 `defect_manage2`에 누락된 것을 확인하고 반영
+- 2026-05-21: `js/storage.js`의 목록/export 조회 컬럼에 `action_due_date` 추가
+- 2026-05-21: `js/modules/list-module.js` 결함 목록 표에 `조치예정일` 컬럼 추가
+- 2026-05-21: `js/modules/form-module.js` 일반 결함 수정 폼과 조치 결과 입력 폼에 `조치 예정일` date 입력 추가, 모바일 퀵 등록에는 hidden 값을 추가해 신규 등록 흐름 유지
+- 2026-05-21: `js/app.js` CSV 다운로드 헤더/행 및 `buildDefectPayload()`에 `action_due_date` 저장 반영
+- 2026-05-21: `docs/db_schema.md`, `docs/program_design.md`, `docs/CHANGELOG.md`, `docs/action_due_date_column_ddl.md`에 조치예정일 문서 반영
+- 2026-05-21: `defect_manage`의 GitHub Pages workflow action 버전(`checkout@v5`, `configure-pages@v5`, `upload-pages-artifact@v4`)을 `defect_manage2/.github/workflows/static.yml`에 반영
+- 2026-05-21: `npm.cmd run check:syntax` 통과
+- 2026-05-21: `npm.cmd run test:unit` 통과 (`6`개 파일, `13`개 테스트)
+- 2026-05-21: Playwright E2E `tests/e2e/defect.spec.js tests/e2e/simple.spec.js` 실행 결과 `simple.spec.js` 1건은 통과, `defect.spec.js`의 로그인 화면 제목 기대값(`환영합니다`)에서 기존 화면이 `Loading...`에 머물러 실패하고 두 번째 시나리오는 장시간 대기되어 중단함
 - 2026-04-30: `defect_manage` 운영본 최근 변경 분석 결과, 2026-04-09까지의 대시보드/목록 개선사항은 `defect_manage2`에 이미 반영되어 있고, 2026-04-30 대시보드 요약 전체 조회 수정만 미반영으로 확인
 - 2026-04-30: 운영본 `js/storage.js`의 `getDefectsSummaryForStats()` 전체 페이지 조회 수정사항을 개선본 구조에 맞춰 `js/services/storage/defect-storage-service.js`에 반영
 - 2026-04-30: 대시보드 요약 데이터가 1000건 단위로 끝까지 조회되는지 검증하는 단위 테스트를 `tests/unit/storage-defect-service.test.js`에 추가
@@ -93,6 +106,8 @@
 
 ## 다음 작업
 - 브라우저 수동 테스트에서 대시보드 `최종테스트` 전체 건수가 운영본과 동일하게 표시되는지 확인
+- Playwright E2E 실패 원인 분리: 홈 진입 시 로그인 heading 대신 `Loading...`이 유지되는 원인이 테스트 기대값 문제인지 초기화/라우팅 문제인지 확인
+- 브라우저에서 결함 목록, 일반 수정 폼, 조치 결과 입력, 엑셀 다운로드에 `조치예정일`이 정상 노출/저장되는지 수동 확인
 - `docs/local_test_execution_checklist.md` 기준으로 실제 수동 로컬 테스트 수행
 - 대시보드 상단 `조치 미완료` 카드 숫자 클릭 시 결함목록이 `조치 미완료` 필터 상태로 정상 조회되는지 수동 확인
 - 대시보드의 `결함 조치 현황 (테스트 구분별)` 조치완료율 열과 `심각도별 조치 현황` 완료율 표기를 브라우저에서 수동 확인
