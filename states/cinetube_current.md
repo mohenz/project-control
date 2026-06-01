@@ -123,6 +123,7 @@
 - 반영 후 검증 완료: `node --check assets/js/shared/ui.js`, `node --check assets/js/pages/home.js`, `node --check assets/js/pages/movie-detail.js`, `python -m py_compile scripts/local_api.py`.
 - 로컬 런처 실행 및 브라우저 확인 완료: `http://localhost:8080/index.html`, `http://localhost:8080/pages/actors.html`, `http://localhost:8080/admin/actors.html`.
 - 2026-06-01: 구조개선 후 기존 루트 URL 404 방지를 위해 `actor.html`, `actors.html`, `categories.html`, `movie.html`, `ratings.html`, `login.html` 호환 리다이렉트 파일 추가. `movie.html?code=...`, `actor.html?id=...` 쿼리 보존 확인. 커밋/푸시 완료: `a4df9e5 Add legacy page redirects`.
+- 2026-06-01: `Araki Noa` / `https://javtiful.com/kr/actress/araki-noa` 기준 reducing-mosaic 작품만 추출해 로컬 DB 등록 완료. 페이지 1에서 reducing 11건 확인, 페이지 2에는 reducing 항목 없음. 추가 SQL: `supabase/import_araki_noa_reducing.sql`. 로컬 검증 결과 배우 id `10`, reducing 작품 `11`건. 브라우저 `http://localhost:8080/pages/actor.html?id=10` 표시 및 콘솔 오류 없음. 커밋/푸시 완료: `277debc Add Araki Noa reducing import`.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
