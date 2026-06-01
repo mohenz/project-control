@@ -122,6 +122,7 @@
 - `assets/js/shared/ui.js`의 `routePath()` 기반 경로 보정, `scripts/start_local_db.ps1`의 PostgreSQL 설치 경로 자동 탐색, `scripts/local_api.py`의 쓰기 응답 처리 개선 반영 완료.
 - 반영 후 검증 완료: `node --check assets/js/shared/ui.js`, `node --check assets/js/pages/home.js`, `node --check assets/js/pages/movie-detail.js`, `python -m py_compile scripts/local_api.py`.
 - 로컬 런처 실행 및 브라우저 확인 완료: `http://localhost:8080/index.html`, `http://localhost:8080/pages/actors.html`, `http://localhost:8080/admin/actors.html`.
+- 2026-06-01: 구조개선 후 기존 루트 URL 404 방지를 위해 `actor.html`, `actors.html`, `categories.html`, `movie.html`, `ratings.html`, `login.html` 호환 리다이렉트 파일 추가. `movie.html?code=...`, `actor.html?id=...` 쿼리 보존 확인. 커밋/푸시 완료: `a4df9e5 Add legacy page redirects`.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
