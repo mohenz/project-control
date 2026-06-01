@@ -16,6 +16,7 @@
 - Supabase는 교체 가능한 저장소로만 취급하며, 프론트엔드가 Supabase에 직접 write/delete/upload하는 구조는 최종 구조로 채택하지 않는다.
 - 관리자 등록/수정/삭제/이미지 업로드는 서버 API가 Bloom 계정/권한을 확인한 뒤 저장소에 반영하는 구조로 설계한다.
 - Supabase RLS는 운영 권한 모델이 아니라 저장소 측 보조 안전장치가 필요한 경우에만 최소 범위로 둔다.
+- 배우 세부 프로필이 Javtiful 등 1차 등록 페이지에서 조회되지 않을 때는 `https://www.avdbs.com/menu/actor_list.php`에서 배우를 검색해 나이, 신장, 신체사이즈, 데뷔년도를 보강한다.
 
 ## 진행 중 작업
 - 원격 구조개선 반영 후 관리자 로컬 CRUD 전체 회귀 테스트 대기.
@@ -124,6 +125,7 @@
 - 로컬 런처 실행 및 브라우저 확인 완료: `http://localhost:8080/index.html`, `http://localhost:8080/pages/actors.html`, `http://localhost:8080/admin/actors.html`.
 - 2026-06-01: 구조개선 후 기존 루트 URL 404 방지를 위해 `actor.html`, `actors.html`, `categories.html`, `movie.html`, `ratings.html`, `login.html` 호환 리다이렉트 파일 추가. `movie.html?code=...`, `actor.html?id=...` 쿼리 보존 확인. 커밋/푸시 완료: `a4df9e5 Add legacy page redirects`.
 - 2026-06-01: `Araki Noa` / `https://javtiful.com/kr/actress/araki-noa` 기준 reducing-mosaic 작품만 추출해 로컬 DB 등록 완료. 페이지 1에서 reducing 11건 확인, 페이지 2에는 reducing 항목 없음. 추가 SQL: `supabase/import_araki_noa_reducing.sql`. 로컬 검증 결과 배우 id `10`, reducing 작품 `11`건. 브라우저 `http://localhost:8080/pages/actor.html?id=10` 표시 및 콘솔 오류 없음. 커밋/푸시 완료: `277debc Add Araki Noa reducing import`.
+- 2026-06-01: AVDBS 배우 페이지 `https://www.avdbs.com/menu/actor.php?actor_idx=11244`에서 `Araki Noa` 세부 프로필 확인 후 로컬 DB와 import SQL 보강. 반영값: 나이 21, 신장 162cm, 신체사이즈 `B84(E)-W56-H87`, 데뷔년도 2025. 브라우저 배우 상세 표시 확인. 커밋/푸시 완료: `c6456e0 Fill Araki Noa profile details`.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
