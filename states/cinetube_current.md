@@ -3,8 +3,8 @@
 ## 기본 정보
 - project_key: cinetube
 - last_updated: 2026-06-01
-- owner_request: `D:\workspace\cinetube\cinetube 기본요구사항.txt`와 `stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 신규 등록, 이미지 관리 및 전 화면 폐쇄형 인증 시스템 구축 완료. bloom 프로젝트 계정 연동 및 루트 경로 login.html을 통한 전원 차단 완료. Vercel 원격 배포 및 Git 동기화 완료.
+- owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
+- current_status: 로컬 PC 전용 PostgreSQL/API 운영 구조 전환 완료 후, 루트에는 메인 화면만 두고 공개 서브화면/인증 화면/요구사항/참조자료를 하위 디렉터리로 분리하는 구조 개선 진행 완료.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 완벽한 비공개(Closed-Access) 개인 사이트로 전면 개편.
@@ -22,6 +22,12 @@
 - URL+배우명 기반 영화/배우/카테고리 자동 등록 흐름 검증 중. 첫 대상은 `https://javtiful.com/kr/actress/yatsugake-umi` / `Yatsugake Umi`.
 
 ## 최근 완료 작업
+- 2026-06-01: 루트의 공개 서브화면 `actor.html`, `actors.html`, `categories.html`, `ratings.html`, `movie.html`을 `pages/` 하위로 이동
+- 2026-06-01: 레거시 로그인 화면 `login.html`을 `auth/login.html`로 이동
+- 2026-06-01: 요구사항 원문 `cinetube 기본요구사항.txt`를 `docs/requirements/` 하위로 이동
+- 2026-06-01: 참조자료 보관 위치 `docs/reference/` 및 안내 문서 추가, Stitch 산출물 제외 경로를 `.gitignore`에 반영
+- 2026-06-01: 이동된 화면 기준으로 루트/공개/관리 화면의 상대 링크와 `CineTubeUI` 영화 상세 라우팅 보정
+- 2026-06-01: 전체 `assets/js` 20개 파일 `node --check` 통과, HTML 로컬 링크 검사 통과, 주요 HTML 5개 HTTP 200 응답 확인
 - project-control 레지스트리에 `cinetube` 프로젝트 등록.
 - 상태 파일 생성.
 - 핵심 요구사항 문서와 Stitch 디자인 산출물 확인.
@@ -105,9 +111,15 @@
 - `CineTubeStore.load()`의 인증 리다이렉트 제거, `isAuthenticated()`는 항상 true 반환하도록 변경.
 - `scripts/launch_cinetube.ps1` 기본 오픈 URL을 `login.html`에서 `index.html`로 변경.
 - `http://localhost:8080/index.html?nocache=1`, `http://localhost:8080/admin/actors.html?nocache=1` 직접 접속 검증 완료. 로그인 리다이렉트 없음, 콘솔 오류 없음.
+- 2026-06-01: PostgreSQL 18.4 설치 환경 확인 후 `scripts/start_local_db.ps1`, `scripts/local_api.py`가 설치된 최신 PostgreSQL 버전 폴더를 자동 탐색하도록 수정.
+- 2026-06-01: 로컬 API `POST/PATCH`가 `insert/update returning` 결과를 JSON으로 감쌀 때 발생하던 SQL 문법 오류를 CTE 방식으로 수정.
+- 2026-06-01: TMDB `Blade Runner` 페이지 기준으로 로컬 DB에 카테고리 `SF`, 배우 `해리슨 포드`, 영화 `블레이드 러너`(`TMDB-78`) 등록 완료.
+- 2026-06-01: 로컬 검증 완료. `http://localhost:8080/index.html` 200 OK, `http://localhost:3001/movies` 200 OK, PostgreSQL `localhost:54322` 연결 성공, API `POST/PATCH/DELETE` smoke 통과.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
+- `블레이드 러너` 등록 결과를 브라우저 홈/관리 화면에서 시각 확인.
+- `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
 - 클라우드 Storage 객체(`cinetube-images`)도 비울지 별도 결정. 이번 작업은 테이블 데이터 초기화만 수행.
 
@@ -121,8 +133,8 @@
 
 ## 핵심 경로
 - project_root: `D:\Workspace\cinetube`
-- key_docs: `cinetube 기본요구사항.txt`, `stitch_cinetube_movie_hub\cinematic_archive_system\DESIGN.md`
-- key_files: `index.html`, `actors.html`, `categories.html`, `ratings.html`, `admin/*.html`, `assets/js/shared/store.js`, `assets/js/local-db-config.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `scripts/migrate_supabase_to_local.ps1`, `local/schema.sql`, `supabase/schema.sql`
+- key_docs: `docs\requirements\cinetube 기본요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub\cinematic_archive_system\DESIGN.md`
+- key_files: `index.html`, `pages\actors.html`, `pages\actor.html`, `pages\categories.html`, `pages\ratings.html`, `pages\movie.html`, `auth\login.html`, `admin/*.html`, `assets/js/shared/store.js`, `assets/js/local-db-config.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `scripts/migrate_supabase_to_local.ps1`, `local/schema.sql`, `supabase/schema.sql`
 
 ## 리스크 / 주의사항
 - 사용자가 Supabase 테이블 생성 완료를 확인했다.
