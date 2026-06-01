@@ -129,9 +129,10 @@
 - 2026-06-01: `Kaede Karen` / `https://javtiful.com/kr/actress/kaede-karen` 기준 reducing-mosaic 작품만 추출해 로컬 DB 등록 완료. 페이지별 reducing 수집 결과: 1페이지 18건, 2페이지 6건, 3페이지 4건, 4페이지 0건. AVDBS 배우 페이지 `https://www.avdbs.com/menu/actor.php?actor_idx=4981`에서 프로필 보강. 반영값: 나이 26, 신장 162cm, 신체사이즈 `B82(D)-W59-H81`, 데뷔년도 2018. 추가 SQL: `supabase/import_kaede_karen_reducing.sql`. 로컬 검증 결과 배우 id `11`, reducing 작품 `28`건. 브라우저 `http://localhost:8080/pages/actor.html?id=11` 표시 및 콘솔 오류 없음. 커밋/푸시 완료: `917db84 Add Kaede Karen reducing import`.
 - 2026-06-01: `Tsujimoto An` / `https://javtiful.com/kr/actress/tsujimoto-an` 기준 reducing-mosaic 작품만 추출해 로컬 DB 등록 완료. 페이지별 reducing 수집 결과: 1페이지 3건, 2페이지 1건. AVDBS 배우 페이지 `https://www.avdbs.com/menu/actor.php?actor_idx=1298`에서 프로필 보강. 반영값: 나이 32, 신장 155cm, 신체사이즈 `B82(C)-W57-H80`, 데뷔년도 2013. 추가 SQL: `supabase/import_tsujimoto_an_reducing.sql`. 로컬 검증 결과 배우 id `12`, reducing 작품 `4`건. 브라우저 `http://localhost:8080/pages/actor.html?id=12` 표시 및 콘솔 오류 없음. 커밋/푸시 완료: `e5e4624 Add Tsujimoto An reducing import`.
 - 2026-06-01: `Tsujimoto An` / `https://supjav.com/?s=Tsujimoto+An` 기준 Supjav 검색 결과 6페이지를 확인하고 `[Reducing Mosaic]` 라벨 작품만 추출해 로컬 DB 추가 등록 완료. `Ryo Tsujimoto` 등 다른 배우 결과는 제외, 중복 품번은 upsert 처리. Supjav 기준 unique reducing 34건 적용 후 기존 Javtiful-only `TEAM-062` 포함 총 reducing 작품 `35`건. 추가 SQL: `supabase/import_tsujimoto_an_supjav_reducing.sql`. 브라우저 `http://localhost:8080/pages/actor.html?id=12` 표시 및 콘솔 오류 없음. 커밋/푸시 완료: `fba4773 Add Tsujimoto An Supjav reducing import`.
+- 2026-06-01: 관리자 영화정보 화면에서 `메인전시 여부` 저장 시 로컬 API가 `UPDATE ... RETURNING`을 일반 서브쿼리로 감싸 PostgreSQL 문법 오류가 발생하던 문제 수정. `scripts/local_api.py`의 쓰기 SQL 응답 래핑을 명시적 CTE 경로로 고정하고 세미콜론 정규화 추가. 로컬 API 재기동 후 `movies.id=138`의 `is_main` PATCH true/false 왕복 검증 완료.
 
 ## 다음 작업
-- 관리자 화면에서 로컬 DB 기준 등록/수정/삭제/이미지 업로드(data URL 저장) 회귀 테스트.
+- 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - `블레이드 러너` 등록 결과를 브라우저 홈/관리 화면에서 시각 확인.
 - `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
