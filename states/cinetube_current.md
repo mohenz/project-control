@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-06-01
+- last_updated: 2026-06-02
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 전환 완료. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 메인 화면만 두고 공개 서브화면/인증 화면/요구사항/참조자료를 하위 디렉터리로 분리하는 원격 구조개선 작업을 fast-forward로 반영하고 주요 화면 검증 완료.
+- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 전환 완료. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 다중 주연배우/감독/정보출처 메타데이터 관리와 로컬 이미지 저장 오류 수정 반영 후 `4806e41 Improve movie people metadata management` 커밋을 원격 `main`에 push 완료.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 로컬 PC 전용 서비스로 안정 운영.
@@ -19,7 +19,7 @@
 - 배우 세부 프로필이 Javtiful 등 1차 등록 페이지에서 조회되지 않을 때는 `https://www.avdbs.com/menu/actor_list.php`에서 배우를 검색해 나이, 신장, 신체사이즈, 데뷔년도를 보강한다.
 
 ## 진행 중 작업
-- 원격 구조개선 반영 후 관리자 로컬 CRUD 전체 회귀 테스트 대기.
+- 관리자 로컬 CRUD 전체 회귀 테스트 대기.
 - URL+배우명 기반 영화/배우/카테고리 자동 등록 흐름은 보류 상태.
 
 ## 최근 완료 작업
@@ -134,10 +134,18 @@
 - 2026-06-01: 영화 상세 화면에 `영화정보 삭제` 버튼 추가. 확인창 승인 시 `Store.remove("movies", id)`로 영화정보를 삭제하고 연결된 poster/capture/snapshot media asset도 정리한 뒤 홈으로 이동. 임시 영화 `UI-DELETE-TEST-*` 생성 후 상세 화면 삭제 버튼으로 삭제, 로컬 API 조회에서 미존재 확인, 콘솔 오류 없음.
 - 2026-06-01: `Aoi Tsukasa` 요청 작품 3건 등록 완료. 대상: `SSNI-987` Javtiful, `SSNI-346` Javtiful, `SNIS-675` Supjav. 추가 SQL: `supabase/import_aoi_tsukasa_requested_works.sql`. 배우 id `13`, 프로필 반영값: 나이 35, 신장 163cm, 신체사이즈 `B85(D)-W58-H88`, 데뷔년도 2010. 로컬 검증 결과 3개 작품 모두 `reducing-mosaic`, 포스터 있음. 브라우저 `http://localhost:8080/pages/movie.html?code=SSNI-987` 표시 및 콘솔 오류 없음.
 - 2026-06-01: `Miyuki Arisaka` 요청 작품 `MIAA-077` / `https://supjav.com/307511.html` 등록 완료. 추가 SQL: `supabase/import_miyuki_arisaka_miaa_077.sql`. 기존 `Arisaka Miyuki` 배우 id `7`을 요청 표기 `Miyuki Arisaka`로 정리하고 프로필 유지. 로컬 검증 결과 `MIAA-077`은 `reducing-mosaic`, 제작사 `MOODYZ`, 포스터 있음. 브라우저 `http://localhost:8080/pages/movie.html?code=MIAA-077` 표시 및 콘솔 오류 없음.
+- 2026-06-02: TMDB URL 기반 일반 영화 등록 흐름 테스트. `클라우드 아틀라스`(`TMDB-83542`)와 배우 `톰 행크스` 로컬 DB 등록, 포스터/캡쳐/스냅샷 URL 렌더링 검증 완료.
+- 2026-06-02: `블레이드 러너`(`TMDB-78`) 영화정보를 TMDB 현재 포스터/백드롭 중심으로 업데이트. 기존 ORB 실패 포스터 URL을 렌더링 가능한 TMDB 미디어 URL로 교체하고 상세 화면 검증 완료.
+- 2026-06-02: 상세 페이지 포스터 세로 크기를 정보 패널 높이에 맞게 확장하고 모바일 1열에서는 자연 비율로 표시되도록 CSS 조정.
+- 2026-06-02: 로컬 API가 긴 Data URL 이미지를 `psql -c` 인자로 넘겨 `[WinError 206]`이 발생하던 문제 수정. SQL을 stdin으로 전달하도록 `scripts/local_api.py` 변경, 120KB Data URL 대표이미지 저장 테스트 통과.
+- 2026-06-02: 관리자 정보수정/삭제 성공 시 완료 알림을 표시하도록 `assets/js/shared/admin-page.js` 개선.
+- 2026-06-02: 영화 메타데이터 확장. 주연배우 최대 4명(`actor_ids`), 감독 최대 2명(`director_names`), 정보출처 URL(`source_url`) 지원 추가. 로컬/Supabase 스키마, 로컬 API, Store enrich, 관리자 폼/목록, 상세 화면, 배우 상세/카탈로그 필터, 샘플 데이터, Supabase 마이그레이션 SQL 반영.
+- 2026-06-02: 루트 디렉터리에서 legacy redirect 파일 `actor.html`, `actors.html`, `categories.html`, `login.html`, `movie.html`, `ratings.html` 제거. 루트 HTML은 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/`에 유지.
+- 2026-06-02: 변경사항 커밋/푸시 완료: `4806e41 Improve movie people metadata management`.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
-- `블레이드 러너` 등록 결과를 브라우저 홈/관리 화면에서 시각 확인.
+- 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
 - `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
 - 클라우드 Storage 객체(`cinetube-images`)도 비울지 별도 결정. 이번 작업은 테이블 데이터 초기화만 수행.
