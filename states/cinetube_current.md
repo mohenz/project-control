@@ -4,7 +4,7 @@
 - project_key: cinetube
 - last_updated: 2026-06-02
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 전환 완료. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 다중 주연배우/감독/정보출처 메타데이터 관리와 로컬 이미지 저장 오류 수정 반영 후 `4806e41 Improve movie people metadata management` 커밋을 원격 `main`에 push 완료.
+- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. `4806e41 Improve movie people metadata management`까지 원격 `main` push 완료. 이후 루튼토마토 평점 필드, 영화목록 화면, TMDB URL 가져오기, 포스터 카드 반응형 UI, 홈 히어로 높이 조정 작업이 로컬 작업트리에 미커밋 상태로 반영됨.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 로컬 PC 전용 서비스로 안정 운영.
@@ -20,7 +20,8 @@
 
 ## 진행 중 작업
 - 관리자 로컬 CRUD 전체 회귀 테스트 대기.
-- URL+배우명 기반 영화/배우/카테고리 자동 등록 흐름은 보류 상태.
+- TMDB URL 가져오기 기능은 로컬 API `/tmdb/import`와 관리자 화면 패널 구현/기본 검증 완료. 실제 신규 영화 저장까지의 전체 사용자 흐름은 추가 회귀 테스트 필요.
+- CineTube 작업트리에 여러 기능 개선 변경이 미커밋 상태로 남아 있음. 커밋/푸시 전 변경 범위 재확인 필요.
 
 ## 최근 완료 작업
 - 2026-06-01: 루트의 공개 서브화면 `actor.html`, `actors.html`, `categories.html`, `ratings.html`, `movie.html`을 `pages/` 하위로 이동
@@ -142,10 +143,21 @@
 - 2026-06-02: 영화 메타데이터 확장. 주연배우 최대 4명(`actor_ids`), 감독 최대 2명(`director_names`), 정보출처 URL(`source_url`) 지원 추가. 로컬/Supabase 스키마, 로컬 API, Store enrich, 관리자 폼/목록, 상세 화면, 배우 상세/카탈로그 필터, 샘플 데이터, Supabase 마이그레이션 SQL 반영.
 - 2026-06-02: 루트 디렉터리에서 legacy redirect 파일 `actor.html`, `actors.html`, `categories.html`, `login.html`, `movie.html`, `ratings.html` 제거. 루트 HTML은 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/`에 유지.
 - 2026-06-02: 변경사항 커밋/푸시 완료: `4806e41 Improve movie people metadata management`.
+- 2026-06-02: `클라우드 아틀라스` 상세 화면의 중복 정보출처 표시 문제를 정리하고 영화 메타데이터에 `rotten_tomatoes_score` 필드 추가. 로컬/Supabase 스키마, 로컬 API, Store enrich, 관리자 영화 폼, 상세 화면, 샘플 데이터, Supabase 마이그레이션 SQL 반영. 상세 화면에서는 추천점수와 별도 항목으로 `루튼 토마토`를 표시.
+- 2026-06-02: `클라우드 아틀라스` 로컬 DB에 `rotten_tomatoes_score=66` 반영. 상세 화면에서 추천점수 `88`, 루튼 토마토 `66%` 분리 표시 확인. 관리자 입력값 표시 확인.
+- 2026-06-02: `pages/movies.html`, `assets/js/pages/movies.js` 신규 추가. 공개 사이드바/홈 CTA에 `영화목록` 메뉴 추가. 영화목록은 최신영화 순(`release_month` 내림차순)으로 정렬하고 검색/페이지 크기 선택을 지원. 브라우저 검증 결과 `CineTube | 영화목록`, 목록 렌더링 및 콘솔 오류 없음.
+- 2026-06-02: TMDB `지옥의 묵시록`(`TMDB-28`) 등록 완료. 새 배우 `마틴 쉰`, 새 카테고리 `전쟁`, 감독 `프란시스 포드 코폴라`, 정보출처 URL, 포스터/캡쳐/스냅샷 TMDB 이미지 등록. 초기 생성 시 API 응답 배열 처리로 `actor_id=null`이 들어간 것을 `id=eq.3` PATCH 방식으로 `actor_id=4`, `actor_ids=[4]`로 보정. 상세/목록 렌더링과 이미지 로드 확인.
+- 2026-06-02: CineTube 관리자 영화정보 화면에 `TMDB URL 가져오기` 패널 추가. `scripts/local_api.py`에 `/tmdb/import?url=...` 엔드포인트 추가. TMDB API 키 401 상황에 대비해 공개 TMDB 페이지 HTML 파서 폴백 구현. 자동 추출 항목: 영화코드, 제목, 설명, 장르/카테고리, 주연배우 최대 4명, 감독 최대 2명, 포스터/캡쳐/스냅샷, 출시년월, 키워드, 정보출처 URL.
+- 2026-06-02: TMDB 가져오기 시 없는 카테고리/배우는 관리자 폼에서 자동 생성 후 선택값으로 연결하도록 `assets/js/shared/admin-page.js` 개선. `admin/movies.html`의 `admin-page.js`에 캐시 회피 버전 쿼리 추가. 샘플 `블레이드 러너` TMDB URL로 `/tmdb/import` 응답 확인: `SF`, 배우 4명, 감독 `리들리 스콧`, 포스터/배경 이미지 추출 정상. 관리자 화면 패널 노출 및 콘솔 오류 없음.
+- 2026-06-02: 영화 포스터 카드 UI 개선. `assets/css/styles.css`에 `--poster-image-ratio: 2 / 3` 추가, `.poster-frame`은 포스터 전용 세로 비율과 `object-fit: contain` 적용. 세로 포스터 전체가 보이도록 수정하고 기존 캡쳐/스냅샷 가로 비율(`--movie-image-ratio`)은 유지. 영화목록/홈 카드에서 포스터 원본 `500x750` 전체 표시 확인.
+- 2026-06-02: 포스터 그리드를 디바이스 가로폭에 맞춰 자동 정렬하도록 변경. `.poster-grid`를 `repeat(auto-fit, minmax(...))` 기반으로 조정하고 480px 이하에서는 2열 유지. 검증 결과 데스크톱 1600px 폭에서 4열, 좁은 화면에서 가로폭 기준 재배치, 콘솔 오류 없음.
+- 2026-06-02: 메인 홈 `#hero` 세로 크기를 +20px 조정. 데스크톱 `.hero min-height` 430px -> 450px, 모바일 구간 360px -> 380px. 브라우저에서 `#hero` 실제 렌더 높이 450px 확인, 콘솔 오류 없음.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
+- TMDB URL 가져오기 기능의 실제 신규 영화 저장 전체 흐름 회귀 테스트. 특히 자동 생성된 배우/카테고리, 포스터 URL, `actor_ids` 저장값, 상세 화면 이동 확인 필요.
+- 미커밋 변경 범위 정리 후 의도한 단위로 CineTube 커밋/푸시 여부 결정.
 - `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
 - 클라우드 Storage 객체(`cinetube-images`)도 비울지 별도 결정. 이번 작업은 테이블 데이터 초기화만 수행.
@@ -155,6 +167,7 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
+- latest_verification: `http://localhost:8080/admin/movies.html` TMDB 패널 노출 확인, `/tmdb/import` 샘플 응답 확인, `http://localhost:8080/pages/movies.html` 포스터 그리드/목록 확인, `http://localhost:8080/index.html` hero 높이 확인, 브라우저 콘솔 오류 없음.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
@@ -174,6 +187,8 @@
 - `media_assets` 테이블/Storage 정책 미적용 상태에서는 이미지 업로드를 차단하도록 방어 처리됨.
 - Supabase Auth/RLS 기반 관리자 저장 정책은 사용하지 않는다. 관리자 쓰기는 Bloom/CineTube 자체 API에서 권한 확인 후 처리해야 한다.
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
+- `project_registry.md`에 `cinetube` 항목이 중복 등록되어 있음. 둘 다 `states/cinetube_current.md`를 가리키지만 run/verify 설명이 서로 다르므로 추후 레지스트리 정리 필요.
+- 현재 CineTube 작업트리는 `README.md`, `admin/movies.html`, `assets/css/styles.css`, 다수 JS/HTML, 스키마/마이그레이션 파일, 신규 `pages/movies.html`, `assets/js/pages/movies.js` 등이 미커밋 상태임.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql`
