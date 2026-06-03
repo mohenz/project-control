@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-06-02
+- last_updated: 2026-06-03
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
 - current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. `4806e41 Improve movie people metadata management`까지 원격 `main` push 완료. 이후 루튼토마토 평점 필드, 영화목록 화면, TMDB URL 가져오기, 포스터 카드 반응형 UI, 홈 히어로 높이 조정 작업이 로컬 작업트리에 미커밋 상태로 반영됨.
 
@@ -152,11 +152,19 @@
 - 2026-06-02: 영화 포스터 카드 UI 개선. `assets/css/styles.css`에 `--poster-image-ratio: 2 / 3` 추가, `.poster-frame`은 포스터 전용 세로 비율과 `object-fit: contain` 적용. 세로 포스터 전체가 보이도록 수정하고 기존 캡쳐/스냅샷 가로 비율(`--movie-image-ratio`)은 유지. 영화목록/홈 카드에서 포스터 원본 `500x750` 전체 표시 확인.
 - 2026-06-02: 포스터 그리드를 디바이스 가로폭에 맞춰 자동 정렬하도록 변경. `.poster-grid`를 `repeat(auto-fit, minmax(...))` 기반으로 조정하고 480px 이하에서는 2열 유지. 검증 결과 데스크톱 1600px 폭에서 4열, 좁은 화면에서 가로폭 기준 재배치, 콘솔 오류 없음.
 - 2026-06-02: 메인 홈 `#hero` 세로 크기를 +20px 조정. 데스크톱 `.hero min-height` 430px -> 450px, 모바일 구간 360px -> 380px. 브라우저에서 `#hero` 실제 렌더 높이 450px 확인, 콘솔 오류 없음.
+- 2026-06-03: 배우정보 관리 화면에 `배우명 + 참고 URL` 기반 배우정보 조회 기능 추가. `scripts/local_api.py`에 `/metadata/actor` 엔드포인트와 AVDBS 배우 페이지 파서 추가. AVDBS 체크 쿠키 절차를 통과해 HTML을 가져오도록 보강. `assets/js/shared/admin-page.js`에 `배우 URL 가져오기` 패널 추가, 조회 결과를 배우명/나이/신장/신체사이즈/데뷔년도/대표이미지/일반이미지 슬롯에 반영. `Honjou Suzu` + `https://www.avdbs.com/menu/actor.php?actor_idx=4004` 검증 결과: 나이 29, 신장 163cm, `B85(C)-W59-H88`, 데뷔년도 2018, 이미지 5건 추출. 관리자 화면 버튼 조회 및 폼 반영 확인, 콘솔 오류 없음.
+- 2026-06-03: 주연배우 관리 `등록 목록` 상단에 배우명 조회 입력 추가. 기존 topbar `배우명 검색`과 등록 목록 상단 `배우명 조회` 값을 동기화하고, 배우명 기준으로 목록을 필터링하도록 `assets/js/shared/admin-page.js` 수정. 브라우저 검증 결과 `Honjou` 입력 시 목록 14건 -> 2건 필터링, 콘솔 오류 없음.
+- 2026-06-03: 영화정보 가져오기 대상에 ProjectJAV 추가. `scripts/local_api.py`의 import site 목록/자동 감지/검색 URL 해석에 `projectjav` 추가, ProjectJAV 전용 파서와 원격 HTML 차단 시 URL 구조 기반 fallback 추가. `assets/js/shared/admin-page.js`의 가져오기 대상 선택에 `ProjectJAV` 옵션 추가. 검증 URL `https://projectjav.com/movie/stars-924-153234` 기준 API 응답 및 관리자 폼 반영 확인: `movie_code=STARS-924`, `category_code=projectjav`, `source_url` 반영, poster `https://images.projectjav.com/data/covers/153234.jpg`, capture/snapshot `https://images.projectjav.com/data/screenshots/153234.jpg?width=300`. ProjectJAV가 Python/PowerShell 직접 HTML 요청을 TLS 단계에서 차단해 배우명/상세 제목은 fallback에서는 비워질 수 있음.
+- 2026-06-03: ProjectJAV 이미지 대체 소스로 MissAV 확인 및 영화정보 가져오기 대상에 `missav` 추가. `https://missav123.to/ko/v/hoks-225`는 Python fetch로 HTML 접근 가능하고 `og:image`에서 커버 `https://icdn.missav123.to/img2/c2/hoks-225/cover.webp` 추출 가능. `scripts/local_api.py`에 MissAV 파서 추가, `assets/js/shared/admin-page.js`의 가져오기 대상 선택에 `MissAV` 옵션 추가. 검증 결과 `movie_code=HOKS-225`, 제목, 배우 `Meguri Minoshima`, 출시월 `2026-05`, 제작사 `Fa 프로`, 키워드, poster/capture/snapshot 이미지가 정상 반영됨. 관리자 영화정보 화면 폼 자동 반영 및 콘솔 오류 없음.
+- 2026-06-03: ProjectJAV를 영화정보 가져오기 자동인식/선택 목록에서 제거. `assets/js/shared/admin-page.js`의 가져오기 대상 옵션에서 `ProjectJAV` 삭제, `scripts/local_api.py`의 `IMPORT_SITES`/자동감지에서 ProjectJAV 제외. ProjectJAV URL은 자동인식 시 명시적으로 거부 메시지를 반환하도록 처리. 검증 결과 관리자 옵션은 `auto/tmdb/javtiful/supjav/missav`, ProjectJAV 없음, MissAV 유지, 콘솔 오류 없음.
+- 2026-06-03: 관리자 등록/수정 폼 제목 영역에 수정 저장 버튼 추가. `assets/js/shared/admin-page.js`에서 수정 모드일 때 `정보 수정` 제목 오른쪽에 `수정 저장` 버튼을 렌더링하고 기존 `entryForm` submit을 호출하도록 연결. `assets/css/styles.css`에 `.form-title-row` 정렬 스타일 추가. `node --check assets/js/shared/admin-page.js` 통과. 브라우저 확인은 Codex browser/devtools 사용량 제한으로 수행하지 못함.
+- 2026-06-03: `Toujou Natsu` / `https://javtiful.com/kr/actress/toujou-natsu` 기준 `video_type=reducing_mosaic` 필터에서 Reducing 작품만 추출해 로컬 DB 등록 완료. 배우 id `64`, 신규 작품 18건: `HMN-435`, `DASS-863`, `HMN-774`, `DASS-859`, `HMN-743`, `HMN-740`, `HMN-664`, `HMN-469`, `DASS-785`, `HMN-684`, `HMN-725`, `HNDS-182`, `HMN-709`, `NHDTB-953`, `DASS-574`, `JUL-896`, `HMN-649`, `DASS-231`. 로컬 API 검증 결과 18건 모두 `reducing-mosaic`, `actor_id=64`, 포스터 URL 있음.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
 - TMDB URL 가져오기 기능의 실제 신규 영화 저장 전체 흐름 회귀 테스트. 특히 자동 생성된 배우/카테고리, 포스터 URL, `actor_ids` 저장값, 상세 화면 이동 확인 필요.
+- 배우 URL 가져오기 기능의 실제 저장 회귀 테스트. 예: `Honjou Suzu` / AVDBS actor_idx 4004 조회 후 저장, 배우 목록/상세 표시 확인.
 - 미커밋 변경 범위 정리 후 의도한 단위로 CineTube 커밋/푸시 여부 결정.
 - `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
@@ -167,7 +175,7 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
-- latest_verification: `http://localhost:8080/admin/movies.html` TMDB 패널 노출 확인, `/tmdb/import` 샘플 응답 확인, `http://localhost:8080/pages/movies.html` 포스터 그리드/목록 확인, `http://localhost:8080/index.html` hero 높이 확인, 브라우저 콘솔 오류 없음.
+- latest_verification: `Toujou Natsu` 배우 id `64` 및 Reducing 작품 18건 로컬 API 조회 확인. 전체 등록 작품이 `reducing-mosaic`, `actor_id=64`, 포스터 URL 보유 상태.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
