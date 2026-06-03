@@ -4,7 +4,7 @@
 - project_key: cinetube
 - last_updated: 2026-06-03
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 기준 CineTube 작업트리는 clean 상태이며 로컬 `main`은 `origin/main`보다 1개 커밋 앞서 있음. 이번 세션에서 project-control 상태 파일에 현재 Git 상태를 저장하고 원격 push를 진행한다.
+- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. CineTube 작업트리에는 해당 구현 변경이 커밋 대기 상태로 남아 있음.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 로컬 PC 전용 서비스로 안정 운영.
@@ -160,13 +160,15 @@
 - 2026-06-03: 관리자 등록/수정 폼 제목 영역에 수정 저장 버튼 추가. `assets/js/shared/admin-page.js`에서 수정 모드일 때 `정보 수정` 제목 오른쪽에 `수정 저장` 버튼을 렌더링하고 기존 `entryForm` submit을 호출하도록 연결. `assets/css/styles.css`에 `.form-title-row` 정렬 스타일 추가. `node --check assets/js/shared/admin-page.js` 통과. 브라우저 확인은 Codex browser/devtools 사용량 제한으로 수행하지 못함.
 - 2026-06-03: `Toujou Natsu` / `https://javtiful.com/kr/actress/toujou-natsu` 기준 `video_type=reducing_mosaic` 필터에서 Reducing 작품만 추출해 로컬 DB 등록 완료. 배우 id `64`, 신규 작품 18건: `HMN-435`, `DASS-863`, `HMN-774`, `DASS-859`, `HMN-743`, `HMN-740`, `HMN-664`, `HMN-469`, `DASS-785`, `HMN-684`, `HMN-725`, `HNDS-182`, `HMN-709`, `NHDTB-953`, `DASS-574`, `JUL-896`, `HMN-649`, `DASS-231`. 로컬 API 검증 결과 18건 모두 `reducing-mosaic`, `actor_id=64`, 포스터 URL 있음.
 - 2026-06-03: Git 상태 저장. `D:\workspace\cinetube` 작업트리는 clean, 로컬 `main`은 `origin/main`보다 1개 커밋 앞선 상태로 확인됨. project-control 상태 파일에 이 상태를 반영하고 push 진행 대상으로 기록.
+- 2026-06-03: 영화정보 가져오기 대상을 공통코드 기반으로 관리하도록 개선. `common_codes` 테이블/마이그레이션 추가, Store/API 테이블 연결, `admin/common-codes.html` 및 `assets/js/pages/admin-common-codes.js` 추가, 전체 관리자 사이드바에 `공통코드` 메뉴 추가. 로컬 DB에 `local/common_codes_migration.sql` 적용 완료. 브라우저 검증 결과 `http://localhost:8080/admin/movies.html`에서 `자동 인식/TMDB/Javtiful/Supjav/MissAV` 버튼이 공통코드 순서대로 표시되고 콘솔 오류 없음.
+- 2026-06-03: 공통코드 관리 화면의 `사용여부` select 표시값을 `전시/미전시`에서 `사용/미사용`으로 변경. `node --check assets/js/shared/admin-page.js` 통과, 브라우저 검증 결과 `사용/미사용` 옵션 표시 및 콘솔 오류 없음.
 
 ## 다음 작업
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
 - TMDB URL 가져오기 기능의 실제 신규 영화 저장 전체 흐름 회귀 테스트. 특히 자동 생성된 배우/카테고리, 포스터 URL, `actor_ids` 저장값, 상세 화면 이동 확인 필요.
 - 배우 URL 가져오기 기능의 실제 저장 회귀 테스트. 예: `Honjou Suzu` / AVDBS actor_idx 4004 조회 후 저장, 배우 목록/상세 표시 확인.
-- 로컬 `main` ahead 커밋의 원격 push 완료 여부 확인.
+- 공통코드 관리 기능 변경사항 커밋 완료 후 필요 시 원격 push.
 - `pages/movie.html` 상세 진입, 배우 상세 진입, 홈 카드 클릭 등 이동된 공개 서브화면 브라우저 회귀 확인.
 - Vercel 배포를 계속 유지할지, 로컬 전용 운영으로 고정할지 결정.
 - 클라우드 Storage 객체(`cinetube-images`)도 비울지 별도 결정. 이번 작업은 테이블 데이터 초기화만 수행.
@@ -176,7 +178,7 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
-- latest_verification: `Toujou Natsu` 배우 id `64` 및 Reducing 작품 18건 로컬 API 조회 확인. 전체 등록 작품이 `reducing-mosaic`, `actor_id=64`, 포스터 URL 보유 상태.
+- latest_verification: `node --check assets/js/shared/admin-page.js`, `node --check assets/js/shared/store.js`, `node --check assets/js/pages/admin-common-codes.js` 통과. 로컬 DB에 `common_codes` 마이그레이션 적용 완료. Browser 검증 결과 관리자 영화정보 가져오기 대상 버튼, 공통코드 메뉴, `사용/미사용` select 표시 정상, 콘솔 오류 없음.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
@@ -197,7 +199,7 @@
 - Supabase Auth/RLS 기반 관리자 저장 정책은 사용하지 않는다. 관리자 쓰기는 Bloom/CineTube 자체 API에서 권한 확인 후 처리해야 한다.
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 - `project_registry.md`에 `cinetube` 항목이 중복 등록되어 있음. 둘 다 `states/cinetube_current.md`를 가리키지만 run/verify 설명이 서로 다르므로 추후 레지스트리 정리 필요.
-- 2026-06-03 확인 기준 CineTube 작업트리는 clean 상태. 로컬 `main`이 `origin/main`보다 1개 커밋 앞선 상태였으므로 push 결과 확인 필요.
+- 공통코드 기능 구현 변경이 CineTube 작업트리에 커밋 대기 상태로 남아 있음.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql`
