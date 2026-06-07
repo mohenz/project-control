@@ -1,10 +1,10 @@
-# CineTube Current State
+﻿# CineTube Current State
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-06-03
-- owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`와 `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. CineTube와 project_control 모두 로컬 `main`과 `origin/main`이 동기화된 clean 상태.
+- last_updated: 2026-06-07
+- owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`, `D:\workspace\cinetube\docs\requirements\cinetube 기능추가요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
+- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. `docs\requirements\cinetube 기능추가요구사항.txt` 기준 관심작품과 갤러리 게시판 기능 구현 완료.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 로컬 PC 전용 서비스로 안정 운영.
@@ -24,6 +24,33 @@
 - CineTube 작업트리는 clean 상태. 로컬 `main`과 `origin/main` 동기화 완료.
 
 ## 최근 완료 작업
+- 2026-06-07: 기능추가요구사항 `갤러리 게시판` 구현. `gallery_images` 테이블/마이그레이션 추가, `favorite_movies.content_type`에 `gallery` 허용, 로컬 API/Store 연동, 관리자 `admin/gallery-images.html` 등록/수정/삭제 화면 추가, 공개 `pages/gallery.html` 목록/바둑판/슬라이드/상세 보기 추가. 파일 직접 업로드와 이미지 입력 paste 이벤트 기반 클립보드 붙여넣기 등록은 기존 `media_assets` 업로드 흐름을 재사용. 갤러리 이미지 관심작품 선택/해제 및 관심작품 화면 혼합 목록 표시 구현.
+- 2026-06-07: 갤러리 이미지 신규 등록 UX 개선. 관리자 갤러리 화면에서 이미지 파일 선택 또는 클립보드 붙여넣기만 수행해도 `Gallery ID`, 제목, 설명, 출처, 태그가 자동 입력되도록 `assets/js/shared/admin-page.js` 보강. 저장 시에도 이미지 외 필드가 비어 있으면 동일 기본값을 강제 적용.
+- 2026-06-07: 갤러리 클립보드 붙여넣기 UX 수정. 기존에는 파일 입력 요소에만 paste 이벤트가 연결되어 실제 `Ctrl+V` 동작이 어려웠으므로, 갤러리 이미지 슬롯/폼/문서 전체 paste 이벤트에서 클립보드 이미지 파일을 감지해 파일 입력·미리보기·자동입력 흐름으로 연결하도록 개선. `admin/gallery-images.html`의 `admin-page.js` 캐시 버전을 `gallery-paste`로 갱신.
+- 2026-06-06: 관리자 `Webtoon 정보` 목록의 6번째 컬럼을 `Rating`에서 `에피소드 개수`로 변경. `assets/js/shared/admin-page.js`에서 `data.webtoonChapters` 기준 Webtoon별 Chapter 개수를 계산해 표시하도록 수정하고, `admin/webtoons.html`의 `admin-page.js` 캐시 버전을 `webtoon6`으로 갱신. Browser 검증 결과 `#adminTable ... th:nth-of-type(6)` 텍스트가 `에피소드 개수`로 표시되고 콘솔 오류 없음.
+- 2026-06-06: `local/postgres-data.corrupt-20260605_192600` 손상 DB에서 컨텐츠 복구 가능성 점검 및 확정 복구 수행. 확인 결과 `pg_control` 및 `base/16384` 데이터 파일 362개가 PostgreSQL 8192-byte block 배수가 아니고 `EF BF BD` replacement 문자가 섞인 상태라 클러스터 기동/`pg_dump` 방식 복구는 불가. 다만 heap 파일과 로그에 컨텐츠 문자열은 남아 있어 텍스트 카빙/기존 SQL 재적용 방식으로 복구 가능함을 확인.
+- 2026-06-06: 저장소에 남아 있던 `supabase/import_*.sql` 11개를 로컬 DB에 재적용해 영화/배우 컨텐츠 복구. 복구 후 DB 건수: movies 172, actors 14, categories 3. 적용 파일: `import_aoi_tsukasa_requested_works.sql`, `import_araki_noa_reducing.sql`, `import_hatsumi_nanoka_reducing.sql`, `import_horisawa_mayu_missav_reducing.sql`, `import_kaede_karen_reducing.sql`, `import_koumura_izuki_reducing.sql`, `import_miyuki_arisaka_miaa_077.sql`, `import_toujou_natsu_reducing.sql`, `import_tsujimoto_an_reducing.sql`, `import_tsujimoto_an_supjav_reducing.sql`, `import_yatsugake_umi.sql`.
+- 2026-06-06: 손상 DB/로그에서 `neighbors-curse-uncensored` Webtoon 및 Chapter URL 8건을 추출해 `local/recovered_webtoon_neighbors_curse_20260606.sql` 생성/적용. 복구 후 webtoons 1, webtoon_chapters 8. 추가 손상 heap 후보 영화코드는 `local/missing_movie_codes_from_corrupt.txt`에 추출해 둠. 이 목록은 오탐/불완전 후보가 섞여 있어 자동 삽입하지 않음.
+- 2026-06-05: 관리자 영화정보/카테고리/주연배우/평가등급/공통코드 등 모든 관리화면에서 관리항목이 비어 보이던 문제 수정. 원인: `assets/js/shared/ui.js` 앞부분의 깨진 중복 IIFE로 `window.CineTubeUI`가 생성되지 않고, `assets/js/shared/admin-page.js`의 고아 코드/닫힘 누락으로 공통 관리자 렌더러가 문법 오류를 내던 상태. 수정: `ui.js` 정상 IIFE 구조 복구 및 `showError` export 추가, `admin-page.js` 이미지 삭제/교체 함수와 `init()` 닫힘 구조 복구.
+- 2026-06-05: 로컬 API의 `psql` stderr 디코딩 실패 시 `NoneType.strip` 500 오류가 발생하던 문제 수정. `scripts/local_api.py`의 `subprocess.run(..., errors="replace")` 및 stdout/stderr None 방어 처리 추가.
+- 2026-06-05: 로컬 PostgreSQL 데이터 디렉터리 손상 복구. `postgresql.conf`, `postgresql.auto.conf`, `PG_VERSION`에 UTF-8 BOM이 들어가고 `pg_control`까지 손상되어 DB 기동 불가 상태였음. 기존 손상 디렉터리는 `local/postgres-data.corrupt-20260605_192600`로 보존하고 새 클러스터를 초기화한 뒤 `local/backups/supabase_to_local_import_20260601_051412.sql`, `local/common_codes_migration.sql`, `local/webtoons_migration.sql`, `local/webtoon_import_sites_migration.sql` 적용 완료. 복구 후 DB 건수: movies 66, actors 8, categories 3, rating_grades 5, common_codes 8, webtoons 0.
+- 2026-06-05: `scripts/start_local_db.ps1` 보강. PostgreSQL 텍스트 제어 파일의 UTF-8 BOM 제거 처리(`PG_VERSION`, `postgresql.conf`, `postgresql.auto.conf`)와 `pg_ctl`/접속/createdb 실패 시 즉시 오류를 던지는 검증을 추가해 실패를 성공처럼 출력하지 않도록 수정.
+- 2026-06-05: Hentai18 Webtoon 가져오기 후 저장 시 `저장 실패: {"message": "'NoneType' object has no attribute 'strip'"}` 오류 수정. 원인: Webtoon 신규 저장 후 생성 행을 잘못 식별하거나, 이미 본문만 저장된 재시도 상황에서 Chapter upsert가 FK/중복 흐름에 취약한 구조. 수정: Webtoon 저장 후 `webtoon_id` 기준으로 생성/기존 행을 재조회하고, 동일 `webtoon_id`가 있으면 update 후 Chapter를 동기화하도록 보강. Chapter pending payload에서 불필요한 `chapter_poster_asset_id: null` 전송 제거.
+- 2026-06-05: 실제 등록 검증 완료. `https://hentai18.net/read-hentai/neighbors-curse-uncensored`를 관리자 Webtoon 화면에서 Hentai18 대상으로 가져오기 후 저장. DB 확인 결과 Webtoon `neighbors-curse-uncensored`, title `Neighbor’s Curse (Uncensored)`, rating `3.4`, Chapter `001`~`008` 총 8건 저장 정상. 브라우저 콘솔 오류 없음.
+- 2026-06-05: 관리자 Webtoon 정보관리의 `Webtoon URL 가져오기` 패널을 영화정보 관리와 동일한 공통코드 기반 UX/UI로 변경. 신규 공통코드 그룹 `webtoon_import_site` 추가: `auto`/`mangadistrict`/`hentai18`. Webtoon 가져오기 대상 버튼은 `common_codes`의 `display_order`, `is_enabled` 기준으로 렌더링되며, 공통코드가 없을 때도 기본 fallback을 제공.
+- 2026-06-05: `local/webtoon_import_sites_migration.sql`, `supabase/webtoon_import_sites_migration.sql` 추가 및 `local/common_codes_migration.sql`, `local/schema.sql`, `supabase/schema.sql` seed 반영. 로컬 DB에 Webtoon 가져오기 대상 공통코드 3건 적용 완료.
+- 2026-06-05: Webtoon 가져오기 대상 UI 검증 완료. Browser에서 `admin/webtoons.html` 패널에 `자동 인식`, `MangaDistrict`, `Hentai18` 버튼 표시 확인. `Hentai18` 버튼 선택 후 `https://hentai18.net/read-hentai/neighbors-curse-uncensored` 가져오기 결과 title `Neighbor’s Curse (Uncensored)`, rating `3.4`, Chapter 8건 자동 반영 및 콘솔 오류 없음 확인.
+- 2026-06-05: Hentai18 Webtoon URL 기반 자동등록 프로세스 추가. 대상 예시: `https://hentai18.net/read-hentai/neighbors-curse-uncensored`. 로컬 API Webtoon import에서 `hentai18.net` 자동 인식 지원을 추가하고, Hentai18 페이지의 H1/메타/본문 라벨/Chapter 링크를 분석해 `webtoon_id`, `title`, `rating`, `genre`, `type`, `tage`, `poster_image`, `url`, Chapter 목록을 추출하도록 구현.
+- 2026-06-05: 관리자 Webtoon URL 가져오기 UI를 `auto` 인식 방식으로 변경해 Mangadistrict와 Hentai18 URL을 모두 처리하도록 개선. `admin/webtoons.html`, `admin/webtoon-chapters.html`의 `admin-page.js` 캐시 버전을 갱신.
+- 2026-06-05: Hentai18 자동등록 검증 완료. `neighbors-curse-uncensored` 기준 API 응답: title `Neighbor’s Curse (Uncensored)`, rating `3.4`, genre `Manhwa, Adult, Comedy, Drama, Mature, Romance, Seinen, Uncensored`, type `Manhwa`, tag 9건, Chapter 8건, poster 추출 정상. 브라우저 관리자 Webtoon 화면에서 URL 가져오기 후 필드 자동 반영 및 콘솔 오류 없음 확인.
+- 2026-06-05: Mangadistrict 웹툰 URL 기반 Webtoon 정보 자동등록 기능 추가. 로컬 API `/metadata/webtoon?site=mangadistrict&url=...` 및 `/webtoon/import` 엔드포인트를 추가하고, `https://mangadistrict.com/series/the-islands-naughty-teacher/` 기준 제목, 평점, 대체명, 작가, 장르, 타입, 태그, 포스터, Webtoon 이미지, Chapter URL 20건을 자동 추출하도록 구현.
+- 2026-06-05: 관리자 Webtoon 정보관리 화면에 `Webtoon URL 가져오기` 패널 추가. Mangadistrict URL 조회 시 Webtoon 기본 필드와 포스터/Webtoon 이미지 슬롯을 자동 채우고, 저장 시 가져온 Chapter 목록을 `webtoon_chapters`에 upsert하도록 `assets/js/shared/admin-page.js` 반영.
+- 2026-06-05: Webtoon 자동등록 검증 완료. `python -m py_compile scripts/local_api.py`, `node --check assets/js/shared/admin-page.js`, `node --check assets/js/shared/store.js` 통과. API 응답 확인 결과 `The Island’s Naughty Teacher`, 평점 `4.7`, 작가 `TOOBA`, Chapter 20건 추출 정상. 브라우저 관리자 화면에서 URL 가져오기 후 필드 자동 반영 확인, 콘솔 오류 없음.
+- 2026-06-05: 영화목록/영화정보관리 패턴을 확장해 Webtoon 정보관리, Webtoon Chapter 관리, Webtoon 목록, 웹툰 상세정보 화면 신규 추가. 추가 테이블: `webtoons`, `webtoon_chapters`; 추가 화면: `admin/webtoons.html`, `admin/webtoon-chapters.html`, `pages/webtoons.html`, `pages/webtoon.html`; 추가 JS: `assets/js/pages/admin-webtoons.js`, `assets/js/pages/admin-webtoon-chapters.js`, `assets/js/pages/webtoons.js`, `assets/js/pages/webtoon-detail.js`.
+- 2026-06-05: Webtoon 관리 항목 반영 완료: `webtoon_id`, `title`, `rating`, `alternative`, `artist`, `genre`, `type`, `tage`, `poster_image`, `url`, `webtoon_images[1..6]`, `regdate`. Chapter 항목 반영 완료: `webtoon_chapter_id`, `webtoon_id`, `chapter_number`, `chapter_url`, `chapter_poster`, `regdate`.
+- 2026-06-05: `local/webtoons_migration.sql`, `supabase/webtoons_migration.sql` 추가 및 `local/schema.sql`, `supabase/schema.sql`, `scripts/local_api.py`, `assets/js/shared/store.js`, `assets/js/shared/admin-page.js` 반영. 로컬 PostgreSQL에 `local/webtoons_migration.sql` 적용 완료.
+- 2026-06-05: 검증 완료. `node --check assets/js/shared/store.js`, `node --check assets/js/shared/admin-page.js`, `node --check assets/js/pages/webtoons.js`, `node --check assets/js/pages/webtoon-detail.js`, `python -m py_compile scripts/local_api.py` 통과. 로컬 API `GET /webtoons`, `GET /webtoon_chapters` 200 응답 확인. 롤백 트랜잭션으로 Webtoon/Chapter insert 및 join 검증 통과. 브라우저에서 `admin/webtoons.html`, `admin/webtoon-chapters.html`, `pages/webtoons.html`, `pages/webtoon.html?id=WT-TEST` 렌더링 및 콘솔 오류 없음 확인.
+- 2026-06-05: `Horisawa Mayu` / `https://missav.to/actress/horisawa-mayu/movie` 기준 MissAV 배우 페이지에서 `[Reducing]` 표기 작품만 추출해 로컬 DB 등록 완료. 신규 배우 id `90`, 신규 작품 10건: `FSDSS-345`, `FSDSS-344`, `FSDSS-343`, `MXGS-1257`, `NACR-596`, `MDTM-786`, `NACR-576`, `WAAA-188`, `EKDV-686`, `FSDSS-399`. 추가 SQL: `supabase/import_horisawa_mayu_missav_reducing.sql`. 로컬 검증 결과 10건 모두 `reducing-mosaic`, `actor_id=90`, 포스터 URL 있음. 브라우저 `http://localhost:8080/pages/movie.html?code=FSDSS-345` 표시 및 콘솔 오류 없음.
 - 2026-06-01: 루트의 공개 서브화면 `actor.html`, `actors.html`, `categories.html`, `ratings.html`, `movie.html`을 `pages/` 하위로 이동
 - 2026-06-01: 레거시 로그인 화면 `login.html`을 `auth/login.html`로 이동
 - 2026-06-01: 요구사항 원문 `cinetube 기본요구사항.txt`를 `docs/requirements/` 하위로 이동
@@ -163,8 +190,14 @@
 - 2026-06-03: 영화정보 가져오기 대상을 공통코드 기반으로 관리하도록 개선. `common_codes` 테이블/마이그레이션 추가, Store/API 테이블 연결, `admin/common-codes.html` 및 `assets/js/pages/admin-common-codes.js` 추가, 전체 관리자 사이드바에 `공통코드` 메뉴 추가. 로컬 DB에 `local/common_codes_migration.sql` 적용 완료. 브라우저 검증 결과 `http://localhost:8080/admin/movies.html`에서 `자동 인식/TMDB/Javtiful/Supjav/MissAV` 버튼이 공통코드 순서대로 표시되고 콘솔 오류 없음.
 - 2026-06-03: 공통코드 관리 화면의 `사용여부` select 표시값을 `전시/미전시`에서 `사용/미사용`으로 변경. `node --check assets/js/shared/admin-page.js` 통과, 브라우저 검증 결과 `사용/미사용` 옵션 표시 및 콘솔 오류 없음.
 - 2026-06-03: 공통코드 관리 기능 변경사항 커밋/푸시 완료. `cinetube`는 원격 변경 `37842b0`까지 로컬 fast-forward 반영 완료. 최종 확인 결과 `cinetube`, `project_control` 모두 `main...origin/main` clean 상태.
+- 2026-06-06: Webtoon 정보 가져오기 대상에 `IMHentai` 추가. `scripts/local_api.py`에 `imhentai.xxx/gallery/...` 자동/수동 인식, 제목/태그/작가/카테고리/커버/본문 이미지 파서, 서버 직접 조회 차단 시 URL 기반 최소 정보 fallback 추가. `assets/js/shared/admin-page.js` fallback 버튼/placeholder, `admin/webtoons.html` 캐시 버전, `local/supabase` schema 및 webtoon import site migration에 `imhentai` 공통코드 추가. 로컬 DB에 `webtoon_import_sites_migration.sql` 적용 완료. 검증 결과 관리자 화면 버튼 `자동 인식/MangaDistrict/Hentai18/IMHentai`, 콘솔 오류 없음. API `GET /metadata/webtoon?site=imhentai&url=https://imhentai.xxx/gallery/1666131/`는 사이트 직접 조회 차단으로 fallback JSON을 반환함.
+- 2026-06-06: 기능추가요구사항 `관심작품` 완료. 영화 카드 우측 `관심작품` 토글, 영화 상세 `관심작품` 버튼, 좌측 메뉴 `관심작품`, `pages/favorites.html` 전용 목록 화면 추가. 관심작품은 브라우저 `localStorage(cinetube_favorite_movies)`에 영화코드 목록으로 저장하며 선택/해제 가능. `docs/requirements/cinetube 기능추가요구사항.txt` 현황을 `완료`로 변경. 검증 결과 영화목록에서 선택 시 저장, 관심작품 화면 1건 표시, 해제 시 0건 즉시 갱신, 콘솔 오류 없음.
+- 2026-06-06: 관심작품 DB 저장 전환 기반으로 `favorite_movies` 테이블 설계/추가. 테이블명은 유지하되 `content_type in ('movie','webtoon')`, `content_id`, `user_key` 구조로 영화(`movie_code`)와 웹툰(`webtoon_id`) 모두 저장 가능한 확장형으로 설계. `(user_key, content_type, content_id)` 유니크와 조회 인덱스 추가. `local/schema.sql`, `supabase/schema.sql`, `local/favorite_movies_migration.sql`, `supabase/favorite_movies_migration.sql`, `scripts/local_api.py`, `assets/js/shared/store.js` 반영. 로컬 DB 마이그레이션 적용 및 movie/webtoon insert 롤백 테스트, `/favorite_movies` API 조회 정상.
+- 2026-06-06: 관심작품 UI 저장소를 `localStorage`에서 DB `favorite_movies`로 전환 완료. `assets/js/shared/store.js`에 `favoriteUserKey/favoriteIds/favoriteItems/isFavoriteItem/toggleFavoriteItem` 추가, 기존 `localStorage(cinetube_favorite_movies)` 값은 최초 DB 연결 시 `favorite_movies`로 자동 이전 후 제거. `assets/js/shared/ui.js` 관심작품 버튼은 Store DB 토글을 우선 사용하고 샘플 모드만 localStorage fallback. 공개/상세 페이지 `store.js` 캐시 버전 `favorites-db` 반영. 검증 결과 영화목록 선택 시 DB insert, 재선택 시 DB delete, 관심작품 화면 DB 기준 1건 표시/해제 시 0건 갱신, 기존 localStorage 목록 미사용, 콘솔 오류 없음.
+- 2026-06-06: 웹툰에도 관심작품 기능 추가. `assets/js/shared/ui.js` 관심작품 바인딩을 `content_type` 기반으로 확장하고, `assets/js/pages/webtoons.js` 웹툰 카드 우측 버튼, `assets/js/pages/webtoon-detail.js` 상세 버튼 추가. `assets/js/pages/favorites.js` 관심작품 화면은 영화/웹툰 혼합 목록과 영화/웹툰 카운트를 표시하도록 확장. 검증 결과 웹툰 목록/상세 선택 시 `favorite_movies(content_type='webtoon', content_id=webtoon_id)` 저장, 관심작품 화면 웹툰 표시 및 해제 즉시 DB 삭제/화면 갱신, 콘솔 오류 없음.
 
 ## 다음 작업
+- 갤러리 게시판 브라우저 실사용 회귀 테스트: 관리자 이미지 파일 등록/클립보드 붙여넣기 저장, 공개 목록/바둑판/슬라이드 전환, 상세 수정/삭제, 관심작품 반영 확인.
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
 - TMDB URL 가져오기 기능의 실제 신규 영화 저장 전체 흐름 회귀 테스트. 특히 자동 생성된 배우/카테고리, 포스터 URL, `actor_ids` 저장값, 상세 화면 이동 확인 필요.
@@ -179,13 +212,13 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
-- latest_verification: `node --check assets/js/shared/admin-page.js`, `node --check assets/js/shared/store.js`, `node --check assets/js/pages/admin-common-codes.js` 통과. 로컬 DB에 `common_codes` 마이그레이션 적용 완료. Browser 검증 결과 관리자 영화정보 가져오기 대상 버튼, 공통코드 메뉴, `사용/미사용` select 표시 정상, 콘솔 오류 없음.
+- latest_verification: 2026-06-07 갤러리 작업 기준 `node --check assets/js/shared/store.js`, `node --check assets/js/shared/admin-page.js`, `node --check assets/js/pages/gallery.js`, `node --check assets/js/pages/favorites.js`, `python -m py_compile scripts/local_api.py` 통과. `local/gallery_images_migration.sql` 로컬 PostgreSQL 적용 완료, `public.gallery_images` 테이블 조회 정상. 롤백 트랜잭션으로 `gallery_images` insert 및 `favorite_movies(content_type='gallery')` insert 검증 통과. Browser/DevTools 검증 결과 `pages/gallery.html` 공개 갤러리 제목/좌측 메뉴/목록·바둑판·슬라이드 버튼 표시 및 콘솔 오류 없음, `admin/gallery-images.html` 관리 폼 라벨 7개/이미지 슬롯 1개/목록 헤더 표시 및 콘솔 오류 없음. 추가 UX 검증: 관리자 갤러리에서 `sample_gallery_image.png` 파일 선택 이벤트 모의 실행 시 `Gallery ID`, 제목, 출처, 태그, 설명 자동 입력 및 미리보기 표시 정상. `clipboard-test.png` paste 이벤트 모의 실행 시 파일 입력 연결, `Gallery ID`, 제목, `source=clipboard`, 태그 자동 입력 및 미리보기 표시 정상. 콘솔 오류 없음.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
 ## 핵심 경로
 - project_root: `D:\Workspace\cinetube`
-- key_docs: `docs\requirements\cinetube 기본요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub\cinematic_archive_system\DESIGN.md`
+- key_docs: `docs\requirements\cinetube 기본요구사항.txt`, `docs\requirements\cinetube 기능추가요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub\cinematic_archive_system\DESIGN.md`
 - key_files: `index.html`, `pages\actors.html`, `pages\actor.html`, `pages\categories.html`, `pages\ratings.html`, `pages\movie.html`, `auth\login.html`, `admin/*.html`, `assets/js/shared/store.js`, `assets/js/shared/ui.js`, `assets/js/local-db-config.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `scripts/migrate_supabase_to_local.ps1`, `local/schema.sql`, `supabase/schema.sql`
 
 ## 리스크 / 주의사항
@@ -194,6 +227,7 @@
 - Supabase URL / anon key는 `D:\workspace\cinetube\assets\js\supabase-config.js`에 등록 완료.
 - 로컬 모드에서는 `assets/js/local-db-config.js`가 우선되어 Supabase 대신 `http://localhost:3001`을 사용한다.
 - `local/postgres-data/`, `local/backups/`, `local/*.log`, `local/.schema_applied`는 Git 추적 제외.
+- 2026-06-05 로컬 PostgreSQL 손상 복구 과정에서 기존 손상 데이터 디렉터리는 `local/postgres-data.corrupt-20260605_192600`로 보존됨. 새 DB는 2026-06-01 백업 기준으로 복원되어 2026-06-05에 저장했던 Webtoon 실데이터는 현재 새 DB에 없음(`webtoons=0`). 필요 시 손상 디렉터리/별도 백업에서 추가 복구 검토 필요.
 - 클라우드 테이블 데이터는 초기화 완료했지만 Supabase Storage 객체 삭제는 수행하지 않았다.
 - Vercel URL 확인 결과 Supabase 연결 상태가 표시되며, 영화 데이터가 없는 상태에서도 홈/관리 화면 콘솔 오류 없음.
 - `media_assets` 테이블/Storage 정책 미적용 상태에서는 이미지 업로드를 차단하도록 방어 처리됨.
@@ -205,3 +239,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql`
 - 확인이 필요한 미결사항: 관리자 로컬 CRUD 전체 회귀, 로컬 이미지 저장 정책(data URL 유지 여부), Vercel/클라우드 운영 지속 여부, Supabase Storage 객체 정리 여부
+
+
+
+
+
+
