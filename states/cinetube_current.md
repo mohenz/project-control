@@ -21,12 +21,21 @@
 ## 진행 중 작업
 - 관리자 로컬 CRUD 전체 회귀 테스트 대기.
 - TMDB URL 가져오기 기능은 로컬 API `/tmdb/import`와 관리자 화면 패널 구현/기본 검증 완료. 실제 신규 영화 저장까지의 전체 사용자 흐름은 추가 회귀 테스트 필요.
-- CineTube 작업트리는 clean 상태. 로컬 `main`과 `origin/main` 동기화 완료.
+- CineTube 원격은 `origin/rename/persona_full` 기준 최신 상태이나, 작업트리에 다수의 미커밋 변경/신규 파일이 있어 자동 업데이트나 커밋 전 범위 확인 필요.
 
 ## 최근 완료 작업
+- 2026-06-08: 관리자 대시보드 `#adminStats`에 CineTube PostgreSQL 데이터베이스 사이즈 표시 추가. `scripts/local_api.py`에 `GET /metadata/database` 엔드포인트를 추가해 `current_database()`, `pg_database_size`, `pg_size_pretty` 값을 반환하도록 구현. `assets/js/shared/store.js`에 `databaseMetadata()` 공개 함수 추가, `assets/js/pages/admin-dashboard.js`에서 DB 사이즈 통계 카드를 렌더링하도록 수정. `admin/index.html`의 `store.js`/`admin-dashboard.js` 캐시 버전을 `db-size`로 갱신.
+- 2026-06-08: Vercel 배포본용 WAS/API 구조 추가. `api/index.py`를 추가해 Vercel Python Function의 `handler`가 기존 `scripts/local_api.py`의 `BaseHTTPRequestHandler` 로직을 재사용하도록 구성하고, `/api/movies` 같은 Vercel 경로를 내부 `/movies` 경로로 변환. `vercel.json`에 `/api/(.*)` rewrite를 추가해 같은 Vercel 프로젝트 안에서 프론트와 API가 함께 동작하도록 설정. `assets/js/local-db-config.js`의 배포 API base를 `/api`로 변경해 `https://cinetube-gray.vercel.app/`에서는 Vercel Function을 호출하도록 수정.
+- 2026-06-08: `scripts/local_api.py`에 `/health` 상태 확인 엔드포인트 추가. `scripts/start_local_db.ps1`이 API 시작 시 내부 관리 DB인 `postgres`가 아니라 실제 서비스 DB `cinetube`를 보도록 API 시작 직전 `PGDATABASE=$DbName` 설정을 추가. 환경변수 기반 DB 접속 변경 이후 로컬 API가 `postgres` DB를 바라보며 `invalid order column`을 반환하던 문제를 수정.
+- 2026-06-08: 프론트엔드 API 연결 구조를 도메인 기반 선택 방식으로 변경. `assets/js/local-db-config.js`/`.example.js`가 `localhost`, `127.0.0.1`, `::1` 접속 시 `http://127.0.0.1:3001` 로컬 API를 사용하고, `cinetube-gray.vercel.app` 등 배포 도메인에서는 `cloudUrl`에 지정한 배포 WAS/API를 사용하도록 구성. `cloudUrl`이 비어 있으면 API 모드로 진입하지 않아 기존 Supabase/sample fallback 흐름을 유지. 모든 HTML의 `local-db-config.js` 캐시 버전을 `domain-api`로 갱신.
+- 2026-06-08: 배포 WAS/API가 Supabase PostgreSQL을 참조할 수 있도록 `scripts/local_api.py`의 DB 접속 설정을 환경변수 기반으로 보강. 기존 로컬 기본값은 유지하되 `DATABASE_URL` 또는 `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGSSLMODE`를 읽도록 변경해 클라우드 배포 시 Supabase PostgreSQL 접속정보를 주입할 수 있게 함.
+- 2026-06-07: 로컬 API를 `psql.exe` 프로세스 반복 실행 방식에서 WAS 애플리케이션 직접 DB connection 방식으로 전환. `psycopg[binary]==3.3.4` 의존성을 추가하고 `scripts/local_api.py`에 최대 8개 LIFO persistent connection pool을 구현해 요청마다 `psql.exe`를 새로 띄우지 않도록 수정. `scripts/start_local_db.ps1`은 API 시작 전 `psycopg` 설치 여부를 검증하도록 보강. Windows `localhost` 접속 지연을 피하기 위해 로컬 API/DB 기본 주소를 `127.0.0.1`로 통일하고, `assets/js/local-db-config.js`, `README.md`, HTML 캐시 버전(`local-db-config.js?v=dbpool`)을 갱신.
+- 2026-06-07: 메인화면/메뉴 이동 로딩 성능 개선 적용. `scripts/local_api.py`가 GET 조회의 `select=` 컬럼 projection과 단순 `eq.` 필터를 실제 SQL에 반영하도록 수정. `assets/js/shared/store.js`의 로컬 기본 로딩을 화면 공통 경량 컬럼 목록으로 변경해 `movies.snapshot_url`, `media_assets.public_url`, `gallery_images.image_url` 같은 대용량 base64 원본 컬럼을 기본 로딩에서 제외. `gallery.html`/`favorites.html`은 갤러리 이미지가 필요한 경우에만 `loadGalleryImagesWithUrls()`로 원본 이미지 URL을 추가 조회하도록 분리. 영화 상세는 `loadMovieWithUrls()`로 해당 영화 1건만 원본 URL 포함 재조회해 스냅샷 전체보기를 유지. HTML의 `store.js` 캐시 버전을 `perf-light3`로 갱신.
+- 2026-06-07: 메인화면/메뉴 이동 로딩 지연 원인 진단. 모든 공개 화면이 `Store.load()`에서 `movies`, `media_assets`, `gallery_images` 등 10개 테이블을 `select *`로 전체 조회하며, 로컬 API는 요청마다 `psql.exe`를 새로 실행하는 구조임을 확인. 로컬 API 측정 결과 `movies` 215행 응답 약 146MB/17.8초, `media_assets` 80행 약 159MB/11.7초, `gallery_images` 11행 약 9.2MB. 병목의 직접 원인은 `movies.snapshot_url`에 저장된 base64 Data URL 약 138MB와 `media_assets.public_url` Data URL 약 151MB를 목록/메인 로딩 때마다 전송하는 구조.
 - 2026-06-07: 기능추가요구사항 `갤러리 게시판` 구현. `gallery_images` 테이블/마이그레이션 추가, `favorite_movies.content_type`에 `gallery` 허용, 로컬 API/Store 연동, 관리자 `admin/gallery-images.html` 등록/수정/삭제 화면 추가, 공개 `pages/gallery.html` 목록/바둑판/슬라이드/상세 보기 추가. 파일 직접 업로드와 이미지 입력 paste 이벤트 기반 클립보드 붙여넣기 등록은 기존 `media_assets` 업로드 흐름을 재사용. 갤러리 이미지 관심작품 선택/해제 및 관심작품 화면 혼합 목록 표시 구현.
 - 2026-06-07: 갤러리 이미지 신규 등록 UX 개선. 관리자 갤러리 화면에서 이미지 파일 선택 또는 클립보드 붙여넣기만 수행해도 `Gallery ID`, 제목, 설명, 출처, 태그가 자동 입력되도록 `assets/js/shared/admin-page.js` 보강. 저장 시에도 이미지 외 필드가 비어 있으면 동일 기본값을 강제 적용.
 - 2026-06-07: 갤러리 클립보드 붙여넣기 UX 수정. 기존에는 파일 입력 요소에만 paste 이벤트가 연결되어 실제 `Ctrl+V` 동작이 어려웠으므로, 갤러리 이미지 슬롯/폼/문서 전체 paste 이벤트에서 클립보드 이미지 파일을 감지해 파일 입력·미리보기·자동입력 흐름으로 연결하도록 개선. `admin/gallery-images.html`의 `admin-page.js` 캐시 버전을 `gallery-paste`로 갱신.
+- 2026-06-07: 영화 상세정보 화면의 스냅샷 전체보기 팝업 추가. `assets/js/pages/movie-detail.js`에서 하단 스냅샷 이미지 자체를 클릭 가능한 대상으로 렌더링하고, 클릭 시 전체 이미지를 모달로 표시하도록 구현. 모달은 닫기 버튼, 바깥 영역 클릭, Escape 키로 닫힘. `pages/movie.html`의 `movie-detail.js` 캐시 버전을 `snapshot-image-modal`로 갱신하고 CSS 캐시 버전도 추가.
 - 2026-06-06: 관리자 `Webtoon 정보` 목록의 6번째 컬럼을 `Rating`에서 `에피소드 개수`로 변경. `assets/js/shared/admin-page.js`에서 `data.webtoonChapters` 기준 Webtoon별 Chapter 개수를 계산해 표시하도록 수정하고, `admin/webtoons.html`의 `admin-page.js` 캐시 버전을 `webtoon6`으로 갱신. Browser 검증 결과 `#adminTable ... th:nth-of-type(6)` 텍스트가 `에피소드 개수`로 표시되고 콘솔 오류 없음.
 - 2026-06-06: `local/postgres-data.corrupt-20260605_192600` 손상 DB에서 컨텐츠 복구 가능성 점검 및 확정 복구 수행. 확인 결과 `pg_control` 및 `base/16384` 데이터 파일 362개가 PostgreSQL 8192-byte block 배수가 아니고 `EF BF BD` replacement 문자가 섞인 상태라 클러스터 기동/`pg_dump` 방식 복구는 불가. 다만 heap 파일과 로그에 컨텐츠 문자열은 남아 있어 텍스트 카빙/기존 SQL 재적용 방식으로 복구 가능함을 확인.
 - 2026-06-06: 저장소에 남아 있던 `supabase/import_*.sql` 11개를 로컬 DB에 재적용해 영화/배우 컨텐츠 복구. 복구 후 DB 건수: movies 172, actors 14, categories 3. 적용 파일: `import_aoi_tsukasa_requested_works.sql`, `import_araki_noa_reducing.sql`, `import_hatsumi_nanoka_reducing.sql`, `import_horisawa_mayu_missav_reducing.sql`, `import_kaede_karen_reducing.sql`, `import_koumura_izuki_reducing.sql`, `import_miyuki_arisaka_miaa_077.sql`, `import_toujou_natsu_reducing.sql`, `import_tsujimoto_an_reducing.sql`, `import_tsujimoto_an_supjav_reducing.sql`, `import_yatsugake_umi.sql`.
@@ -197,6 +206,11 @@
 - 2026-06-06: 웹툰에도 관심작품 기능 추가. `assets/js/shared/ui.js` 관심작품 바인딩을 `content_type` 기반으로 확장하고, `assets/js/pages/webtoons.js` 웹툰 카드 우측 버튼, `assets/js/pages/webtoon-detail.js` 상세 버튼 추가. `assets/js/pages/favorites.js` 관심작품 화면은 영화/웹툰 혼합 목록과 영화/웹툰 카운트를 표시하도록 확장. 검증 결과 웹툰 목록/상세 선택 시 `favorite_movies(content_type='webtoon', content_id=webtoon_id)` 저장, 관심작품 화면 웹툰 표시 및 해제 즉시 DB 삭제/화면 갱신, 콘솔 오류 없음.
 
 ## 다음 작업
+- 현재 운영은 로컬 PC 전용 사용을 우선한다. Vercel `/api` + Supabase PostgreSQL 직접 연결 구조는 기반만 마련된 상태로 두고, 배포 운영 전 개선과제로 관리한다.
+- 이후 배포 운영 개선과제: Vercel 프로젝트 환경변수에 Supabase PostgreSQL 접속용 `DATABASE_URL` 또는 `PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`, `PGSSLMODE=require` 설정 후 배포 검증. 같은 프로젝트의 `/api`를 사용하므로 별도 WAS/API URL 입력은 필요 없음.
+- 이후 배포 운영 개선과제: `/api`의 `POST/PATCH/DELETE` 쓰기 요청에 관리자 인증/권한 검증 추가. 현재 구조는 로컬 사용 기준으로 인증이 완화되어 있으므로, 공개 배포에서 쓰기 API를 그대로 열지 않는다.
+- 이후 배포 운영 개선과제: Vercel serverless 환경에서 Supabase PostgreSQL connection 수 제한을 고려해 pool 크기/connection 재사용/필요 시 Supabase pooler 사용 여부를 검토.
+- 성능 후속 개선: 상세 화면 단건 `select=*`는 현재 정상 동작하나 스냅샷 원본이 큰 작품은 약 4~5MB 응답이 발생할 수 있으므로, 필요 시 스냅샷 이미지를 버튼 클릭 시점의 지연 조회로 추가 분리 검토.
 - 갤러리 게시판 브라우저 실사용 회귀 테스트: 관리자 이미지 파일 등록/클립보드 붙여넣기 저장, 공개 목록/바둑판/슬라이드 전환, 상세 수정/삭제, 관심작품 반영 확인.
 - 관리자 화면에서 로컬 DB 기준 등록/삭제/이미지 업로드(data URL 저장) 추가 회귀 테스트.
 - 다중 주연배우 2~4명 선택 저장, 감독 2명 저장, 정보출처 URL 저장의 관리자 화면 실사용 회귀 테스트.
@@ -211,8 +225,8 @@
 - run_command: `start-cinetube.cmd` 또는 `.\ct` (`http://localhost:8080/index.html` 자동 오픈)
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
-- verify_command: `node --check assets/js/shared/store.js`, local API `http://localhost:3001`, browser inspect 주요 페이지
-- latest_verification: 2026-06-07 갤러리 작업 기준 `node --check assets/js/shared/store.js`, `node --check assets/js/shared/admin-page.js`, `node --check assets/js/pages/gallery.js`, `node --check assets/js/pages/favorites.js`, `python -m py_compile scripts/local_api.py` 통과. `local/gallery_images_migration.sql` 로컬 PostgreSQL 적용 완료, `public.gallery_images` 테이블 조회 정상. 롤백 트랜잭션으로 `gallery_images` insert 및 `favorite_movies(content_type='gallery')` insert 검증 통과. Browser/DevTools 검증 결과 `pages/gallery.html` 공개 갤러리 제목/좌측 메뉴/목록·바둑판·슬라이드 버튼 표시 및 콘솔 오류 없음, `admin/gallery-images.html` 관리 폼 라벨 7개/이미지 슬롯 1개/목록 헤더 표시 및 콘솔 오류 없음. 추가 UX 검증: 관리자 갤러리에서 `sample_gallery_image.png` 파일 선택 이벤트 모의 실행 시 `Gallery ID`, 제목, 출처, 태그, 설명 자동 입력 및 미리보기 표시 정상. `clipboard-test.png` paste 이벤트 모의 실행 시 파일 입력 연결, `Gallery ID`, 제목, `source=clipboard`, 태그 자동 입력 및 미리보기 표시 정상. 콘솔 오류 없음.
+- verify_command: `node --check assets/js/shared/store.js`, local API `http://127.0.0.1:3001`, browser inspect 주요 페이지
+- latest_verification: 2026-06-08 관리자 대시보드 DB 사이즈 표시 기준 `python -m py_compile scripts/local_api.py`, `node --check assets/js/shared/store.js`, `node --check assets/js/pages/admin-dashboard.js` 통과. 로컬 API 재시작 후 `GET /metadata/database` 200 응답 `database_name=cinetube`, `size_pretty=416 MB`. Browser 검증 결과 `http://localhost:8080/admin/index.html?dbsize=1`의 `#adminStats`에 8번째 카드 `DB 사이즈 / 416 MB` 표시 및 콘솔 오류 없음. Vercel `/api` 구성 기준 `node --check assets/js/local-db-config.js`, `node` JSON parse `vercel.json`, `python -m py_compile scripts/local_api.py api/index.py` 통과.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
@@ -225,7 +239,7 @@
 - 사용자가 Supabase 테이블 생성 완료를 확인했다.
 - 사용자가 Vercel 배포 완료를 확인했다. 배포 URL: `https://cinetube-gray.vercel.app`
 - Supabase URL / anon key는 `D:\workspace\cinetube\assets\js\supabase-config.js`에 등록 완료.
-- 로컬 모드에서는 `assets/js/local-db-config.js`가 우선되어 Supabase 대신 `http://localhost:3001`을 사용한다.
+- 로컬 모드에서는 `assets/js/local-db-config.js`가 우선되어 Supabase 대신 `http://127.0.0.1:3001`을 사용한다.
 - `local/postgres-data/`, `local/backups/`, `local/*.log`, `local/.schema_applied`는 Git 추적 제외.
 - 2026-06-05 로컬 PostgreSQL 손상 복구 과정에서 기존 손상 데이터 디렉터리는 `local/postgres-data.corrupt-20260605_192600`로 보존됨. 새 DB는 2026-06-01 백업 기준으로 복원되어 2026-06-05에 저장했던 Webtoon 실데이터는 현재 새 DB에 없음(`webtoons=0`). 필요 시 손상 디렉터리/별도 백업에서 추가 복구 검토 필요.
 - 클라우드 테이블 데이터는 초기화 완료했지만 Supabase Storage 객체 삭제는 수행하지 않았다.
@@ -234,7 +248,7 @@
 - Supabase Auth/RLS 기반 관리자 저장 정책은 사용하지 않는다. 관리자 쓰기는 Bloom/CineTube 자체 API에서 권한 확인 후 처리해야 한다.
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 - `project_registry.md`에 `cinetube` 항목이 중복 등록되어 있음. 둘 다 `states/cinetube_current.md`를 가리키지만 run/verify 설명이 서로 다르므로 추후 레지스트리 정리 필요.
-- 2026-06-03 마무리 기준 `cinetube`, `project_control` 모두 clean 및 원격 동기화 완료.
+- 2026-06-07 시작 점검 기준 `cinetube`는 `rename/persona_full...origin/rename/persona_full` 원격과 커밋 차이는 없지만 작업트리가 dirty 상태. `project_control`도 다수의 미커밋 변경이 있어 상태 파일 변경 전후 diff 확인 필요.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `assets/js/shared/store.js`, `scripts/start_local_db.ps1`, `scripts/local_api.py`, `local/schema.sql`
