@@ -1,8 +1,8 @@
-# bloom Current State
+﻿# bloom Current State
 
 ## 기본 정보
 - project_key: `bloom`
-- last_updated: `2026-04-28`
+- last_updated: `2026-06-08`
 - owner_request: bloom 환경변수 보안 점검 및 개선 테스트
 - current_status: Prompt History 기능 구현 및 Supabase 실CRUD 검증 완료, 배포 반영 진행 상태
 
@@ -14,6 +14,10 @@
 - Prompt History 배포 반영 및 보호된 Vercel 환경 확인 대기
 
 ## 최근 완료 작업
+- 2026-06-08: Story 화면 1차 구현 결과가 사용자가 원하는 화면 출력/기능 방식과 맞지 않아 재진행 대상으로 전환. 현재 `bloom` 작업트리의 Story 관련 코드 변경(`index.html`, `prompt-generator/ui/app.js`, `prompt-generator/styles/app.css`, `prompt-generator/data/story-manifest.js`)은 커밋 대상에서 제외하고, 원본 `story/` 디렉터리는 보존한다.
+- 2026-06-08: Bloom 메인 대시보드에 `Story` 메뉴 추가 및 story 파일 보기 화면 구현. `story/` 디렉터리의 현재 Markdown 파일 29개를 `prompt-generator/data/story-manifest.js`로 등록하고, `index.html`에 Story 화면과 편집 모달 DOM을 추가. `prompt-generator/ui/app.js`에서 Story 화면 전환, 파일 검색, 파일 fetch 로딩, 모달 편집, 복사, 원본 복원, 브라우저 localStorage 기반 수정본 저장 기능을 구현. `prompt-generator/styles/app.css`에 Story 리스트/모달/모바일 스타일 추가. 정적 실행에서는 디스크 직접 저장이 불가하므로 편집 저장은 브라우저 로컬 저장소 기준으로 동작.
+- 2026-06-08: Story 화면 로컬 브라우저 검증 완료. `node --check prompt-generator/ui/app.js`, `node --check prompt-generator/data/story-manifest.js` 통과. `http://localhost:8081/index.html?story=1`에서 게스트 모드 진입 후 Story 메뉴 표시, Story 화면 29개 파일 리스트업, `bookstore.md` 모달 열기, 편집 저장 표시, 원본 복원 동작 확인. 정적 실행 특성상 `/api/auth/me` 404는 게스트 모드 기준 허용 범위.
+- 2026-06-08: `bloom` 원격 변경 확인 및 업데이트 점검. `git fetch origin` 후 로컬 `main`과 `origin/main` 해시가 모두 `ccfff026fe5720666a43fa97f476d36ac4784a31`로 동일함을 확인. `git pull --ff-only origin main` 결과 `Already up to date`. 로컬 작업트리에는 기존 미커밋 변경 다수와 `story/` 신규 디렉터리가 남아 있어 별도 선별 확인 필요.
 - 2026-04-28: Prompt Builder 키워드 그룹 순서를 장소/배경, 무드/환경 우선으로 변경
 - 2026-04-28: 날씨/계절 그룹을 날씨와 계절로 분리하고 `season` 키워드 그룹을 생성
 - 2026-04-28: 나이 키워드에서 `20대 초반`, `20대 후반`을 제거하고 `20대`, `초반`, `중반`, `후반` 구조로 변경
@@ -78,6 +82,8 @@
 - `https://mohenz.github.io/bloom/?nocache=20260413b` 기준으로 GitHub Pages 미리보기 문구/버튼 반영 및 콘솔 오류 없음 확인
 
 ## 다음 작업
+- Story 기능은 기존 1차 구현을 기준으로 진행하지 않고, 원하는 화면 구조/파일 저장 방식/편집 UX를 다시 정의한 뒤 재구현한다.
+- Story 파일 편집 결과를 실제 파일로 저장해야 할 경우, 정적 실행 한계를 넘기 위해 로컬 API 또는 Vercel/Node API 저장 엔드포인트 추가 검토. 현재는 브라우저 localStorage 저장 방식.
 - Vercel 환경 변수에서 `ALLOWED_ORIGINS`가 필요한 배포 환경만 명시 allowlist로 설정되어 있는지 확인
 - 배포 후 `GET /healthz`, `POST /api/translate`, 로그인, Prompt History 저장/불러오기 동작을 보호된 Vercel 환경에서 실화면 기준으로 재확인
 - 필요 시 `SUPABASE_SERVICE_ROLE_KEY`, `AUTH_SESSION_SECRET`, `ANTHROPIC_API_KEY` 회전 여부와 절차 확정
@@ -121,3 +127,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `docs/prompt_history_schema.sql`, `api/prompt-history.js`, `prompt-generator/features/prompt-history.js`, `prompt-generator/ui/app.js`
 - 확인이 필요한 미결사항: Deployment Protection 우회 방식, 비밀번호 변경 기능 범위
+
+
+
+
+
+
