@@ -1,4 +1,4 @@
-# performance_lab Current State
+﻿# performance_lab Current State
 
 ## 기본 정보
 - project_key: `performance_lab`
@@ -50,3 +50,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `docs/성능점검_수행매뉴얼.md`
 - 확인이 필요한 미결사항: 프로젝트별 예시 타깃 파일 확장 여부, 추가 시나리오 필요 여부
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-# Command Spec
+﻿# Command Spec
 
 ## Grammar
 
@@ -69,3 +69,9 @@
 
 ### `register`
 - Add a new project entry and create a state file.
+
+
+
+
+
+

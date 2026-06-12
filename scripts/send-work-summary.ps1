@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)]
     [string]$ProjectAlias,
 
@@ -472,3 +472,4 @@ try {
     $message.Dispose()
     $smtpClient.Dispose()
 }
+

@@ -1,4 +1,4 @@
-# security_management Current State
+﻿# security_management Current State
 
 ## 기본 정보
 - project_key: `security_management`
@@ -49,3 +49,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `security_management/README.md`, `security_management/docs/security_program_plan.md`, `project_control/states/security_management_current.md`
 - 확인이 필요한 미결사항: 보안관리 프로젝트의 보고 템플릿과 프로젝트별 점검 결과 저장 형식
+
+
+
+
+
+

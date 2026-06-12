@@ -1,4 +1,4 @@
-# VSCode Skill 사용 매뉴얼
+﻿# VSCode Skill 사용 매뉴얼
 
 ## 목적
 - VSCode에서 `project-control` skill을 명시적으로 호출해 프로젝트 전환과 상태 복구를 표준화합니다.
@@ -117,3 +117,9 @@ $project-control /project use n8n
 - `project_selection_prompt_list.md`
 - `project_switch_workflow.md`
 - `portable_standard_prompt.md`
+
+
+
+
+
+

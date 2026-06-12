@@ -1,4 +1,4 @@
-# defect_manage2 Current State
+﻿# defect_manage2 Current State
 
 ## 기본 정보
 - project_key: `defect_manage2`
@@ -174,3 +174,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `docs/executable_size_structure_improvement_plan.md`, `docs/project_bootstrap_record_2026-04-02.md`, `js/app.js`, `js/storage.js`
 - 확인이 필요한 미결사항: 서비스 전환 시 URL 및 외부 연동 주소 점검, `defect_manage_old` 보관 및 운영 저장소 교체 순서 최종 점검
+
+
+
+
+
+

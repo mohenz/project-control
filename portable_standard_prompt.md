@@ -1,4 +1,4 @@
-# Portable Standard Prompt for Project Control
+﻿# Portable Standard Prompt for Project Control
 
 ## 목적
 - 다른 PC에서도 동일한 `project_control` 운영 방식을 복붙해서 재사용하기 위한 표준 프롬프트입니다.
@@ -155,3 +155,9 @@ Primary control files:
 - 세션 시작 시 이 프롬프트를 붙여넣고 시작
 - 프로젝트 선택은 반드시 `/project ...` command로 수행
 - 작업 종료 시 상태 파일을 갱신
+
+
+
+
+
+

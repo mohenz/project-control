@@ -1,4 +1,4 @@
-# unit_test Current State
+﻿# unit_test Current State
 
 ## 기본 정보
 - project_key: `unit_test`
@@ -53,3 +53,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `SKILL.md`, `docs/unit_test_workflow.md`, `docs/unit_test_rules.md`
 - 확인이 필요한 미결사항: 첫 결과서를 어떤 프로젝트/기능부터 생성할지, skill 설치 스크립트를 저장소에도 추가할지 여부
+
+
+
+
+
+

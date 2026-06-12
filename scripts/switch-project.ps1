@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)]
     [string]$ProjectName
 )
@@ -121,3 +121,4 @@ if ($entry.Port -ne '-' -and $entry.Port) {
     Write-Output ("Port Check (" + $entry.Port + "):")
     netstat -ano | findstr (":" + $entry.Port)
 }
+

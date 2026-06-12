@@ -1,4 +1,4 @@
-# Project State
+﻿# Project State
 
 ## 기본 정보
 - project_key: quickmemo
@@ -64,3 +64,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `webapp_react/package.json`, `webapp_react/src`, `webapp_react/api`, `webapp_react/lib/auth-session.js`, `extension/manifest.json`
 - 확인이 필요한 미결사항: Vercel CLI 설정, Supabase Auth 세션 발급 방식, API 저장 요청의 실제 응답 코드, Playwright 통합 테스트 최신성
+
+
+
+
+
+

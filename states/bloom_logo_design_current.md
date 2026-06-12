@@ -1,4 +1,4 @@
-# Project State: bloom_logo_design
+﻿# Project State: bloom_logo_design
 
 ## Current Status
 - 초기 아이디에이션 및 디자인 방향성(영혼의 핵, B 모노그램 등) 도출 완료
@@ -9,3 +9,9 @@
 
 ## Reference
 - 관련 논의: 2026-04-29
+
+
+
+
+
+

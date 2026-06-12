@@ -1,4 +1,4 @@
-# ui_coding_helper Current State
+﻿# ui_coding_helper Current State
 
 ## 기본 정보
 - project_key: `ui_coding_helper`
@@ -65,3 +65,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `docs/mvp_spec.md`, `sidepanel/sidepanel.js`
 - 확인이 필요한 미결사항: 실제 작업 흐름에서 Markdown 포맷이 충분한지, 다중 요소 선택이 필요한지
+
+
+
+
+
+

@@ -1,4 +1,4 @@
----
+﻿---
 name: project-control
 description: Use when working in a multi-project workspace that keeps a top-level project_control folder for alias-based project switching, state-file context recovery, minimal startup checks, and /project command handling such as /project use, /project status, /project update, /project close, /project improve, /project fix, /project start, /project deploy, or /project register.
 ---
@@ -97,3 +97,9 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Read `references/command-spec.md` for command grammar and action meanings.
 - Read `references/workflow-map.md` for the control-file reading order and switch procedure.
 - Read `references/state-update-rules.md` when updating or closing project state files.
+
+
+
+
+
+

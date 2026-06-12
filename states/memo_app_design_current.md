@@ -1,18 +1,18 @@
-# Project State
+﻿# Project State
 
 ## 기본 정보
 - project_key: quickmemo_service_level_expansion
 - last_updated: 2026-05-10
 - owner_request: 개인용 캐주얼 메모 웹앱(Bloom Memo)의 MVP를 넘어선 정식 서비스(Production) 레벨 기능 확장 및 프레임워크 전환 (Codex로 인수인계 됨)
-- current_status: 프런트엔드 React 전환 및 확장 UI 구현 완료. 단, Vercel 백엔드 API 연동 누락 및 인증 세션 부재로 인해 실제 데이터베이스 저장 불가 상태. 에이전트 교체(Soyeon -> Codex).
+- current_status: 프런트엔드 React 전환 및 확장 UI 구현 완료. 단, Vercel 백엔드 API 연동 누락 및 인증 세션 부재로 인해 실제 데이터베이스 저장 불가 상태. 에이전트 교체(Rachel -> Codex).
 
 ## 현재 목표
 - Vercel 통합 환경(`npx vercel dev`)을 구축하여 React 프런트엔드와 Serverless API 간의 통신을 정상화한다.
 - Mock 처리된 로그인/비밀번호 로직을 실제 Supabase Auth 및 쿠키 세션 기반으로 연동하여 인증 권한(401) 문제를 해결한다.
 - 자동 저장, 리치 텍스트 에디터, 확장 프로그램의 오프라인 큐 기능이 백엔드 DB와 완벽히 통신하도록 연동한다.
 
-## 진행 중 발생한 치명적 실수 (Soyeon's Handoff Note)
-다음은 프로젝트 이관의 원인이 된 에이전트(Soyeon)의 치명적 판단 미스 및 누락 사항입니다. Codex는 이를 최우선으로 인지하고 해결해야 합니다.
+## 진행 중 발생한 치명적 실수 (Rachel's Handoff Note)
+다음은 프로젝트 이관의 원인이 된 에이전트(Rachel)의 치명적 판단 미스 및 누락 사항입니다. Codex는 이를 최우선으로 인지하고 해결해야 합니다.
 1. **무단 테스트 생략으로 인한 렌더링 장애:** 순수 JS(MVP)에서 React 19 환경으로 프레임워크를 전면 전환하고 리치 에디터(`react-quill`)를 도입한 후, 테스트 코드를 재작성하지 않고 구동하여 구형 API(`findDOMNode`) 충돌로 인한 흰 화면(화면 크래시) 버그를 배포함. (이후 순수 `Quill.js` 래퍼 컴포넌트로 재작성하여 수습 및 E2E 테스트 통과 처리함)
 2. **백엔드 구동 환경 누락 (저장 불가 원인):** 프런트엔드를 테스트할 때 Vercel 통합 서버(`npx vercel dev`)가 아닌 Vite 전용 서버(`npm run dev`)만 단독으로 띄움. 이로 인해 브라우저의 저장 요청(`/api/memo-memos`)을 처리할 백엔드 Serverless Function이 없어 **404 Not Found 에러**가 발생함.
 3. **가상(Mock) 인증으로 인한 401 권한 거부:** UI 확장 요구사항에 치중하여 로그인 로직을 `localStorage`를 조작하는 Mock으로만 구현함. 실제 백엔드 통합을 하더라도 세션 쿠키가 발급되지 않았으므로 **401 Unauthorized 에러**가 필연적으로 발생하는 아키텍처 결함을 남김.
@@ -43,3 +43,9 @@
 ## 리스크 / 주의사항
 - 프런트엔드 뷰의 렌더링 상태만 보고 앱 전체의 무결성을 확신해서는 안 됨. 프런트엔드-백엔드 간 네트워크 탭(API 응답 코드)을 필수적으로 확인해야 함.
 - 현재의 Vercel `/api` 라우트들은 `lib/auth-session.js`의 `getAuthenticatedSession`을 통해 강력한 세션 검사를 수행하므로, 브라우저 쿠키 발급이 성공해야만 테스트가 가능함.
+
+
+
+
+
+

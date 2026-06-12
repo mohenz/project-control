@@ -1,4 +1,4 @@
-# Project Control Center
+﻿# Project Control Center
 
 ## 목적
 - 여러 프로젝트를 병행할 때 프로젝트 전환 비용을 줄이기 위한 중앙 운영 폴더입니다.
@@ -79,3 +79,9 @@ project_control/
     install-project-control-skill.ps1
     switch-project.ps1
 ```
+
+
+
+
+
+

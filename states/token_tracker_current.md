@@ -1,4 +1,4 @@
-# Project State
+﻿# Project State
 
 ## 기본 정보
 - project_key: `token_tracker`
@@ -45,3 +45,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `D:\workspace\token_tracker\server.py`, `D:\workspace\token_tracker\database.py`, `D:\workspace\project_control\states\token_tracker_current.md`
 - 확인이 필요한 미결사항: `추가 Gemini 스크립트 로깅 연동 여부, 윈도우 시스템 알림 기능 추가 여부`
+
+
+
+
+
+

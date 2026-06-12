@@ -1,4 +1,4 @@
-# web_perf_extension Current State
+﻿# web_perf_extension Current State
 
 ## 기본 정보
 - project_key: `web_perf_extension`
@@ -81,3 +81,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `manifest.json`, `background.js`, `popup/popup.js`, `popup/popup-view.js`, `docs/mvp_spec.md`
 - 확인이 필요한 미결사항: 실제 브라우저 로드 결과, 측정 기록 보존 범위, 아이콘 추가 여부
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-# Project State
+﻿# Project State
 
 ## 기본 정보
 - project_key: `jina_writer`
@@ -51,3 +51,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `docs/app_plan.md`, `docs/gemini_integration.md`, `project_control/states/jina_writer_current.md`
 - 확인이 필요한 미결사항: `프로젝트 재개 필요성, 실제 Gemini 키 기준 호출 확인, 설치형 배포 방식, 내보내기 기능, API 키 저장 보안`
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-# project_04 Placeholder
+﻿# project_04 Placeholder
 
 ## 기본 정보
 - project_key: `project_04`
@@ -39,3 +39,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `project_registry.md`, `templates/project_state_template.md`
 - 확인이 필요한 미결사항: 프로젝트명, 경로, 실행 방식
+
+
+
+
+
+

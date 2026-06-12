@@ -1,4 +1,4 @@
-# n8n_defect_automation Current State
+﻿# n8n_defect_automation Current State
 
 ## 기본 정보
 - project_key: `n8n_defect_automation`
@@ -45,3 +45,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `docs/n8n_project_manual.md`, `workflow/defect_report_workflow.json`
 - 확인이 필요한 미결사항: 현재 운영 인스턴스 위치와 자격 증명 보관 방식
+
+
+
+
+
+

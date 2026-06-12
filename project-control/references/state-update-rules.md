@@ -1,4 +1,4 @@
-# State Update Rules
+﻿# State Update Rules
 
 ## Update after meaningful work
 - completed work
@@ -21,3 +21,9 @@
 - Keep state files concise.
 - Prefer operational facts over narrative.
 - Keep current goal, recent completed work, and next work easy to scan.
+
+
+
+
+
+

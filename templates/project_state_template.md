@@ -1,4 +1,4 @@
-# Project State Template
+﻿# Project State Template
 
 ## 기본 정보
 - project_key:
@@ -36,3 +36,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것:
 - 확인이 필요한 미결사항:
+
+
+
+
+
+

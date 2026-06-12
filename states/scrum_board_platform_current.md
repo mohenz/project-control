@@ -1,4 +1,4 @@
-# scrum_board_platform Current State
+﻿# scrum_board_platform Current State
 
 ## 기본 정보
 - project_key: `scrum_board_platform`
@@ -169,3 +169,9 @@
 - 다음 시작 시 먼저 볼 것: `README.md`, `docs/daily_meeting_memo_app_spec.md`, `docs/platform_security_roadmap.md`, `docs/daily_meeting_supabase_schema.sql`
 - 참고 파일: `js/app.js`, `js/services/`, `js/state/app-state.js`
 - 확인이 필요한 미결사항: 로그인 후 CRUD 실사용 검증, 작업자 이모지 영속화 방식(DB 승격 여부), 플랫폼 확장용 Auth + RLS 전환 범위
+
+
+
+
+
+

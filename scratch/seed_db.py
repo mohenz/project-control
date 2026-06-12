@@ -1,4 +1,4 @@
-import urllib.request
+﻿import urllib.request
 import urllib.error
 import json
 
@@ -50,3 +50,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

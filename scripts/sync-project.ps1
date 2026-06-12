@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)]
     [string]$ProjectName,
     
@@ -11,9 +11,9 @@ param(
 
 # This is a simplified registry lookup for the script
 # In a real scenario, this would read project_registry.md
-$projectPath = "d:\Bloom" # Default for soyeon_soul for now
+$projectPath = "d:\Bloom" # Default for Rachel_soul for now
 
-if ($ProjectName -match "soyeon|soul|bloom soul") {
+if ($ProjectName -match "Rachel|soul|bloom soul") {
     $syncScript = Join-Path $projectPath "system\soul_sync_gcs.py"
     $python = "python" # Or path to venv python if fixed
     
@@ -29,3 +29,4 @@ if ($ProjectName -match "soyeon|soul|bloom soul") {
 } else {
     Write-Output "[!] Sync not implemented for project: $ProjectName"
 }
+

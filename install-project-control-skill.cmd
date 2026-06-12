@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 setlocal
 
 set "SCRIPT_DIR=%~dp0"
@@ -15,3 +15,4 @@ if not "%EXIT_CODE%"=="0" (
 echo project-control skill install completed.
 echo If the skill does not appear, open a new Codex chat first.
 pause
+

@@ -1,8 +1,8 @@
-# defect_manage Current State
+﻿# defect_manage Current State
 
 ## 기본 정보
 - project_key: `defect_manage`
-- last_updated: `2026-04-30`
+- last_updated: `2026-06-05`
 - owner_request: 대시보드 테스트 구분별 전체 건수와 결함목록 검색 건수 불일치 원인 확인 및 수정
 - current_status: 활성 운영 프로젝트
 
@@ -14,6 +14,7 @@
 - 실제 구조 분해 구현은 아직 시작하지 않음
 
 ## 최근 완료 작업
+- 2026-06-05: startup remote sync 점검 시 `git fetch --prune`은 가능했으나 현재 브랜치에 upstream이 없어 자동 fast-forward 업데이트를 건너뜀
 - 2026-04-30: 대시보드 `결함 조치 현황 (테스트 구분별)`의 최종테스트 전체 건수가 결함목록보다 적게 보이는 원인을 확인하고 수정
 - 2026-04-30: 원인은 `getDefectsSummaryForStats()`가 Supabase 기본 반환 제한에 걸릴 수 있는 단일 조회를 사용해 대시보드 집계 대상이 일부 행으로 잘릴 수 있었던 점으로 확인
 - 2026-04-30: `js/storage.js`에서 대시보드 요약 데이터를 `defect_id` 기준 1000건 단위 `.range()` 페이지 조회로 끝까지 수집하도록 변경하고 타임아웃을 10초로 조정
@@ -140,6 +141,7 @@
   - `index.html`
 
 ## 리스크 / 주의사항
+- 2026-06-05 기준 로컬 브랜치에 upstream이 설정되어 있지 않아 startup routine에서 원격 대비 ahead/behind 및 자동 fast-forward를 수행할 수 없음. 다음 조치: `origin/main` 추적 브랜치 설정 여부를 확인한 뒤 필요 시 upstream 설정
 - 저장소 안에는 네이티브 `.exe` 빌드 스크립트가 없어 실제 실행 파일 크기는 외부 패키징 방식에 따라 달라질 수 있음
 - `js/app.js`, `js/storage.js`, 외부 위젯, Chrome 확장프로그램이 `pending_defect` / `postMessage` 흐름으로 강결합되어 있어 구조 분해 시 회귀 위험이 있음
 - `js/storage.js`에 `getUsers()` 중복 정의가 있어 서비스 계층 정리 시 우선 점검 필요
@@ -151,3 +153,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `docs/CHANGELOG.md`, `js/app.js`, `js/storage.js`
 - 확인이 필요한 미결사항: 대시보드와 목록의 실제 쿼리 시간 비교
+
+
+
+
+
+

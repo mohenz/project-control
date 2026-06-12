@@ -1,4 +1,4 @@
-# auth_pro Current State
+﻿# auth_pro Current State
 
 ## 기본 정보
 - project_key: `auth_pro`
@@ -42,3 +42,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `index.html`, `js/app.js`
 - 확인이 필요한 미결사항: 프로젝트 목적, 배포 경로, 운영 여부
+
+
+
+
+
+

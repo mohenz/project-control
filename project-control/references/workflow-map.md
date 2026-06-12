@@ -1,4 +1,4 @@
-# Workflow Map
+﻿# Workflow Map
 
 ## Control file order
 1. `project_governance_rules.md`
@@ -22,3 +22,9 @@
 - Missing registry: stop and report the missing file.
 - Missing state file: report it and fall back to minimum context building.
 - Ambiguous alias: prefer registry exact match; otherwise ask briefly.
+
+
+
+
+
+

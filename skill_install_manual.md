@@ -1,4 +1,4 @@
-# project-control Skill 설치 매뉴얼
+﻿# project-control Skill 설치 매뉴얼
 
 ## 목적
 - 저장소에 포함된 `project-control` skill 배포본을 로컬 Codex skills 경로에 설치합니다.
@@ -125,3 +125,9 @@ powershell -ExecutionPolicy Bypass -File .\scripts\install-project-control-skill
 - `README.md`
 - `vscode_skill_manual.md`
 - `project-control/SKILL.md`
+
+
+
+
+
+

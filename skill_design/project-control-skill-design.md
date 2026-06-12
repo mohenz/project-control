@@ -1,4 +1,4 @@
-# project-control skill 설계서
+﻿# project-control skill 설계서
 
 ## 1. 목적
 - 여러 프로젝트를 병행하는 워크스페이스에서 프로젝트 전환 비용을 줄인다.
@@ -167,3 +167,9 @@ project-control/
 - 이 설계를 바탕으로 실제 `project-control` skill 폴더를 생성한다.
 - 생성 위치는 사용자 선택이 필요하다.
 - 권장 위치는 자동 발견 가능한 Codex skills 경로이다.
+
+
+
+
+
+

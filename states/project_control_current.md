@@ -1,4 +1,4 @@
-# Project Control Current State
+﻿# Project Control Current State
 
 ## 기본 정보
 - project_key: project_control
@@ -34,3 +34,9 @@
 ## 리스크 / 주의사항
 - `project_registry.md`에 `cinetube` 항목이 중복 등록되어 있음. 둘 다 `states/cinetube_current.md`를 가리키지만 run/verify/deploy 설명이 다르므로 추후 정리 필요.
 - startup routine에서는 자동 fast-forward 대상만 갱신하고, dirty/divergent/no-upstream 상태는 강제 처리하지 않는다.
+
+
+
+
+
+

@@ -1,4 +1,4 @@
-# ui_code_helper Current State
+﻿# ui_code_helper Current State
 
 ## 기본 정보
 - project_key: `ui_code_helper`
@@ -57,3 +57,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `README.md`, `manifest.json`, `content/select-mode.js`, `sidepanel/sidepanel.js`
 - 확인이 필요한 미결사항: 실제 Chrome Side Panel 동작 여부, 다중 선택 UX 설계안 반영 범위
+
+
+
+
+
+

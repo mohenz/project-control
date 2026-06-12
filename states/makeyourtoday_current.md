@@ -1,4 +1,4 @@
-# makeyourtoday Current State
+﻿# makeyourtoday Current State
 
 ## 기본 정보
 - project_key: `makeyourtoday`
@@ -50,3 +50,9 @@
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `MBDP_요구사항정의서_v1.0.md`의 Section 2, 3, 6, 10, 11과 `pm_도구_ai_에이전트_전체_설계서_mvp_포함.md`의 Section 4, 5
 - 확인이 필요한 미결사항: 실제 구현 대상 저장소 유무, MVP 우선순위, 프로젝트 공식 명칭, 기초 시스템 이후 상세 DB/API 문서 작성 순서
+
+
+
+
+
+

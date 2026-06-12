@@ -1,4 +1,4 @@
-param(
+﻿param(
     [ValidateSet('Install', 'Update', 'Remove', 'Verify')]
     [string]$Action = 'Install',
 
@@ -116,3 +116,4 @@ switch ($Action) {
         Write-Output "Verified    : $installRoot"
     }
 }
+
