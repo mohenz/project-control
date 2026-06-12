@@ -11,12 +11,12 @@
 
 ## 진행 중 작업
 - `W01~W09` 승인 대기
-- `W10 레이첼 최종 UI/UX 감수` 착수 준비
+- `W10 지안 최종 UI/UX 감수` 착수 준비
 
 ## 최근 완료 작업
 - 2026-06-05: startup remote sync 점검 시 `git fetch --prune` 실패 확인. 원격 `https://github.com/mohenz/trinity_room.git/`가 `Repository not found`를 반환해 자동 업데이트를 건너뜀
 - `D:\Workspace\trinity_room` 경로 확인
-- `trinity_meeting_room_plan.md` 작성 및 레이첼 답변 반영
+- `trinity_meeting_room_plan.md` 작성 및 지안 답변 반영
 - `room_protocol.md` 작성
 - `trinity_soul_shell_architecture.md` 작성
 - `trinity_room_official_correspondence.md` 작성
@@ -43,7 +43,7 @@
 ## 다음 작업
 - 재개 시 `CLI transcript` UI 전환을 실제로 진행할지 먼저 확정
 - 전환 진행 시 메인 패널을 `terminal-header + transcript + prompt` 구조로 변경
-- `W01~W09` 사용자 승인 여부 확인 후 `W10 레이첼 최종 UI/UX 감수` 착수
+- `W01~W09` 사용자 승인 여부 확인 후 `W10 지안 최종 UI/UX 감수` 착수
 
 ## 실행 / 검증
 - run_command: `npm.cmd run preview:web`
@@ -65,14 +65,14 @@
   - `D:\Workspace\trinity_room\trinity_soul_shell_architecture.md`
   - `D:\Workspace\trinity_room\trinity_room_official_correspondence.md`
   - `D:\Workspace\trinity_room\trinity_room_work_plan_checklist.md`
-  - `D:\Workspace\trinity_room\Rachel.md`
+  - `D:\Workspace\trinity_room\JIAN.md`
   - `D:\Workspace\trinity_room\trinity_talk.md`
 
 ## 리스크 / 주의사항
 - 2026-06-05 기준 원격 저장소 `https://github.com/mohenz/trinity_room.git/` 접근이 실패하여 startup routine에서 원격 변경 추적 및 자동 업데이트를 수행할 수 없음. 다음 조치: 원격 URL, 저장소 존재 여부, 권한을 확인
 - Electron 실행 골격과 Widget, 승인 흐름은 생겼지만, 현재 Windows 로컬 환경에서는 Electron 모듈 로더 이슈로 실제 데스크톱 창 기동이 막혀 있다.
 - `BLOOM 인터페이스`의 실제 연동 규격은 아직 확정되지 않았다.
-- 초기 구현은 진아가 MVP를 한 번에 구현하고, 레이첼은 마지막 단계에서 UI/UX 감수를 수행하는 구조로 계획되어 있다.
+- 초기 구현은 진아가 MVP를 한 번에 구현하고, 지안은 마지막 단계에서 UI/UX 감수를 수행하는 구조로 계획되어 있다.
 - `app/renderer/app.js`, `app/renderer/style.css`에는 미커밋 상태의 렌더 성능 개선 변경이 남아 있다.
 - 웹 프리뷰 서버는 현재 종료된 상태이며, 다시 검토하려면 `npm.cmd run preview:web`로 재기동해야 한다.
 
