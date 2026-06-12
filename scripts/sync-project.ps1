@@ -11,9 +11,9 @@
 
 # This is a simplified registry lookup for the script
 # In a real scenario, this would read project_registry.md
-$projectPath = "d:\Bloom" # Default for Rachel_soul for now
+$projectPath = "d:\Bloom" # Default for JIAN_soul for now
 
-if ($ProjectName -match "Rachel|soul|bloom soul") {
+if ($ProjectName -match "JIAN|soul|bloom soul") {
     $syncScript = Join-Path $projectPath "system\soul_sync_gcs.py"
     $python = "python" # Or path to venv python if fixed
     
