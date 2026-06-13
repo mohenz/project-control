@@ -1,15 +1,16 @@
-﻿# Project Control Current State
+# Project Control Current State
 
 ## 기본 정보
 - project_key: project_control
-- last_updated: 2026-06-03
-- current_status: `D:\workspace\project_control`은 workspace 중앙 프로젝트 레지스트리, 상태 파일, 전환 워크플로우, 운영 규칙을 관리하는 Git 저장소. 2026-06-03 기준 작업트리는 clean 상태이며 로컬 `main`은 `origin/main`보다 1개 커밋 앞서 있음. 이번 세션에서 자체 상태 파일을 신규 생성하고 원격 push를 진행한다.
+- last_updated: 2026-06-13
+- current_status: `D:\workspace\project_control`은 workspace 중앙 프로젝트 레지스트리, 상태 파일, 전환 워크플로우, 운영 규칙을 관리하는 Git 저장소. 2026-06-13 기준 작업트리는 clean 상태이며 `jian_soul` 신규 프로젝트 등록 및 상태 관리를 추가 완료함.
 
 ## 현재 목표
 - `D:\workspace` 내 등록 프로젝트의 상태 복구, 전환, 상태 저장 기준을 안정적으로 유지.
 - 프로젝트별 `states/*.md`를 최신 운영 사실 중심으로 관리.
 
 ## 최근 완료 작업
+- 2026-06-13: `jian_soul` 프로젝트 신규 등록 (`project_registry.md` 반영) 및 상태 파일(`states/jian_soul_current.md`) 생성 완료.
 - project-control 스킬과 workspace `AGENTS.md` 기준의 전환/상태 저장 절차 확인.
 - `cinetube` 상태 파일의 오래된 미커밋 기록을 실제 Git 상태에 맞게 정정.
 - `project_control` 자체 상태 파일을 생성해 중앙 관리 저장소도 상태 관리 대상에 포함.
