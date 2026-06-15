@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-06-11 09:24 KST
+- last_updated: 2026-06-15 KST
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`, `D:\workspace\cinetube\docs\requirements\cinetube 기능추가요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
 - current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. `docs\requirements\cinetube 기능추가요구사항.txt` 기준 관심작품과 갤러리 게시판 기능 구현 완료.
 
@@ -17,6 +17,11 @@
 - 관리자 등록/수정/삭제/이미지 업로드는 서버 API가 Bloom 계정/권한을 확인한 뒤 저장소에 반영하는 구조로 설계한다.
 - Supabase RLS는 운영 권한 모델이 아니라 저장소 측 보조 안전장치가 필요한 경우에만 최소 범위로 둔다.
 - 배우 세부 프로필이 Javtiful 등 1차 등록 페이지에서 조회되지 않을 때는 `https://www.avdbs.com/menu/actor_list.php`에서 배우를 검색해 나이, 신장, 신체사이즈, 데뷔년도를 보강한다.
+- 이미지 저장 관련 답변/작업 시 추정으로 말하지 않는다. 반드시 DB `movies`/`media_assets` 값과 실제 `local/media/...` 파일 존재 여부를 함께 확인한 뒤 경로를 보고한다.
+- 로컬 운영 기준 모든 신규 이미지는 `local/media/...` 파일 저장을 원칙으로 한다. 파일 업로드 이미지뿐 아니라 외부 URL 가져오기 이미지도 로컬 API가 다운로드해 원본과 300px WebP 썸네일을 생성하고, DB에는 `public_url`/`thumb_url` 경로와 `*_asset_id`만 저장해야 한다.
+- API 등록/수정도 등록/수정으로 본다. 프론트 관리자 화면, 가져오기 패널, 직접 API `POST/PATCH` 등 어떤 저장 경로로 들어와도 `movies.poster_url/capture_url/snapshot_url` 등 외부 이미지 URL은 서버 저장 계층에서 로컬 파일+썸네일로 변환되어야 한다.
+- 목록 화면은 `media_assets.thumb_url`을 우선 사용하고, 상세/모달은 `media_assets.public_url` 또는 연결된 원본 URL을 사용한다. 이미지 관련 수정 후에는 목록 썸네일과 상세 원본을 모두 확인한다.
+- `local/media/`는 콘텐츠 저장소이므로 테스트 편의를 이유로 빈 폴더를 임의 생성하지 않는다. 콘텐츠 제로화 또는 정리 작업 시에는 DB 콘텐츠 상태와 파일 저장소 상태를 같이 보고한다.
 
 ## 진행 중 작업
 - 관리자 로컬 CRUD 전체 회귀 테스트 대기.
@@ -24,6 +29,15 @@
 - CineTube 원격은 `origin/rename/persona_full` 기준 최신 상태이나, 작업트리에 다수의 미커밋 변경/신규 파일이 있어 자동 업데이트나 커밋 전 범위 확인 필요.
 
 ## 최근 완료 작업
+- 2026-06-15: 웹툰 상세 화면의 웹툰 이미지 목록을 영화 상세 스냅샷 전체보기와 동일한 모달 동작으로 개선. `assets/js/pages/webtoon-detail.js`에서 각 웹툰 이미지를 클릭/Enter/Space 가능한 `snapshot-preview-image`로 렌더링하고, `image-modal`/닫기 버튼/배경 클릭 닫기/Escape 닫기를 적용. `pages/webtoon.html` 캐시 키를 `image-modal`로 갱신. `node --check assets/js/pages/webtoon-detail.js` 통과.
+- 2026-06-15: 주연배우 공개 목록과 주연배우정보관리 목록을 작품수 많은 순으로 정렬하도록 수정. `assets/js/shared/store.js`에서 `movies.actor_ids/actor_id` 기준 배우별 `movie_count`를 계산하고, `assets/js/pages/actors.js`는 전체 배우를 `movie_count desc -> name asc`로 정렬 후 페이지 처리. 관리자 배우 목록도 같은 기준으로 정렬하고 표시 작품수는 `item.movie_count`를 우선 사용. `pages/actors.html`, `admin/actors.html` 캐시 키를 `actor-count-sort`로 갱신. `node --check assets/js/shared/store.js`, `assets/js/pages/actors.js`, `assets/js/shared/admin-page.js` 통과.
+- 2026-06-15: 공개 영화목록 `pages/movies.html` 페이징 이동 후 목록 상단으로 포커스/스크롤되도록 `assets/js/pages/movies.js` 수정. 페이지 버튼 콜백에서 렌더 완료 후 `movieGrid`에 임시 포커스를 주고 `.content-view` 상단으로 smooth scroll 처리. `movies.js` 캐시 키를 `paging-focus-top`으로 갱신. `node --check assets/js/pages/movies.js` 통과.
+- 2026-06-15: 공통코드 관리 화면 등록 목록을 코드그룹 기준으로 그룹핑 표시하고, `code_group` -> `display_order` -> `code_value` 순으로 정렬하도록 `assets/js/shared/admin-page.js` 수정. `admin/common-codes.html`의 `admin-page.js` 캐시 키를 `common-code-groups`로 갱신. `node --check assets/js/shared/admin-page.js` 통과. Chrome DevTools MCP는 응답 타임아웃으로 브라우저 렌더 확인 미수행.
+- 2026-06-15: 관리자 목록 화면도 썸네일 우선 사용하도록 수정. `assets/js/shared/admin-page.js`의 영화정보 관리 목록은 기존 `UI.movieImageUrl()` 원본 우선 경로 대신 `UI.movieThumbnailUrl()`을 사용하도록 변경. 갤러리/카테고리/배우/웹툰/웹툰 챕터 관리 목록도 연결 asset의 `thumb_url`을 우선 사용하고 없을 때 기존 URL로 fallback하도록 보강. 관리자 화면 `admin-page.js` 캐시 버전을 `admin-thumb`로 갱신. 검증 결과 `node --check assets/js/shared/admin-page.js` 통과, DB 확인상 최근 영화 poster asset에 `public_url`과 `thumb_url`이 분리 저장되어 있음.
+- 2026-06-14: CineTube 로컬 DB 콘텐츠 제로화 완료. 작업 전 `local\backups\cinetube_before_content_zero_20260614_204927.sql` 백업 생성. 구조 변경(`media_assets.thumb_url`, 성능/검색/FK 보조 인덱스)은 적용한 뒤 콘텐츠 테이블 `movies`, `actors`, `categories`, `gallery_images`, `webtoons`, `webtoon_chapters`, `favorite_movies`, `media_assets`를 `truncate ... restart identity cascade`로 초기화. 기본 설정 테이블 `rating_grades` 5건과 `common_codes` 9건은 유지. `local/media/` 디렉터리 삭제 완료. 검증 결과 콘텐츠 테이블 8개 모두 0건, `media_assets.thumb_url` 컬럼 존재, inline 이미지 이관 dry-run 대상 0건.
+- 2026-06-14: CineTube 이미지 저장 구조 개선을 신규/기존 데이터 양쪽 기준으로 반영. 신규 로컬 업로드는 `assets/js/shared/store.js`가 원본 Data URL과 300px WebP 썸네일 Data URL을 생성해 로컬 API `/media/upload`로 전달하고, `scripts/local_api.py`가 `local/media/...`에 원본/썸네일 파일을 저장한 뒤 `media_assets` 메타데이터를 등록하도록 변경. 목록 카드는 `assets/js/shared/ui.js`, `assets/js/pages/gallery.js`에서 `media_assets.thumb_url`을 우선 사용하고, 상세/모달은 기존 원본 URL 흐름을 유지. `media_assets.thumb_url` 컬럼을 `local/schema.sql`, `supabase/schema.sql`에 추가하고 기존 DB 적용용 `local/media_assets_thumb_url_migration.sql`, `supabase/media_assets_thumb_url_migration.sql`을 추가. 기존 DB의 base64/Data URL 이미지를 파일로 추출하기 위한 `scripts/migrate_inline_images_to_files.py`를 추가했으며 기본은 dry-run이고 `--apply`에서만 파일 생성/DB URL 업데이트 수행. `local/media/`는 Git 추적 제외. 실제 DB 이관 및 마이그레이션 실행은 수행하지 않음.
+- 2026-06-14: Supabase/Postgres 기준 로딩 성능 개선 2차 반영. `assets/js/shared/store.js`에서 Supabase `fetchTable()`의 기본 `select("*")`를 명시 컬럼 조회로 변경하고, `Store.list()` 진입 시 Supabase 모드에서도 전체 `load()` 대신 카테고리/배우/등급/공통코드/관심작품/미디어 메타만 읽는 경량 컨텍스트를 구성하도록 수정. 영화/배우/갤러리 목록은 페이지 단위 조회를 먼저 사용하며, 영화 상세와 갤러리 원본 이미지가 필요한 경우에는 Supabase에서도 별도 `select("*")` 단건/원본 조회를 수행하도록 보강. `store.js` 캐시 버전을 `supabase-perf`로 갱신. `local/schema.sql`, `supabase/schema.sql`, `local/performance_indexes_migration.sql`, `supabase/performance_indexes_migration.sql`에는 배우/갤러리 trigram 검색 인덱스와 media asset FK 보조 인덱스 후보를 추가. 실제 DB 마이그레이션/데이터 변경은 수행하지 않음.
+- 2026-06-14: `stop-cinetube.cmd` 실행 시 첫 줄이 `癤?echo off`로 해석되던 문제 수정. 원인은 Windows `cmd.exe`가 UTF-8 BOM을 명령 문자로 읽는 인코딩 문제로 판단되어 루트의 `stop-cinetube.cmd`, `start-cinetube.cmd`, `ct.cmd`를 동일 내용의 BOM 없는 ASCII 배치 파일로 재생성. `cmd /d /c stop-cinetube.cmd` 검증 결과 기존 `'癤?echo'` 오류 없이 `scripts/stop_local_db.ps1`이 실행되어 `CineTube local DB stopped.` 출력 확인.
 - 2026-06-11: 미커밋 변경사항 104개 파일 전체 커밋 및 `origin/rename/persona_full`에 push 완료. 커밋 해시 `ffff5ea`. 신규 파일: 웹툰(관리자/공개), 갤러리, 관심작품, LAN 모드, 성능 인덱스 마이그레이션, Horisawa Mayu 임포트 SQL, DB 복구 관련 파일. `.gitignore`에 `local/postgres-data.corrupt*/` 패턴 추가해 손상 DB 디렉토리 추적 제외.
 - 2026-06-11: DB 인덱스/정렬 최적화 1차 적용. 실제 Store/API 조회 흐름을 기준으로 기존 단일 인덱스(`created_at`, `ranking_score`, `category_code`, `actor_ids` GIN 등)는 유지하고, 목록/홈/갤러리/관심작품/미디어 자산 조회에 맞춘 복합 인덱스 13개를 추가. `local/schema.sql`, `supabase/schema.sql`에 신규 생성 스키마용 인덱스를 반영하고, 반복 실행 가능한 `local/performance_indexes_migration.sql`, `supabase/performance_indexes_migration.sql`을 추가. 로컬 PostgreSQL `cinetube` DB에 `local/performance_indexes_migration.sql` 적용 완료 및 `ANALYZE` 실행. `pg_indexes` 확인 결과 신규 인덱스 13개 생성 확인.
 - 2026-06-09: 갤러리 목록 카드 이미지 위의 텍스트가 보이지 않도록 개선. `assets/css/styles.css`에서 갤러리 카드에 한해 `.gallery-card .poster-overlay { display:none; }`을 적용해 이미지 하단 출처/태그 오버레이를 숨기고, `.gallery-card .card-favorite-toggle`은 38px 아이콘 버튼으로 축소하며 `.favorite-label`을 숨김. 영화 카드 등 다른 포스터 카드 오버레이에는 영향 없도록 `.gallery-card` 범위로 한정. 모든 HTML의 `styles.css` 캐시 버전을 `gallery-clean-card`로 갱신. Browser 검증 결과 `http://localhost:8080/pages/gallery.html?verify=gallery-clean-card` 첫 갤러리 카드에서 `overlayDisplay=none`, `favoriteLabelDisplay=none`, 버튼은 아이콘만 표시, 적용 CSS `styles.css?v=gallery-clean-card` 확인.
@@ -237,7 +251,7 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://127.0.0.1:3001`, browser inspect 주요 페이지
-- latest_verification: 2026-06-11 DB 인덱스 최적화 기준 `local/performance_indexes_migration.sql`을 로컬 PostgreSQL `cinetube` DB에 적용 완료. `CREATE INDEX` 13건과 `ANALYZE` 8건 성공, `pg_indexes`에서 신규 인덱스 13개 생성 확인. 이전 2026-06-09 갤러리 상세 이미지 전체보기 모달 검증도 통과 상태.
+- latest_verification: 2026-06-14 콘텐츠 제로화 후 `node --check assets/js/shared/store.js`, `node --check assets/js/shared/ui.js`, `node --check assets/js/pages/gallery.js`, `python -m py_compile scripts/local_api.py scripts/migrate_inline_images_to_files.py` 통과. DB 검증 결과 `movies/actors/categories/gallery_images/webtoons/webtoon_chapters/favorite_movies/media_assets=0`, `rating_grades=5`, `common_codes=9`, `media_assets.thumb_url` 컬럼 존재, inline 이미지 dry-run 대상 0건, `local/media` 없음.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
 - deploy_method: Vercel deployment completed from GitHub `origin/main`
 
