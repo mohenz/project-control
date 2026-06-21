@@ -11,6 +11,23 @@
 - record verification
 - record next starting point
 - record unresolved risks if any
+- refresh the handoff section when another session or agent may continue the work
+
+## Handoff section
+- Keep it short and executable.
+- Include:
+  - `current_goal`
+  - `done_latest`
+  - `key_findings`
+  - `changed_files`
+  - `verification`
+  - `next_action`
+  - `risks_or_blockers`
+- Use explicit blocker labels when needed:
+  - `blocked_by`
+  - `required_decision`
+  - `do_not_do`
+- Do not record secrets, credentials, tokens, or private keys.
 
 ## New project registration
 1. Add registry entry.

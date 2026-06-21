@@ -1,6 +1,6 @@
 ﻿---
 name: project-control
-description: Use when working in a multi-project workspace that keeps a top-level project_control folder for alias-based project switching, state-file context recovery, minimal startup checks, and /project command handling such as /project use, /project status, /project update, /project close, /project improve, /project fix, /project start, /project deploy, or /project register.
+description: Use when working in a multi-project workspace that keeps a top-level project_control folder for alias-based project switching, state-file context recovery, handoff summaries, minimal startup checks, and /project command handling such as /project use, /project status, /project handoff, /project update, /project close, /project improve, /project fix, /project start, /project deploy, or /project register.
 ---
 
 # Project Control
@@ -50,11 +50,25 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 ### `/project status <alias>`
 - Return the current state summary and key run or verify information.
 
+### `/project handoff <alias>`
+- Resolve the alias in `project_registry.md`.
+- Read the matched state file before reading the project codebase.
+- Produce a concise handoff summary for the next session or agent:
+  - current goal
+  - done in the latest session
+  - key findings
+  - changed files
+  - verification results
+  - next action
+  - risks, blockers, and do-not-do notes
+- Include project repo status when available.
+- Do not hide blockers. Mark them as `blocked_by`, `required_decision`, or `do_not_do` when useful.
+
 ### `/project update ...`
 - Update the matched state file with completed work and next work.
 
 ### `/project close ...`
-- Update the matched state file with completed work, verification result, next work, and relevant risks.
+- Update the matched state file with completed work, verification result, next work, relevant risks, and the handoff section when the work changed execution context or left a next-session dependency.
 
 ### `/project deploy <alias>`
 - Follow the deploy method recorded in the registry or state file.

@@ -18,6 +18,19 @@
    - port or runtime if relevant
 5. Start work in the matched project context.
 
+## Handoff flow
+1. Resolve alias in the registry.
+2. Read the matched state file.
+3. Check project path and repo status when available.
+4. Extract the latest operational facts:
+   - current goal
+   - latest completed work
+   - current blockers
+   - verification status
+   - next action
+5. Return a compact handoff summary.
+6. If closing a meaningful work session, update the state file handoff section.
+
 ## Missing or ambiguous cases
 - Missing registry: stop and report the missing file.
 - Missing state file: report it and fall back to minimum context building.

@@ -51,6 +51,14 @@
 - 세션 종료 직전
 - 다른 프로젝트로 전환하기 직전
 
+## 8-2. Handoff 운영 규칙
+- handoff는 다음 Codex 세션 또는 다른 작업자가 즉시 이어받기 위한 실행형 인수인계다.
+- `/project handoff <alias>` 요청 시 레지스트리, 상태 파일, 프로젝트 경로, Git 상태를 근거로 요약한다.
+- handoff에는 현재 목표, 최근 완료, 핵심 발견, 변경 파일, 검증 결과, 다음 액션, 리스크/블로커를 포함한다.
+- 블로커는 `blocked_by`, 결정 필요 사항은 `required_decision`, 금지 작업은 `do_not_do`로 명확히 쓴다.
+- 비밀값, 토큰, 인증정보, 개인키는 handoff에 기록하지 않는다.
+- `states/*.md`의 `Handoff` 섹션은 의미 있는 작업 종료, 중단, 또는 외부 의존성 발생 시 갱신한다.
+
 ## 8-1. `project_control` 저장소 배포 규칙
 - `project_control` 저장소는 운영 규칙, 전환 방식, skill 구조, 설치 방식, command 규격처럼 중앙 운영 방식이 변경될 때만 배포한다.
 - 일반 프로젝트 작업 중 `states/*.md`만 바뀐 경우에는 `project_control` 저장소를 자동 배포하지 않는다.

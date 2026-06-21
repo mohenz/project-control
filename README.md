@@ -9,6 +9,7 @@
 - 매칭된 프로젝트의 상태 파일을 먼저 읽고 필요한 최소 검증만 수행합니다.
 - 상태 파일이 최신이면 처음부터 전체 분석하지 않습니다.
 - 작업 종료 전에는 상태 파일에 현재 상황과 다음 작업을 반영합니다.
+- 다음 세션이 이어받아야 하는 작업은 `/project handoff <alias>` 형식으로 실행형 인수인계를 만듭니다.
 
 ## 빠른 사용 순서
 1. 사용자 요청에서 프로젝트 별칭을 확인합니다.
@@ -34,6 +35,12 @@
 - `scripts/switch-project.ps1`
 - `scripts/send-work-summary.ps1`
 - `scripts/install-project-control-skill.ps1`
+
+## 주요 명령
+- `/project use <alias>`: 프로젝트 전환 및 최소 상태 복구
+- `/project status <alias>`: 현재 상태 요약
+- `/project handoff <alias>`: 다음 세션용 인수인계 요약 생성
+- `/project close <alias>`: 완료, 검증, 다음 작업, 리스크 기록
 
 ## 현재 등록 프로젝트
 - `defect_manage`

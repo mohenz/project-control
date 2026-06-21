@@ -37,6 +37,15 @@
 - 다음 시작 시 먼저 볼 것:
 - 확인이 필요한 미결사항:
 
+## Handoff
+- current_goal:
+- done_latest:
+- key_findings:
+- changed_files:
+- verification:
+- next_action:
+- risks_or_blockers:
+
 
 
 

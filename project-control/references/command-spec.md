@@ -9,6 +9,7 @@
 ## Actions
 - `use`
 - `status`
+- `handoff`
 - `update`
 - `close`
 - `improve`
@@ -41,6 +42,18 @@
 
 ### `status`
 - Show state summary and key run or verify info.
+
+### `handoff`
+- Build a next-session handoff for the matched project.
+- Source from the registry, matched state file, project repo status, and recent work notes.
+- Include:
+  - current goal
+  - done in latest session
+  - key findings
+  - changed files
+  - verification
+  - next action
+  - risks or blockers
 
 ### `update`
 - Update state file with progress notes.
