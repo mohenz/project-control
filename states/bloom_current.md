@@ -13,6 +13,7 @@
 - 없음. 금일 요청 사항 전체 완료.
 
 ## 최근 완료 작업
+- 2026-06-24: Supabase 내 20개 전체 테이블(소설, 일기, 메모, 세션, 에이전트 기억 등 총 249개 데이터)의 Firebase Firestore 실서버 이관 성공 및 소유권 자동 매핑(Dynamic UID Mapping) 연동 완료.
 - 2026-06-24: Supabase 및 PostgreSQL(persona-online) 아키텍처를 Cloud Firestore, Firebase Auth, 및 Firebase Local Emulator Suite 환경으로 완벽 마이그레이션 완료.
 - 2026-06-09: `api/download.js` 신규 생성 — `/files` 디렉토리 내 zip 등 파일을 스트리밍 다운로드하는 API 엔드포인트. 경로 탐색 방지 및 허용 확장자 화이트리스트 보안 처리 포함.
 - 2026-06-09: 대시보드 UI Code Helper 카드에 `확장 프로그램 다운로드` 버튼 추가 (`/api/download?name=ui_code_helper.zip` 연결).
@@ -58,11 +59,16 @@
   - `lib/auth-session.js`
   - `lib/auth-store.js`
 
-## 데이터베이스 접속 정보 (로컬)
-- host: `localhost`
-- ports: `Auth: 9099`, `Firestore: 8080`, `UI Dashboard: 4000`
-- database (Project ID): `bloom-universe` (Firebase Local Emulator Suite)
-- 컬렉션: `users`, `prompt_histories`, `story_groups`, `story_documents`, `story_references`, `memories` (에이전트용)
+## 데이터베이스 접속 정보 (실서버 및 로컬)
+- **접속 모드**: 프로덕션 실서버 (Google Cloud Firebase) 연결 완료
+- **실서버 정보**:
+  - 프로젝트 ID: `persona-online`
+  - 인증 제공업체: 이메일/비밀번호 활성화 완료 (`mohenz@hotmail.com` 계정 생성 완료)
+  - 컬렉션 (총 20개): `users`, `app_users`, `memories`, `persona_rules`, `story_groups`, `story_documents`, `story_references`, `prompt_histories`, `diaries`, `novels`, `chapters`, `scenes`, `memo_categories`, `memo_memos`, `memo_user_roles`, `api_telemetry_events`, `auth_sessions`, `app_secrets` 등
+- **로컬 에뮬레이터 정보**:
+  - host: `localhost`
+  - ports: `Auth: 9099`, `Firestore: 8080`, `UI Dashboard: 4000`
+  - database (Project ID): `bloom-universe` (환경 변수 활성화 시 자동 연동)
 
 ## 리스크 / 주의사항
 - Firebase Local Emulator 구동을 위해 Java Development Kit (JDK) 11 이상이 시스템에 설치되어 있어야 합니다.

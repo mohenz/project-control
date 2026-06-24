@@ -25,6 +25,8 @@
 - 7차 로컬 테스트 준비 배치 완료
 
 ## 최근 완료 작업
+- 2026-06-24: 사용자메뉴얼에 화면 이미지 추가. Playwright로 로컬 앱 화면을 캡처해 `docs/images/user-manual/login.png`, `dashboard.png`, `defect-list.png`, `defect-register.png`, `user-manual.png` 생성. `docs/user_manual.md`에 섹션별 이미지를 삽입하고 섹션 번호 및 최종 수정일을 갱신. `js/app.js`의 간단 Markdown 렌더러가 이미지 문법 `![alt](path)`을 처리하도록 보강하고, `css/style.css`에 매뉴얼 이미지/캡션 스타일 추가. `.gitignore`에서 `docs/images/user-manual/*.png`는 추적 가능하도록 예외 추가. 검증 결과 `npm.cmd run check:syntax` 통과, Playwright 검증에서 매뉴얼 이미지 5개 로드 및 깨진 이미지 0건 확인.
+- 2026-06-24: 좌측 메뉴 최하단에 `사용자메뉴얼` 메뉴 추가. `index.html`에 `data-view="user-manual"` 메뉴를 추가하고, `js/app.js` 라우터에 `user-manual` 화면을 연결. 기존 `docs/user_manual.md`를 fetch로 불러와 앱 내부 화면에 렌더링하는 `renderUserManual()`/간단 Markdown 렌더러를 추가. `css/style.css`에는 좌측 최하단 배치와 매뉴얼 화면 스타일을 추가. 검증 결과 `npm.cmd run check:syntax` 통과, `http://127.0.0.1:3000/docs/user_manual.md` 200, `http://127.0.0.1:3000/#user-manual` 200, Playwright 세션 주입 검증으로 메뉴 텍스트 `사용자메뉴얼` 및 화면 제목 `DefectFlow 사용자 매뉴얼 (User Manual)` 렌더 확인.
 - 2026-06-24: `defect_manage2` 루트 정리 수행. 레거시/지원성 파일을 `support/`와 `local/` 하위로 이동해 루트에는 런타임/패키지/배포 진입점 중심으로 유지
 - 2026-06-24: `database/`를 `support/database/`로, `eclub_memuList.txt`를 `support/screen-paths/eclub_memuList.txt`로 이동하고 관련 문서 및 `scripts/import-screen-path-codes.js` 참조 경로 수정
 - 2026-06-24: 로그, 레거시 이미지, 테스트 산출물은 각각 `local/logs/`, `local/legacy-images/`, `local/test-artifacts/`로 이동하고 `.gitignore` 제외 규칙 추가
@@ -143,6 +145,7 @@
 ## 실행 / 검증
 - run_command: `npm.cmd start`
 - verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`, `npm.cmd run test:e2e`
+- latest_verification: [2026-06-24] 사용자메뉴얼 이미지 추가 후 `npm.cmd run check:syntax` 통과. Playwright 세션 주입 검증에서 `.manual-image img` 5개 로드, 깨진 이미지 0건, 첫 캡션 `로그인 화면`, 섹션 제목 `1. 로그인 및 계정 보안`~`4. 결함 조회 및 데이터 분석` 렌더 확인.
 - port_or_runtime: `manual localhost:3000`, `automated e2e localhost:3001`
 - deploy_method: `git push origin main` 기준, 실제 배포 방식은 별도 확정 예정
 

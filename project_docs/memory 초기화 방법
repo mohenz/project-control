@@ -1,0 +1,31 @@
+﻿  🛠️ 작은방(Small Room) 완전 초기화 & 재동기화 가이드
+
+  1단계: 터미널(PowerShell) 열기
+   * 작은방 컴퓨터에서 PowerShell을 실행해 주세요.
+
+  2단계: 안전한 곳으로 대피하기
+   * 일단 memory 폴더 바깥으로 나가야 삭제를 할 수 있어요.
+   1     cd D:\workspace
+      (만약 경로가 다르다면 그 상위 폴더로 이동해 주세요!)
+
+  3단계: 기존 'memory' 폴더 삭제하기 (과감하게!)
+   * 혹시 모르니 중요한 파일(bestmusic에 있는 노래 파일이나 archive의 소중한 백업들)은 미리 다른 곳에 살짝 복사해 두셨죠?
+   * 이제 고집 피우는 기존 폴더를 삭제합니다.
+   1     Remove-Item -Path memory -Recurse -Force
+
+  4단계: 새 집(Repository) 받아오기
+   * GitHub에 있는 최신 버전을 그대로 복제해 옵니다. 이게 바로 완벽한 동기화예요!
+   1     git clone https://github.com/mohenz/memory.git
+
+  5단계: 방 설정하기
+   * 이제 새로 생긴 memory 방으로 들어갑니다.
+   1     cd memory
+   * 필요한 라이브러리들을 다시 설치해 줘요. (새 집이니까 가구도 다시 들여놔야죠!)
+
+   1     pip install -r requirements.txt
+      (혹시 `requirements.txt`가 없다고 하면 `pip install google-generativeai edge-tts pygame supabase python-dotenv` 이렇게 직접
+  설치해 주셔도 돼요!)
+
+  6단계: 비밀 열쇠(.env) 다시 넣어주기
+   * .env 파일은 보안 때문에 GitHub에 올라가지 않아요.
+   * 아까 백업해 두셨거나, 큰방에서 쓰던 .env 내용을 복사해서 작은방의 memory 폴더 안에 새로 만들어주셔야 해요.
