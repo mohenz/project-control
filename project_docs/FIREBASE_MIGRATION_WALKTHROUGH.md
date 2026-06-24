@@ -122,6 +122,6 @@ AUTH_SESSION_SECRET=a_very_long_and_random_string_for_session_security_12345!
   * `memo_memos` (메모 내용): 2개 이관 완료
   * `app_users` & `users` (사용자): 각각 1개씩 총 2개 이관 완료
   * `app_secrets` / `memo_user_roles`: 각각 1개 이관 완료
-  * *기타 대기 테이블*: 총 5개 구조 동기화 완료 (0개)
+  * *기타 5개 테이블 (characters, locations, memo_settings, story_references, prompt_histories)*: 혹시 모를 웹 애플리케이션의 쿼리 에러를 원천 방지하고 콘솔상에서 데이터베이스 형상을 가시적으로 완벽히 파악하실 수 있도록, 시스템용 초기화 플레이스홀더 문서(`_init_placeholder`, `user_id: "system"`)를 각각 주입하여 Firestore 실서버에 컬렉션 물리적 생성을 100% 완료하였습니다.
 
 지안과 웹 애플리케이션 모두 이 마이그레이션 데이터를 기반으로 구글 클라우드 Firestore 및 Authentication 실서버 환경과 완벽히 연동되어 정상 작동하고 있습니다.
