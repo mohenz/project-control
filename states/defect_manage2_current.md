@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: `defect_manage2`
-- last_updated: `2026-05-21`
+- last_updated: `2026-06-24`
 - owner_request: `defect_manage` 운영본의 개선 및 추가 기능을 분석해 `defect_manage2`에 반영
-- current_status: `defect_manage` 운영본과 기능 차이 재점검 후 누락된 `조치예정일(action_due_date)` 기능 및 GitHub Pages workflow action 버전 차이를 `defect_manage2`에 반영 완료
+- current_status: Supabase 직접 연결에서 로컬 PostgreSQL + Node API 방식으로 전환 완료. `defects`는 사용자 지시에 따라 테스트 구분별 최근 100건 기준으로 이관 완료
 
 ## 현재 목표
 - `defect_manage` 원본은 유지하고 `defect_manage2`에서 실행 파일 경량화와 프론트엔드 구조 분해를 안전하게 진행한다.
@@ -25,6 +25,26 @@
 - 7차 로컬 테스트 준비 배치 완료
 
 ## 최근 완료 작업
+- 2026-06-24: `defect_manage2` 루트 정리 수행. 레거시/지원성 파일을 `support/`와 `local/` 하위로 이동해 루트에는 런타임/패키지/배포 진입점 중심으로 유지
+- 2026-06-24: `database/`를 `support/database/`로, `eclub_memuList.txt`를 `support/screen-paths/eclub_memuList.txt`로 이동하고 관련 문서 및 `scripts/import-screen-path-codes.js` 참조 경로 수정
+- 2026-06-24: 로그, 레거시 이미지, 테스트 산출물은 각각 `local/logs/`, `local/legacy-images/`, `local/test-artifacts/`로 이동하고 `.gitignore` 제외 규칙 추가
+- 2026-06-24: 레거시 unit test fixture를 `support/legacy-data/`로 정리하고 `tests/unit/db.test.js` 참조 경로 수정
+- 2026-06-24: 루트 정리 커밋 `585647e Organize root support files`를 `origin/main`에 push 완료
+- 2026-06-24: `playwright.config.js`, `vitest.config.js`를 `config/` 하위로 이동하고 `package.json` 스크립트에 `--config config/...` 명시
+- 2026-06-24: `scripts/check-syntax.js` 검사 대상을 `config/playwright.config.js`, `config/vitest.config.js`로 변경하고 관련 문서 링크 수정
+- 2026-06-24: config 이동 후 `npm.cmd run check:syntax`, `npm.cmd run test:unit` 검증 통과. Playwright 설정 로딩은 `npx.cmd playwright test --config config/playwright.config.js --list`로 확인
+- 2026-06-24: `project_control/docs/defect_manage2_local_postgres_cutover_plan_20260624.md`에 로컬 PostgreSQL 전환 작업계획 기록
+- 2026-06-24: `defect_manage2` 로컬 PostgreSQL 스키마, start/stop 스크립트, Supabase REST 이관 스크립트 추가
+- 2026-06-24: `server.js`를 JSON 파일 API에서 PostgreSQL 기반 `/api/*` 서버로 교체하고 `pg` 의존성 추가
+- 2026-06-24: 프론트 `js/storage.js`를 Supabase SDK 직접 호출에서 로컬 API fetch 기반으로 전환, `index.html`에서 Supabase CDN 제거, `js/config.js`를 `API_BASE_URL: "/api"`로 변경
+- 2026-06-24: Supabase 운영 데이터 이관 완료. 이관 결과 `users=43`, `common_codes=163`, `app_settings=1`, `defect_save_error_logs=21`, `defect_history=0`, `defects=328`
+- 2026-06-24: `defects` 이관 범위는 테스트 구분별 최근 데이터 기준 최대 100건으로 적용. 결과: 최종테스트 19, 백오피스 5, 통합테스트 100, 선오픈 30, 3자테스트(W2) 100, 3자테스트(I&C) 73, 단위테스트 1
+- 2026-06-24: 로컬 API `GET /api/health`, `GET /api/defects?page=1&pageSize=5`, `GET /api/common-codes` 응답 확인
+- 2026-06-24: `npm.cmd run check:syntax`, `npm.cmd run test:unit` 검증 통과 (`6`개 파일, `13`개 테스트)
+- 2026-06-24: `project_control` 기준 `defect_manage`, `defect_manage2` 상태 확인
+- 2026-06-24: 공통 파일 차이 및 기능 키워드(`action_due_date`, `조치 미완료`, `결함조치재확인`, `defect_id`, 페이징, 결함관리번호 복사)를 재점검해 `defect_manage2`에 구현 누락이 없음을 확인
+- 2026-06-24: `defect_manage`의 2026-04-02 변경 이력(결함 목록 10페이지 단위 페이징, 담당자 15명 단위 페이징, 결함관리번호 표시/복사)이 `defect_manage2/docs/CHANGELOG.md`에 누락되어 있어 개선본 구조 기준 파일명으로 문서 보강
+- 2026-06-24: `defect_manage2`에서 `npm.cmd run check:syntax`, `npm.cmd run test:unit` 검증 통과 (`6`개 파일, `13`개 테스트)
 - 2026-05-21: `defect_manage`와 `defect_manage2`의 최근 운영 기능 키워드 및 코드 구조를 비교해 기능 차이 확인
 - 2026-05-21: 대시보드 전체 페이지 조회, 조치 미완료 카드/필터, 조치완료율 표시, 결함조치재확인, 결함관리번호 복사 기능은 `defect_manage2`에 이미 반영되어 있음을 확인
 - 2026-05-21: `defect_manage`의 2026-04-07 기능인 `조치예정일(action_due_date)`이 `defect_manage2`에 누락된 것을 확인하고 반영
@@ -122,7 +142,7 @@
 
 ## 실행 / 검증
 - run_command: `npm.cmd start`
-- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`, `npx.cmd playwright test tests/e2e/defect.spec.js tests/e2e/simple.spec.js`
+- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`, `npm.cmd run test:e2e`
 - port_or_runtime: `manual localhost:3000`, `automated e2e localhost:3001`
 - deploy_method: `git push origin main` 기준, 실제 배포 방식은 별도 확정 예정
 
@@ -158,9 +178,13 @@
   - `tests/unit/app-utils.test.js`
   - `tests/e2e/defect.spec.js`
   - `tests/e2e/simple.spec.js`
-  - `playwright.config.js`
+  - `config/playwright.config.js`
+  - `config/vitest.config.js`
   - `server.js`
   - `index.html`
+  - `support/database/`
+  - `support/screen-paths/eclub_memuList.txt`
+  - `support/legacy-data/`
 
 ## 리스크 / 주의사항
 - 이번 개선 프로젝트 범위에는 데이터베이스 테이블 구조 변경, 컬럼 추가/삭제, 마이그레이션 적용이 포함되지 않음
