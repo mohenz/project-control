@@ -7,7 +7,7 @@
 - current_status: Supabase/PostgreSQL에서 Firebase(Firestore, Auth, Emulators) 환경으로 전면 마이그레이션 및 검증 완료
 
 ## 현재 목표
-- Prompt Builder의 한글/영문 프롬프트 생성 흐름을 확장하고 사용성을 보강하며, 리뉴얼된 UI 검증을 완료한다.
+- Bloom Universe 내의 모든 프로그램 및 잔존 도구들을 Firebase로 완전 연동하고 Supabase 잔재를 100% 청산한다.
 
 ## 진행 중 작업
 - 없음. 금일 요청 사항 전체 완료.
@@ -30,6 +30,7 @@
 - 2026-06-08: Bloom Universe UI 전 페이지 Tailwind CSS Institutional Brutalist 테마 리뉴얼 완료.
 
 ## 다음 작업
+- Bloom Universe 내의 모든 개별 스크립트 및 도구(일기 분석, 지식 저장, 계획 저장 등)의 Firebase SDK 연동 및 전환.
 - Prompt Builder의 한글/영문 프롬프트 생성 흐름 확장 및 사용성 보강.
 - Vercel 환경 변수에서 `ALLOWED_ORIGINS` allowlist 확인.
 
