@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: `archive_store`
-- last_updated: `2026-07-03`
-- owner_request: `archive_store` 프로젝트를 다른 PC로 이관할 수 있도록 project-control 기준으로 정리
-- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, GitHub 원격 저장소 `mohenz/archive-store.git`의 `main` 브랜치에 푸시 완료됨. 새 PC 이관용 `docs\transfer_guide.md`를 추가했고, 민감 입력 파일은 Git 추적에서 제외함.
+- last_updated: `2026-07-04`
+- owner_request: `archive_store` 프로젝트 루트 디렉토리 정리
+- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, 2026-07-04 기준 루트 정리 및 PostgreSQL 18.4 전환 변경을 GitHub 원격 저장소 `mohenz/archive-store.git`의 `main` 브랜치에 푸시 완료함.
 
 ## 현재 목표
 - 다른 PC에서 Git clone 후 로컬 PostgreSQL/API 기반 개발 환경을 재현할 수 있는 상태를 유지한다.
@@ -23,18 +23,26 @@
 - Firebase Hosting, Firestore Rules, Storage Rules 초안 생성
 - 로컬 PostgreSQL 클러스터 구성: `127.0.0.1:54324/archive_store`
 - 로컬 API 구성: `http://127.0.0.1:5175`
-- Windows 실행/종료 스크립트 생성: `start.cmd`, `end.cmd`
+- Windows 실행/종료 스크립트 생성: `scripts\start.cmd`, `scripts\end.cmd`
 - 업로드 smoke test 완료: `README.md` 업로드 및 DB row 확인
 - UI 개선 반영: 좌우 레이아웃, 좌측 아카이브 현황/업로드, 우측 필터/검색/목록/페이지네이션
 - UI 개선 반영: 업로드 영역 강조, 카테고리 버튼 동일 크기/아이콘 적용, 파일 목록 텍스트 배지 아이콘화
 - 민감정보 정리: PIN은 `VITE_ARCHIVE_PIN` 환경변수로 이동, `.env.local` 및 `docs\required_user_inputs.md`는 Git 제외
 - GitHub 원격 저장소 연결 및 푸시 완료: `https://github.com/mohenz/archive-store.git`
 - PC 이관 가이드 추가: `docs\transfer_guide.md`
+- 루트 정리: `start.cmd`, `end.cmd`를 `scripts\`로 이동하고, `firestore.rules`, `storage.rules`를 `firebase\`로 이동
+- 루트 정리: `.env.example`, `vite.config.js`를 `config\`로 이동하고, `firebase.json`을 `firebase\`로 이동. `package.json`, `package-lock.json`, `index.html`은 npm/Vite 표준 루트 파일이라 유지.
+- PostgreSQL 실행 스크립트 개선: 설치된 최신 PostgreSQL bin 자동 감지로 변경. 현재 PC에서는 PostgreSQL 18.4를 선택해 로컬 DB 실행 확인.
+- 로컬 실행 확인: `scripts\start.cmd`로 DB/API/Vite 시작, API health `{"ok":true,...}` 응답 및 앱 `http://127.0.0.1:5174/` HTTP 200 확인.
+- PostgreSQL 18 업그레이드: `winget` 기준 `PostgreSQL.PostgreSQL.18` 버전 `18.4-1` 설치 확인. Windows 서비스 `postgresql-x64-18`은 `Running / Automatic`, 기존 `postgresql-x64-16`은 `Stopped / Automatic`.
+- archive_store DB 전환: 기존 16 데이터 폴더 `local\postgres-data`는 보존하고, 18용 `local\postgres-data-18`을 새로 초기화해 포트 `54324`에서 PostgreSQL 18.4 서버 실행 확인.
+- GitHub 배포 완료: `05928cf` (`chore: organize project root and postgres scripts`)를 `origin/main`에 push 완료.
 
 ## Git / 원격 상태
 - repository: `https://github.com/mohenz/archive-store.git`
 - branch: `main`
 - latest_commits:
+  - `05928cf chore: organize project root and postgres scripts`
   - `1ed1f86 Add PC transfer guide`
   - `9bb551e Initial archive store app`
 - local_status: `main...origin/main`, 추적 대상 변경 없음
@@ -50,9 +58,9 @@
 
 ## 다음 작업
 - 새 PC에서 `git clone https://github.com/mohenz/archive-store.git`
-- `.env.example`을 복사해 `.env.local` 생성
+- `config\.env.example`을 복사해 `.env.local` 생성
 - `.env.local`에 `VITE_ARCHIVE_PIN`, `VITE_DATA_BACKEND=local-api`, `VITE_LOCAL_API_URL=http://127.0.0.1:5175` 설정
-- `npm install` 후 `start.cmd` 실행
+- `npm install` 후 `scripts\start.cmd` 실행
 - PostgreSQL 설치 경로가 `C:\Program Files\PostgreSQL\18\bin`과 다르면 `scripts\start-local-db.ps1`, `scripts\stop-local-db.ps1` 수정
 - 실제 업로드 파일/DB 데이터까지 이관해야 하면 `local\uploads\`와 PostgreSQL 데이터는 별도 백업/복원
 - Firebase config 제공 시 Auth/Firestore/Storage 실연동 검증
@@ -60,8 +68,8 @@
 - Vercel 배포 설정
 
 ## 실행 / 검증
-- run_command: `start.cmd`
-- stop_command: `end.cmd`
+- run_command: `scripts\start.cmd`
+- stop_command: `scripts\end.cmd`
 - verify_command: `npm.cmd run build`, `npm.cmd run check:syntax`, `curl.exe -s http://127.0.0.1:5175/api/health`
 - port_or_runtime: app `http://127.0.0.1:5174/`, api `http://127.0.0.1:5175`, db `127.0.0.1:54324`
 - deploy_method: Vercel + Git TBD
@@ -70,7 +78,7 @@
 - project_root: `D:\Workspace\archive_store`
 - key_docs:
   - `README.md`
-  - `.env.example`
+  - `config\.env.example`
   - `docs\transfer_guide.md`
   - `docs\firebase_setup.md`
   - `docs\requirements\개인용_아카이브_저장소_기능검토보고서.md`
@@ -78,6 +86,8 @@
   - `docs\requirements\디자인_작업_명세서_Stitch.md`
 - key_files:
   - `package.json`
+  - `config\vite.config.js`
+  - `config\.env.example`
   - `src\config\archivePolicy.js`
   - `src\core\fileValidation.js`
   - `src\App.jsx`
@@ -89,10 +99,11 @@
   - `local\schema.sql`
   - `scripts\start-local-db.ps1`
   - `scripts\stop-local-db.ps1`
-  - `start.cmd`
-  - `end.cmd`
-  - `firestore.rules`
-  - `storage.rules`
+  - `scripts\start.cmd`
+  - `scripts\end.cmd`
+  - `firebase\firebase.json`
+  - `firebase\firestore.rules`
+  - `firebase\storage.rules`
   - `integrations\stitch\stitch-manifest.json`
   - `integrations\stitch\scripts\download-stitch-assets.ps1`
 
@@ -106,14 +117,14 @@
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `archive_store/docs/transfer_guide.md`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`
-- 새 PC 재현 최소 절차: clone -> `npm install` -> `.env.local` 생성 -> `start.cmd`
+- 새 PC 재현 최소 절차: clone -> `npm install` -> `.env.local` 생성 -> `scripts\start.cmd`
 - 확인이 필요한 미결사항: Firebase Web App config 6개 값, Stitch hosted image/code URL, Vercel 배포 대상 설정
 
 ## Handoff
 - current_goal: `archive_store`를 다른 PC에서 재현 가능한 GitHub/project-control 기준 상태로 정리
-- done_latest: archive_store GitHub push 완료, 이관 가이드 추가 및 push 완료, project-control registry/state 최신화
+- done_latest: archive_store 루트 정리와 PostgreSQL 18 자동 감지/전환 스크립트 수정 후 `05928cf`로 GitHub push 완료.
 - key_findings: GitHub에는 코드/문서/설정 예시만 포함되며 실제 PIN, 사용자 입력 문서, 업로드 파일, 로컬 DB 데이터는 제외됨.
-- changed_files: `archive_store/README.md`, `archive_store/docs/transfer_guide.md`, `project_control/project_registry.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run build`, `npm.cmd run check:syntax`, `git status --short --branch`, GitHub push
-- next_action: 새 PC에서 `docs\transfer_guide.md` 기준으로 clone 및 로컬 실행 검증
+- changed_files: `archive_store/package.json`, `archive_store/config/*`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/transfer_guide.md`, `archive_store/docs/firebase_setup.md`, `archive_store/scripts/start.cmd`, `archive_store/scripts/end.cmd`, `project_control/project_registry.md`, `project_control/states/archive_store_current.md`
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, `C:\Program Files\PostgreSQL\18\bin\psql.exe --version` => PostgreSQL 18.4, `select version()` on `127.0.0.1:54324` => PostgreSQL 18.4, API health 응답 정상, GitHub push 완료.
+- next_action: Firebase config 입력 후 Firebase 실연동 검증 또는 Vercel 배포 설정.
 - risks_or_blockers: 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요
