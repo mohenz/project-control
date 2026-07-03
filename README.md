@@ -22,6 +22,7 @@
 ## 포함 문서
 - `project_governance_rules.md`
 - `project_registry.md`
+- `project_docs/PROJECT_ARCHITECTURE_MAP.md`
 - `project_switch_workflow.md`
 - `project_selection_prompt_list.md`
 - `skill_install_manual.md`
@@ -44,19 +45,27 @@
 
 ## 현재 등록 프로젝트
 - `defect_manage`
+- `defect_manage2`
 - `n8n_defect_automation`
-- `auth_pro`
 - `makeyourtoday`
 - `trinity_room`
+- `jina_writer`
 - `bloom`
 - `ui_code_helper`
 - `unit_test`
+- `project_control`
+- `archive_store`
+- `token_tracker`
+- `cinetube`
+- `jian_soul`
 - `project_04` placeholder
 
 ## 폴더 구조
 ```text
 project_control/
   README.md
+  project_docs/
+    PROJECT_ARCHITECTURE_MAP.md
   project_governance_rules.md
   project_registry.md
   project_switch_workflow.md
