@@ -3,54 +3,65 @@
 ## 기본 정보
 - project_key: `archive_store`
 - last_updated: `2026-07-03`
-- owner_request: `archive_store` 폴더의 파일을 확인하고 새로운 프로젝트로 등록
-- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP 구현 중. Firebase 연결 전 로컬 PostgreSQL + 로컬 API 선검증 경로를 추가했고, 업로드 smoke test와 주요 UI 개선을 반영함.
+- owner_request: `archive_store` 프로젝트를 다른 PC로 이관할 수 있도록 project-control 기준으로 정리
+- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, GitHub 원격 저장소 `mohenz/archive-store.git`의 `main` 브랜치에 푸시 완료됨. 새 PC 이관용 `docs\transfer_guide.md`를 추가했고, 민감 입력 파일은 Git 추적에서 제외함.
 
 ## 현재 목표
-- Firebase 기반 개인용 아카이브 저장소 MVP를 구현 가능한 상태로 만들고, 필요한 운영/인증/스토리지 정책을 확정한다.
+- 다른 PC에서 Git clone 후 로컬 PostgreSQL/API 기반 개발 환경을 재현할 수 있는 상태를 유지한다.
 
 ## 진행 중 작업
-- React/Vite 앱 스캐폴딩 완료
 - Firebase Web App config 입력 대기
-- 로컬 PostgreSQL/API 기반 기능 검증 가능 상태
-- Stitch 디자인/퍼블리싱 산출물 납품 일정 및 기술 표준 승인 대기
-- Stitch MCP 연동 구조 생성 완료, MCP 도구 인증 재확인 또는 hosted URL 수집 대기
+- Firebase Auth/Firestore/Storage 실연동 전 로컬 PostgreSQL/API 기준 검증 완료 상태 유지
+- Stitch MCP hosted image/code URL 수집은 인증 문제로 대기
+- Vercel 배포 설정은 미착수
 
 ## 최근 완료 작업
-- `archive_store` 폴더 파일 확인
-- 핵심 요구사항 문서 3개 확인
+- `archive_store` 폴더 파일 확인 및 프로젝트 등록
 - `project_control/project_registry.md`에 신규 프로젝트 항목 추가
-- `project_control/states/archive_store_current.md` 상태 파일 생성
-- `archive_store/integrations/stitch/`에 Stitch MCP 산출물 보관 구조와 `curl.exe -L` 다운로드 스크립트 생성
-- React/Vite/Firebase 앱 기본 구조 생성
+- `project_control/states/archive_store_current.md` 상태 파일 생성 및 갱신
+- React/Vite/Firebase-ready 앱 기본 구조 생성
 - Firebase Hosting, Firestore Rules, Storage Rules 초안 생성
-- `npm install`, `npm run build`, `npm run check:syntax` 완료
-- 로컬 개발 서버 `http://127.0.0.1:5174/` HTTP 200 확인
-- `required_user_inputs.md` 입력값 확인
-- 단일 사용자 PIN `0814`, 외부 사용자 불가 정책 반영
-- 단일 파일 200MB 제한, 사용자 총량 1GB, 실행파일 차단 정책 반영
-- Firebase Hosting 미사용, Vercel + Git 배포 방향 문서 반영
-- 프로젝트 전용 로컬 PostgreSQL 클러스터 생성: `127.0.0.1:54324/archive_store`
-- 로컬 API 생성 및 실행: `http://127.0.0.1:5175`
-- `archive_files` 테이블 생성 확인
-- `README.md` 업로드 smoke test 성공, DB row count `1` 확인
-- Windows 실행 스크립트 `start.cmd`, `end.cmd` 생성 및 검증 완료
-- UI 개선 반영: 좌우 2영역 레이아웃, 좌측 아카이브 현황/업로드, 우측 필터/검색/목록/페이지네이션
-- UI 개선 반영: 카테고리 버튼 동일 크기 및 아이콘 적용, 파일 목록 텍스트 배지를 아이콘으로 교체
-- UI 개선 반영: 업로드 영역 크기 확대 및 색상 강조
+- 로컬 PostgreSQL 클러스터 구성: `127.0.0.1:54324/archive_store`
+- 로컬 API 구성: `http://127.0.0.1:5175`
+- Windows 실행/종료 스크립트 생성: `start.cmd`, `end.cmd`
+- 업로드 smoke test 완료: `README.md` 업로드 및 DB row 확인
+- UI 개선 반영: 좌우 레이아웃, 좌측 아카이브 현황/업로드, 우측 필터/검색/목록/페이지네이션
+- UI 개선 반영: 업로드 영역 강조, 카테고리 버튼 동일 크기/아이콘 적용, 파일 목록 텍스트 배지 아이콘화
+- 민감정보 정리: PIN은 `VITE_ARCHIVE_PIN` 환경변수로 이동, `.env.local` 및 `docs\required_user_inputs.md`는 Git 제외
+- GitHub 원격 저장소 연결 및 푸시 완료: `https://github.com/mohenz/archive-store.git`
+- PC 이관 가이드 추가: `docs\transfer_guide.md`
+
+## Git / 원격 상태
+- repository: `https://github.com/mohenz/archive-store.git`
+- branch: `main`
+- latest_commits:
+  - `1ed1f86 Add PC transfer guide`
+  - `9bb551e Initial archive store app`
+- local_status: `main...origin/main`, 추적 대상 변경 없음
+- ignored_local_only:
+  - `.env.local`
+  - `docs\required_user_inputs.md`
+  - `local\postgres-data\`
+  - `local\uploads\`
+  - `local\*.log`
+  - `dev-server.log`
+  - `node_modules\`
+  - `dist\`
 
 ## 다음 작업
-- `.env.local`에 Firebase Web App config 입력
-- 실제 Firebase Auth 로그인 흐름 구현
-- Firestore/Storage Rules를 운영 정책에 맞춰 강화
-- 로컬 API 기준 텍스트/이미지/문서 미리보기 고도화
-- 로컬 API 파일 삭제/태그 수정 기능 추가
-- Stitch MCP 인증 상태 재확인 후 Design System 화면의 hosted image/code URL 수집
-- Stitch 산출물 코드 반영 범위 확정
-- Vercel 배포 설정 및 Git 저장소 초기화/연동
+- 새 PC에서 `git clone https://github.com/mohenz/archive-store.git`
+- `.env.example`을 복사해 `.env.local` 생성
+- `.env.local`에 `VITE_ARCHIVE_PIN`, `VITE_DATA_BACKEND=local-api`, `VITE_LOCAL_API_URL=http://127.0.0.1:5175` 설정
+- `npm install` 후 `start.cmd` 실행
+- PostgreSQL 설치 경로가 `C:\Program Files\PostgreSQL\18\bin`과 다르면 `scripts\start-local-db.ps1`, `scripts\stop-local-db.ps1` 수정
+- 실제 업로드 파일/DB 데이터까지 이관해야 하면 `local\uploads\`와 PostgreSQL 데이터는 별도 백업/복원
+- Firebase config 제공 시 Auth/Firestore/Storage 실연동 검증
+- 로컬 API 파일 삭제/태그 수정/미리보기 고도화
+- Vercel 배포 설정
 
 ## 실행 / 검증
-- run_command: `start.cmd` 또는 개별 실행 `npm.cmd run db:start`, `npm.cmd run dev:api`, `npm.cmd run dev`
+- run_command: `start.cmd`
+- stop_command: `end.cmd`
 - verify_command: `npm.cmd run build`, `npm.cmd run check:syntax`, `curl.exe -s http://127.0.0.1:5175/api/health`
 - port_or_runtime: app `http://127.0.0.1:5174/`, api `http://127.0.0.1:5175`, db `127.0.0.1:54324`
 - deploy_method: Vercel + Git TBD
@@ -58,11 +69,13 @@
 ## 핵심 경로
 - project_root: `D:\Workspace\archive_store`
 - key_docs:
+  - `README.md`
+  - `.env.example`
+  - `docs\transfer_guide.md`
+  - `docs\firebase_setup.md`
   - `docs\requirements\개인용_아카이브_저장소_기능검토보고서.md`
   - `docs\requirements\프로젝트_아키텍처_및_개발계획서.md`
   - `docs\requirements\디자인_작업_명세서_Stitch.md`
-  - `docs\firebase_setup.md`
-  - `docs\required_user_inputs.md`
 - key_files:
   - `package.json`
   - `src\config\archivePolicy.js`
@@ -80,29 +93,27 @@
   - `end.cmd`
   - `firestore.rules`
   - `storage.rules`
-  - `D:\Workspace\project_control\project_registry.md`
-  - `D:\Workspace\project_control\states\archive_store_current.md`
   - `integrations\stitch\stitch-manifest.json`
   - `integrations\stitch\scripts\download-stitch-assets.ps1`
 
 ## 리스크 / 주의사항
-- Firebase Storage Outbound 트래픽 증가 시 예기치 않은 과금이 발생할 수 있으므로 예산 알림과 캐싱 정책이 필요함
-- 모바일 브라우저에서는 클립보드 파일 접근이 제한될 수 있으므로 파일 선택기 폴백 UI가 필요함
-- Stitch 마크업 납품이 지연되면 프론트엔드 연동 일정이 순연될 수 있음
-- 사용자 문서에는 Stitch MCP 인증 완료로 기록되어 있으나, 현재 MCP 도구 호출은 여전히 `Auth required`로 차단되어 실제 이미지/코드 URL 다운로드는 불가함
-- 클라이언트 PIN은 편의용 잠금이며 강한 보안 인증이 아니므로 외부 공개 범위가 생기면 Firebase Auth 적용 필요
-- 업로드 파일이 개인 민감 자산일 수 있으므로 인증, 경로 격리, HTTPS, XSS 방어가 필수임
-- 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
+- `.env.local`과 `docs\required_user_inputs.md`는 Git에 포함하지 않는다.
+- 기존 PC의 실제 업로드 파일과 DB 데이터는 GitHub로 이관되지 않는다.
+- 로컬 PostgreSQL 스크립트는 PostgreSQL 18 Windows 기본 설치 경로를 전제로 한다.
+- 클라이언트 PIN은 편의용 잠금이며 강한 인증이 아니므로 외부 공개 범위가 생기면 Firebase Auth 적용이 필요하다.
+- Stitch MCP는 문서상 인증 완료로 기록되어 있으나 도구 호출은 `Auth required`로 차단되어 실제 이미지/코드 URL 다운로드가 아직 불가하다.
+- Firebase Storage Outbound 트래픽 증가 시 예기치 않은 과금이 발생할 수 있으므로 예산 알림과 캐싱 정책이 필요하다.
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `archive_store/docs/requirements/프로젝트_아키텍처_및_개발계획서.md`, `archive_store/docs/requirements/개인용_아카이브_저장소_기능검토보고서.md`, `archive_store/docs/requirements/디자인_작업_명세서_Stitch.md`
-- 확인이 필요한 미결사항: Firebase Web App config 6개 값, Stitch hosted image/code URL, Stitch 산출물 코드 반영 범위, Vercel 배포 대상 Git 저장소
+- 다음 시작 시 먼저 볼 것: `archive_store/docs/transfer_guide.md`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`
+- 새 PC 재현 최소 절차: clone -> `npm install` -> `.env.local` 생성 -> `start.cmd`
+- 확인이 필요한 미결사항: Firebase Web App config 6개 값, Stitch hosted image/code URL, Vercel 배포 대상 설정
 
 ## Handoff
-- current_goal: Firebase 기반 `archive_store` MVP 구현 착수
-- done_latest: React/Vite/Firebase-ready 스캐폴딩, 기본 UI 및 요청 UI 개선, 사용자 입력 정책 반영, 로컬 PostgreSQL/API 선검증 구조, Firebase 설정 문서, 보안 규칙 초안, Stitch MCP 로컬 연동 구조 생성
-- key_findings: Firebase config가 없으면 샘플 데이터 UI만 동작하며 실제 업로드/목록 기능은 `.env.local` 설정 후 가능함. Stitch MCP는 문서상 인증 완료이나 도구 호출은 `Auth required`.
-- changed_files: `archive_store/*`, `project_control/project_registry.md`, `project_control/states/archive_store_current.md`
-- verification: `npm install`, `npm run build`, `npm run check:syntax`, `npm run db:start`, `start.cmd`, `end.cmd`, `curl.exe -s http://127.0.0.1:5175/api/health`, `POST /api/files` smoke test
-- next_action: 로컬 API 기준 삭제/태그/미리보기 구현 후 사용자 제공 Firebase config 입력 시 Auth/Firestore/Storage 실연동 검증
-- risks_or_blockers: Firebase 설정값과 운영 정책, Stitch MCP 인증이 필요함
+- current_goal: `archive_store`를 다른 PC에서 재현 가능한 GitHub/project-control 기준 상태로 정리
+- done_latest: archive_store GitHub push 완료, 이관 가이드 추가 및 push 완료, project-control registry/state 최신화
+- key_findings: GitHub에는 코드/문서/설정 예시만 포함되며 실제 PIN, 사용자 입력 문서, 업로드 파일, 로컬 DB 데이터는 제외됨.
+- changed_files: `archive_store/README.md`, `archive_store/docs/transfer_guide.md`, `project_control/project_registry.md`, `project_control/states/archive_store_current.md`
+- verification: `npm.cmd run build`, `npm.cmd run check:syntax`, `git status --short --branch`, GitHub push
+- next_action: 새 PC에서 `docs\transfer_guide.md` 기준으로 clone 및 로컬 실행 검증
+- risks_or_blockers: 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요
