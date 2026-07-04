@@ -16,6 +16,7 @@
 - Vercel 배포 설정은 미착수
 
 ## 최근 완료 작업
+- 2026-07-04: Firebase Auth 전환 후 로그인 화면/프로세스를 정리. Firebase 백엔드 모드에서는 `계정 로그인` 화면을 표시하고, Firebase 로그인 오류를 한국어 메시지로 변환하며, 업로드 시 고정 `single-user`가 아니라 실제 로그인 사용자의 `auth.uid`를 전달하도록 수정.
 - 2026-07-04: Firebase 업로드 `Failed to fetch` 원인 분석 후 2번 방향으로 개선 진행. Firebase 백엔드 모드에서 PIN 대신 Email/Password Auth 로그인 화면을 사용하고, Firestore/Storage 경로를 로그인 사용자의 실제 `auth.uid` 기준으로 사용하도록 변경. 기존 Rules의 `request.auth.uid == userId` 정책과 코드 경로가 일치하도록 정리.
 - 2026-07-04: Archive Store에서 새로고침 시 PIN 인증 화면으로 돌아가는 원인을 확인하고 수정. 원인은 잠금 해제 상태가 React 메모리 상태(`useState`)로만 유지되어 refresh 시 초기화되는 구조였으며, 현재 탭의 새로고침 동안만 유지되도록 `sessionStorage` 기반 unlock marker를 추가.
 - `archive_store` 폴더 파일 확인 및 프로젝트 등록
@@ -136,6 +137,6 @@
 - done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료.
 - key_findings: GitHub에는 공개 가능한 project id와 설정 예시만 포함하고, 실제 PIN/Web App config/업로드 파일/로컬 DB 데이터는 제외해야 함.
 - changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정 및 Firebase Auth 로그인 전환 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과.
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정, Firebase Auth 로그인 전환, 로그인 화면/uid 업로드 경로 정리 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과.
 - next_action: Firebase Console에서 Email/Password 제공업체와 운영 계정을 만든 뒤 Vercel에 환경변수를 반영하고 실제 로그인/업로드 검증.
 - risks_or_blockers: Firebase Console에서 Email/Password 제공업체 활성화와 운영 계정 생성이 필요함. 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요.
