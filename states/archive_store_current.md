@@ -3,8 +3,8 @@
 ## 기본 정보
 - project_key: `archive_store`
 - last_updated: `2026-07-04`
-- owner_request: `archive_store` 프로젝트 루트 디렉토리 정리
-- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, 2026-07-04 기준 루트 정리 및 PostgreSQL 18.4 전환 변경을 GitHub 원격 저장소 `mohenz/archive-store.git`의 `main` 브랜치에 푸시 완료함.
+- owner_request: `archive_store` 프로젝트를 Firebase project `archive-store-fae71`에 연결할 준비
+- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, 2026-07-04 기준 Firebase Hosting/Firestore/Storage 연결 준비가 `archive-store-fae71` project id 기준으로 구성됨.
 
 ## 현재 목표
 - 다른 PC에서 Git clone 후 로컬 PostgreSQL/API 기반 개발 환경을 재현할 수 있는 상태를 유지한다.
@@ -37,6 +37,10 @@
 - PostgreSQL 18 업그레이드: `winget` 기준 `PostgreSQL.PostgreSQL.18` 버전 `18.4-1` 설치 확인. Windows 서비스 `postgresql-x64-18`은 `Running / Automatic`, 기존 `postgresql-x64-16`은 `Stopped / Automatic`.
 - archive_store DB 전환: 기존 16 데이터 폴더 `local\postgres-data`는 보존하고, 18용 `local\postgres-data-18`을 새로 초기화해 포트 `54324`에서 PostgreSQL 18.4 서버 실행 확인.
 - GitHub 배포 완료: `05928cf` (`chore: organize project root and postgres scripts`)를 `origin/main`에 push 완료.
+- Firebase 인프라 준비: `firebase-tools` dev dependency 추가, Firebase CLI scripts 추가, `firebase/firebase.json`에 Hosting/Firestore/Storage/emulator 설정 추가.
+- Firebase project id 반영: 로컬 `.firebaserc`와 `firebase\.firebaserc.example` 기본 프로젝트를 `archive-store-fae71`로 설정.
+- Firebase env 예시 추가: `config\.env.firebase.example`에 `VITE_FIREBASE_PROJECT_ID=archive-store-fae71`, `VITE_DATA_BACKEND=firebase` 기준 예시 추가.
+- Firebase 연결 문서 추가: `docs\firebase_infra_setup.md`에 로그인, 프로젝트 선택, emulator, deploy 명령 정리.
 
 ## Git / 원격 상태
 - repository: `https://github.com/mohenz/archive-store.git`
@@ -63,7 +67,7 @@
 - `npm install` 후 `scripts\start.cmd` 실행
 - PostgreSQL 설치 경로가 `C:\Program Files\PostgreSQL\18\bin`과 다르면 `scripts\start-local-db.ps1`, `scripts\stop-local-db.ps1` 수정
 - 실제 업로드 파일/DB 데이터까지 이관해야 하면 `local\uploads\`와 PostgreSQL 데이터는 별도 백업/복원
-- Firebase config 제공 시 Auth/Firestore/Storage 실연동 검증
+- Firebase Web App config 6개 값과 운영 PIN을 `.env.local`에 입력 후 Auth/Firestore/Storage 실연동 검증
 - 로컬 API 파일 삭제/태그 수정/미리보기 고도화
 - Vercel 배포 설정
 
@@ -72,15 +76,17 @@
 - stop_command: `scripts\end.cmd`
 - verify_command: `npm.cmd run build`, `npm.cmd run check:syntax`, `curl.exe -s http://127.0.0.1:5175/api/health`
 - port_or_runtime: app `http://127.0.0.1:5174/`, api `http://127.0.0.1:5175`, db `127.0.0.1:54324`
-- deploy_method: Vercel + Git TBD
+- deploy_method: Firebase Hosting/Firestore/Storage project `archive-store-fae71`
 
 ## 핵심 경로
 - project_root: `D:\Workspace\archive_store`
 - key_docs:
   - `README.md`
   - `config\.env.example`
+  - `config\.env.firebase.example`
   - `docs\transfer_guide.md`
   - `docs\firebase_setup.md`
+  - `docs\firebase_infra_setup.md`
   - `docs\requirements\개인용_아카이브_저장소_기능검토보고서.md`
   - `docs\requirements\프로젝트_아키텍처_및_개발계획서.md`
   - `docs\requirements\디자인_작업_명세서_Stitch.md`
@@ -88,6 +94,7 @@
   - `package.json`
   - `config\vite.config.js`
   - `config\.env.example`
+  - `config\.env.firebase.example`
   - `src\config\archivePolicy.js`
   - `src\core\fileValidation.js`
   - `src\App.jsx`
@@ -102,6 +109,7 @@
   - `scripts\start.cmd`
   - `scripts\end.cmd`
   - `firebase\firebase.json`
+  - `firebase\.firebaserc.example`
   - `firebase\firestore.rules`
   - `firebase\storage.rules`
   - `integrations\stitch\stitch-manifest.json`
@@ -109,6 +117,7 @@
 
 ## 리스크 / 주의사항
 - `.env.local`과 `docs\required_user_inputs.md`는 Git에 포함하지 않는다.
+- `.firebaserc`는 로컬 Firebase project 선택 파일이며 Git에는 포함하지 않는다. 현재 로컬 기본 프로젝트는 `archive-store-fae71`.
 - 기존 PC의 실제 업로드 파일과 DB 데이터는 GitHub로 이관되지 않는다.
 - 로컬 PostgreSQL 스크립트는 PostgreSQL 18 Windows 기본 설치 경로를 전제로 한다.
 - 클라이언트 PIN은 편의용 잠금이며 강한 인증이 아니므로 외부 공개 범위가 생기면 Firebase Auth 적용이 필요하다.
@@ -116,15 +125,15 @@
 - Firebase Storage Outbound 트래픽 증가 시 예기치 않은 과금이 발생할 수 있으므로 예산 알림과 캐싱 정책이 필요하다.
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `archive_store/docs/transfer_guide.md`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`
+- 다음 시작 시 먼저 볼 것: `archive_store/docs/firebase_infra_setup.md`, `archive_store/docs/firebase_setup.md`, `archive_store/README.md`
 - 새 PC 재현 최소 절차: clone -> `npm install` -> `.env.local` 생성 -> `scripts\start.cmd`
-- 확인이 필요한 미결사항: Firebase Web App config 6개 값, Stitch hosted image/code URL, Vercel 배포 대상 설정
+- 확인이 필요한 미결사항: Firebase Web App config 6개 값, 운영 PIN, Stitch hosted image/code URL
 
 ## Handoff
-- current_goal: `archive_store`를 다른 PC에서 재현 가능한 GitHub/project-control 기준 상태로 정리
-- done_latest: archive_store 루트 정리와 PostgreSQL 18 자동 감지/전환 스크립트 수정 후 `05928cf`로 GitHub push 완료.
-- key_findings: GitHub에는 코드/문서/설정 예시만 포함되며 실제 PIN, 사용자 입력 문서, 업로드 파일, 로컬 DB 데이터는 제외됨.
-- changed_files: `archive_store/package.json`, `archive_store/config/*`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/transfer_guide.md`, `archive_store/docs/firebase_setup.md`, `archive_store/scripts/start.cmd`, `archive_store/scripts/end.cmd`, `project_control/project_registry.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, `C:\Program Files\PostgreSQL\18\bin\psql.exe --version` => PostgreSQL 18.4, `select version()` on `127.0.0.1:54324` => PostgreSQL 18.4, API health 응답 정상, GitHub push 완료.
-- next_action: Firebase config 입력 후 Firebase 실연동 검증 또는 Vercel 배포 설정.
-- risks_or_blockers: 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요
+- current_goal: `archive_store`를 Firebase project `archive-store-fae71`에 연결 가능한 준비 상태로 전환
+- done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료.
+- key_findings: GitHub에는 공개 가능한 project id와 설정 예시만 포함하고, 실제 PIN/Web App config/업로드 파일/로컬 DB 데이터는 제외해야 함.
+- changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨.
+- next_action: Firebase Web App config 6개 값과 운영 PIN을 `.env.local`에 입력한 뒤 Firebase emulator 또는 실제 deploy 전 연결 검증.
+- risks_or_blockers: Firebase Console의 Web App config 값이 아직 없어 실연동/배포는 대기. 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요.
