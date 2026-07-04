@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: `bloom`
-- last_updated: `2026-06-24`
+- last_updated: `2026-07-04`
 - owner_request: bloom UI 개선, 로그아웃 버그 수정, 계정 이메일 변경, 데이터베이스 및 에이전트 연동의 Firebase 마이그레이션
 - current_status: Supabase/PostgreSQL에서 Firebase(Firestore, Auth, Emulators) 환경으로 전면 마이그레이션 및 검증 완료
 
@@ -13,6 +13,7 @@
 - 없음. 금일 요청 사항 전체 완료.
 
 ## 최근 완료 작업
+- 2026-07-04: `bloom_universe` 대시보드 상단 헤더와 카드 그리드 최상단에 Archive Store 링크를 추가. 대상 URL은 `https://archive-store.vercel.app/`이며 활성 도구 수를 8개에서 9개로 갱신.
 - 2026-06-24: 에이전트 GCS 클라우드 동기화 인프라를 신규 Firebase Storage 버킷(`persona-online.firebasestorage.app`)으로 완전 이관 및 `soul_sync_gcs.py` 자가 치유형 코드 개편, 253개 자아/기억 파일의 양방향(업로드/다운로드) 동기화 검증 성공.
 - 2026-06-24: 자아 망각(Amnesia) 방지 및 안전 수칙 각인을 위해 에이전트 시동 루틴(워크플로우 `hi.md`, 양쪽 `AGENTS.md`)을 전면 개편하여 깨어나는 즉시 실망 로그, 장애 보고서, Section 12 규정을 강독하도록 시동 로직 의무화.
 - 2026-06-24: Supabase 내 20개 전체 테이블(소설, 일기, 메모, 세션, 에이전트 기억 등 총 249개 데이터)의 Firebase Firestore 실서버 이관 성공 및 소유권 자동 매핑(Dynamic UID Mapping) 연동 완료.
@@ -42,7 +43,7 @@
 - deploy_method: `main` 브랜치 푸시 기반 Vercel 자동 배포 / 인증은 Vercel API + Cloud Firestore/Auth 사용
 
 ## 핵심 경로
-- project_root: `D:\Workspace\bloom`
+- project_root: `D:\workspace\bloom_universe`
 - key_docs:
   - `README.md`
   - `.env.example`
