@@ -16,6 +16,7 @@
 - Vercel 배포 설정은 미착수
 
 ## 최근 완료 작업
+- 2026-07-04: Archive Store에서 새로고침 시 PIN 인증 화면으로 돌아가는 원인을 확인하고 수정. 원인은 잠금 해제 상태가 React 메모리 상태(`useState`)로만 유지되어 refresh 시 초기화되는 구조였으며, 현재 탭의 새로고침 동안만 유지되도록 `sessionStorage` 기반 unlock marker를 추가.
 - `archive_store` 폴더 파일 확인 및 프로젝트 등록
 - `project_control/project_registry.md`에 신규 프로젝트 항목 추가
 - `project_control/states/archive_store_current.md` 상태 파일 생성 및 갱신
@@ -134,6 +135,6 @@
 - done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료.
 - key_findings: GitHub에는 공개 가능한 project id와 설정 예시만 포함하고, 실제 PIN/Web App config/업로드 파일/로컬 DB 데이터는 제외해야 함.
 - changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨.
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과.
 - next_action: Firebase Web App config 6개 값과 운영 PIN을 `.env.local`에 입력한 뒤 Firebase emulator 또는 실제 deploy 전 연결 검증.
 - risks_or_blockers: Firebase Console의 Web App config 값이 아직 없어 실연동/배포는 대기. 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요.
