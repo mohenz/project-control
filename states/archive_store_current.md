@@ -2,25 +2,33 @@
 
 ## 기본 정보
 - project_key: `archive_store`
-- last_updated: `2026-07-04`
-- owner_request: `archive_store` 프로젝트를 Firebase project `archive-store-fae71`에 연결할 준비
-- current_status: React/Vite 기반 개인용 아카이브 저장소 로컬 MVP가 구현되어 있고, 2026-07-04 기준 Firebase Hosting/Firestore/Storage 연결 준비가 `archive-store-fae71` project id 기준으로 구성됨.
+- last_updated: `2026-07-05`
+- owner_request: `archive_store` 프로젝트를 Firebase project `archive-store-fae71`에 연결할 준비 및 모바일 컴팩트 UI 개선
+- current_status: React/Vite 기반 개인용 자료실 웹 앱의 모바일 뷰포트 레이아웃 최적화가 완비되었으며, Vercel 실서버 자동 릴리즈 배포가 최종 성공적으로 수행 완료됨.
 
 ## 현재 목표
 - 다른 PC에서 Git clone 후 로컬 PostgreSQL/API 기반 개발 환경을 재현할 수 있는 상태를 유지한다.
 
 ## 진행 중 작업
-- Firebase Web App config 입력 대기
-- Firebase Auth/Firestore/Storage 실연동 전 로컬 PostgreSQL/API 기준 검증 완료 상태 유지
+- Firebase Authentication 실계정 생성 대기 및 로그인 연동 테스트
 - Stitch MCP hosted image/code URL 수집은 인증 문제로 대기
-- Vercel 배포 설정은 미착수
 
 ## 최근 완료 작업
+- 2026-07-05: 카테고리 필터 탭 영역의 텍스트 라벨들을 전부 제거하고 정사각의 HSL 액센트 컬러풀 아이콘 형태로 개편. 가로폭이 매우 좁은 모바일 규격 하에서도 1열 flex 정렬 흐름이 개행 없이 고정 배치되도록 CSS 오버라이드.
+- 2026-07-05: 아카이브 목록 제어 도구(모두선택 체크박스, 선택 개수 텍스트, 선택/전체삭제 버튼, 총 개수, 목록 드롭다운)를 단일 컨테이너인 `.list-tools`로 최종 통합하여 단 하나의 행(Single Row)에 정렬하고, 모바일 500px 뷰포트에서도 수평 정렬을 유지하도록 Spacing 최적화 완료.
+- 2026-07-05: 메인 툴바의 타이틀과 인증 폼의 eyebrow 텍스트 등에서 "Archive Store"와 "아카이브" 용어를 완전히 제거하고, 이를 대표 한글 텍스트인 `"자료실"`로 일괄 명칭 변경 완료.
+- 2026-07-05: Git 원격 저장소(`main` 브랜치) 푸시 및 Vercel 실서버 상용 릴리즈 배포(`npx vercel --prod`) 최종 정상 완료.
+- 2026-07-04: Archive Store 기능 단위 분리 최종 반영. `useArchiveAuth.js`는 Firebase/PIN 인증과 비밀번호 재설정, `useArchiveListControls.js`는 필터/검색/페이지네이션/선택 상태, `useArchiveMutations.js`는 업로드/삭제/드롭/붙여넣기 처리를 담당하도록 분리. `ArchiveView.jsx`는 데이터/화면 조립만 담당하도록 축소.
+- 2026-07-04: 로그인 화면과 작업 화면을 같은 `ArchiveView.jsx`에 두던 구조를 분리. `ArchiveAuthScreen.jsx`는 로그인/PIN/비밀번호 재설정 화면 전용, `ArchiveWorkspaceScreen.jsx`는 파일 작업 화면 전용, `ArchiveView.jsx`는 인증/데이터 상태 연결 컨테이너로 역할을 제한.
+- 2026-07-04: project-control 중앙 작업룰에 기능 단위 및 화면 단위 소스 분리 규칙을 추가. 다른 목적의 화면을 같은 파일에 섞지 않고, 화면 컴포넌트와 프로그램 로직 책임을 분리하도록 명문화.
+- 2026-07-04: Archive Store 파일 관리 UI에서 화면 물리적 분리 규칙을 반영. 필터/검색 영역, 선택/삭제 영역, 목록 표시 설정 영역, 파일 목록 영역을 각각 별도 `section`으로 분리하고 삭제 액션 영역에 상하 경계선을 적용해 조작 영역이 섞이지 않도록 수정.
+- 2026-07-04: 로컬 변경사항(선택삭제/전체삭제 기능 개선 및 API)을 GitHub 원격 저장소(`main` 브랜치)에 최종 커밋 및 푸시 완료.
+- 2026-07-04: 로컬 개발 환경 종속성 설치 및 빌드 검증을 완료하고, `scripts\start.cmd`를 기동해 로컬 DB(PostgreSQL 18.4), API(5175), Web App(5174) 프로세스 활성화 완료.
+- 2026-07-04: Archive Store 파일 목록에 체크박스 기반 선택삭제와 현재 목록 전체삭제 기능 추가. Firebase 모드에서는 Storage 객체 삭제가 성공했거나 객체가 이미 없는 경우에만 Firestore 문서를 삭제해 실제 스토리지와 화면 목록 정합성을 유지. 로컬 API 모드에서는 실제 업로드 파일 삭제 후 PostgreSQL row를 삭제하도록 구현. 삭제 전 확인창을 표시하며, 삭제 실패 시 권한 오류를 명확히 표시.
 - 2026-07-04: Firebase Auth 전환 후 로그인 화면/프로세스를 정리. Firebase 백엔드 모드에서는 `계정 로그인` 화면을 표시하고, Firebase 로그인 오류를 한국어 메시지로 변환하며, 업로드 시 고정 `single-user`가 아니라 실제 로그인 사용자의 `auth.uid`를 전달하도록 수정.
 - 2026-07-04: Firebase 업로드 `Failed to fetch` 원인 분석 후 2번 방향으로 개선 진행. Firebase 백엔드 모드에서 PIN 대신 Email/Password Auth 로그인 화면을 사용하고, Firestore/Storage 경로를 로그인 사용자의 실제 `auth.uid` 기준으로 사용하도록 변경. 기존 Rules의 `request.auth.uid == userId` 정책과 코드 경로가 일치하도록 정리.
 - 2026-07-04: Archive Store에서 새로고침 시 PIN 인증 화면으로 돌아가는 원인을 확인하고 수정. 원인은 잠금 해제 상태가 React 메모리 상태(`useState`)로만 유지되어 refresh 시 초기화되는 구조였으며, 현재 탭의 새로고침 동안만 유지되도록 `sessionStorage` 기반 unlock marker를 추가.
 - `archive_store` 폴더 파일 확인 및 프로젝트 등록
-- `project_control/project_registry.md`에 신규 프로젝트 항목 추가
 - `project_control/states/archive_store_current.md` 상태 파일 생성 및 갱신
 - React/Vite/Firebase-ready 앱 기본 구조 생성
 - Firebase Hosting, Firestore Rules, Storage Rules 초안 생성
@@ -71,7 +79,7 @@
 - PostgreSQL 설치 경로가 `C:\Program Files\PostgreSQL\18\bin`과 다르면 `scripts\start-local-db.ps1`, `scripts\stop-local-db.ps1` 수정
 - 실제 업로드 파일/DB 데이터까지 이관해야 하면 `local\uploads\`와 PostgreSQL 데이터는 별도 백업/복원
 - Firebase Web App config 6개 값 입력, Email/Password Auth 운영 계정 생성 후 Auth/Firestore/Storage 실연동 검증
-- 로컬 API 파일 삭제/태그 수정/미리보기 고도화
+- 로컬 API 태그 수정/미리보기 고도화
 - Vercel 배포 설정
 
 ## 실행 / 검증
@@ -102,9 +110,15 @@
   - `src\core\fileValidation.js`
   - `src\App.jsx`
   - `src\views\ArchiveView.jsx`
+  - `src\views\ArchiveAuthScreen.jsx`
+  - `src\views\ArchiveWorkspaceScreen.jsx`
   - `src\features\archive\archiveService.js`
   - `src\features\archive\localArchiveApi.js`
   - `src\firebase\client.js`
+  - `src\features\archive\useArchiveAuth.js`
+  - `src\features\archive\useArchiveFiles.js`
+  - `src\features\archive\useArchiveListControls.js`
+  - `src\features\archive\useArchiveMutations.js`
   - `server\local-api.js`
   - `local\schema.sql`
   - `scripts\start-local-db.ps1`
@@ -137,6 +151,6 @@
 - done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료.
 - key_findings: GitHub에는 공개 가능한 project id와 설정 예시만 포함하고, 실제 PIN/Web App config/업로드 파일/로컬 DB 데이터는 제외해야 함.
 - changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정, Firebase Auth 로그인 전환, 로그인 화면/uid 업로드 경로 정리 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과.
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정, Firebase Auth 로그인 전환, 로그인 화면/uid 업로드 경로 정리 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 2026-07-04 파일 선택삭제/전체삭제를 Storage/Firestore 정합성 기준으로 수정하고 삭제 UI 물리적 분리, 로그인/작업 화면 소스 분리, 인증/목록/업로드·삭제 기능 훅 분리 반영 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 로컬 앱 `http://127.0.0.1:5174/` HTTP 200 확인.
 - next_action: Firebase Console에서 Email/Password 제공업체와 운영 계정을 만든 뒤 Vercel에 환경변수를 반영하고 실제 로그인/업로드 검증.
 - risks_or_blockers: Firebase Console에서 Email/Password 제공업체 활성화와 운영 계정 생성이 필요함. 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요.
