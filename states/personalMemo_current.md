@@ -4,7 +4,7 @@
 - project_key: `personalMemo`
 - last_updated: `2026-07-06`
 - owner_request: `personalMemo` 개발 주도권을 Google AI Studio에서 Codex 로컬 개발/운영 기준으로 이관
-- current_status: `D:\Workspace\personalMemo`에 클론 완료. README와 `docs\codex_handover.md`를 로컬 개발 주도 기준으로 정리했고, `npm install`, `npm run build`, `npm run lint` 검증 완료.
+- current_status: `D:\Workspace\personalMemo`에 클론 완료. README와 `docs\codex_handover.md`를 로컬 개발 주도 기준으로 정리했고, `npm install`, `npm run build`, `npm run lint` 검증 완료. 로컬 커밋 `622f2b5`는 생성됐으나 원격 `origin`이 `Repository not found`를 반환해 personalMemo 푸시는 보류.
 
 ## 현재 목표
 - Google AI Studio에서 생성된 개인 메모 앱을 Codex가 로컬 workspace 기준으로 개발, 검증, 상태 관리한다.
@@ -32,9 +32,12 @@
 - `npm install` 완료, `package-lock.json` 생성
 - `npm run build` 성공
 - `npm run lint` 성공
+- 로컬 커밋 생성: `622f2b5 Document Codex development handover`
+- 원격 푸시/조회 실패: `Repository not found`
 
 ## 다음 작업
 - `.env.local` 생성 후 `GEMINI_API_KEY` 설정
+- personalMemo 원격 저장소 URL/권한 확인 후 `git push origin main`
 - `npm.cmd run dev`로 로컬 실행 확인
 - 앱 기능/저장 방식/배포 방식 확인
 - `package.json`의 `name` 정리 여부 결정
@@ -73,6 +76,7 @@
 - `clean` 스크립트가 Unix 명령 `rm -rf`를 사용하므로 Windows PowerShell 환경에서는 동작하지 않을 수 있다.
 - Gemini API 키가 없으면 AI 기능 검증 불가.
 - 현재 저장소명은 `https-github.com-mohenz-personalMemo` 형태이므로 추후 GitHub repo rename 여부 검토 필요.
+- 현재 원격 `https://github.com/mohenz/https-github.com-mohenz-personalMemo.git`가 `Repository not found`를 반환하므로 저장소 존재 여부 또는 GitHub 권한 확인 필요.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `personalMemo/docs/codex_handover.md`, `personalMemo/README.md`, `personalMemo/package.json`, `personalMemo/src/App.tsx`
@@ -80,9 +84,9 @@
 
 ## Handoff
 - current_goal: `personalMemo` 개발 주도권을 AI Studio에서 Codex 로컬 개발 기준으로 이관
-- done_latest: 저장소 클론, 폴더명 변경, 구조 확인, registry/state 등록, README 로컬 개발 기준 갱신, Codex 이관 문서 생성, 의존성 설치, 빌드/타입 검증
+- done_latest: 저장소 클론, 폴더명 변경, 구조 확인, registry/state 등록, README 로컬 개발 기준 갱신, Codex 이관 문서 생성, 의존성 설치, 빌드/타입 검증, 로컬 커밋 생성
 - key_findings: 앱은 현재 `localStorage` 기반 개인 메모 앱이며, Gemini API 키 설정 구조는 있으나 실제 AI 기능 검증은 API 키 제공 후 가능함.
 - changed_files: `personalMemo/README.md`, `personalMemo/docs/codex_handover.md`, `personalMemo/package-lock.json`, `project_control/states/personalMemo_current.md`
-- verification: `git status --short --branch`, `git remote -v`, `git log --oneline -3`, `package.json`/README/metadata 확인, `npm install`, `npm run build`, `npm run lint`
-- next_action: `.env.local`에 `GEMINI_API_KEY` 설정 후 `npm run dev` 로컬 실행 검증
-- risks_or_blockers: API 키 미설정 상태에서는 Gemini 기능 검증 불가
+- verification: `git status --short --branch`, `git remote -v`, `git log --oneline -3`, `package.json`/README/metadata 확인, `npm install`, `npm run build`, `npm run lint`, `git ls-remote origin refs/heads/main`
+- next_action: personalMemo 원격 URL/권한 확인 후 로컬 커밋 `622f2b5` 푸시
+- risks_or_blockers: API 키 미설정 상태에서는 Gemini 기능 검증 불가. personalMemo 원격 저장소가 현재 `Repository not found`를 반환함.
