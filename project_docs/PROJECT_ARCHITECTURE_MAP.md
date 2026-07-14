@@ -25,6 +25,7 @@
 | `unit_test` | 중앙 단위테스트 거버넌스/리포트 저장소 + Codex skill | runtime 없음 | 문서/스킬 저장소 | GitHub repo sync | `states/unit_test_current.md` |
 | `project_control` | 워크스페이스 중앙 프로젝트 레지스트리, 상태 파일, 전환 워크플로우 | runtime 없음 | `project_registry.md`, `states/*.md`, skill package | GitHub repository sync | `states/project_control_current.md` |
 | `archive_store` | React/Vite 개인용 아카이브 웹앱 + local API + Firebase-ready 구조 | app `5174`, API `5175`, DB `54324`, Firebase emulators `5176/9099/8080/9199/4001` | Local PostgreSQL 18.4, local uploads, Firebase project `archive-store-fae71` 준비 | GitHub `mohenz/archive-store`, Firebase Hosting/Firestore/Storage 준비 완료, Web App config 입력 대기 | `states/archive_store_current.md` |
+| `personal_memo` | React/Vite 개인 메모 PWA + Tailwind CSS 화면 구조 | Vite dev server `localhost:3000` | localStorage 기반 메모/폴더/설정 저장 | GitHub `mohenz/personalMemo`, 배포 방식 TBD | `states/personal_memo_current.md` |
 | `token_tracker` | Zero-dependency Python local server + HTML/JS dashboard | Python server, port `5000` | local JSON/DB tracker 구조 | local Python server | `states/token_tracker_current.md` |
 | `cinetube` | Static movie hub + local API + Local PostgreSQL | static `8080`, API `3001`, DB `54322` | Local PostgreSQL/API, 기존 Supabase 구조 참조 | Vercel from GitHub `origin/main` | `states/cinetube_current.md` |
 | `bloom` | Static prompt generator + Vercel API + Firebase 전환 구조 | Vercel dev `3000`, Firebase emulators Auth `9099`, Firestore `8080`, UI `4000` | Firebase Auth/Firestore/Emulators, Vercel API | `main` push 기반 Vercel 자동 배포 | `states/bloom_current.md` |

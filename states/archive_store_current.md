@@ -1,12 +1,17 @@
-# archive_store Current State
+# archive_store (자료실 관리 서비스)
 
-## 기본 정보
-- project_key: `archive_store`
-- last_updated: `2026-07-05`
-- owner_request: `archive_store` 프로젝트를 Firebase project `archive-store-fae71`에 연결할 준비 및 모바일 컴팩트 UI 개선
-- current_status: React/Vite 기반 개인용 자료실 웹 앱의 모바일 뷰포트 레이아웃 최적화가 완비되었으며, Vercel 실서버 자동 릴리즈 배포가 최종 성공적으로 수행 완료됨.
+## 개요
+- Firebase Auth/Firestore/Storage 기반의 개인용 자료실 웹 서비스
+- 로컬 개발 환경용 PostgreSQL 및 Express API 병행 지원
 
-## 현재 목표
+## 마일스톤 및 상태
+- status: `GREEN` (정상 작동 중, 핵심 기능 구현 완료 및 Vercel 배포 완료)
+- goal: 로컬 개발 환경 보존 상태에서 Firebase 인증 및 실서버 배포 완결
+- details:
+  - 1단계: PostgreSQL/로컬 API 및 파일 삭제 정합성 강화 (완료)
+  - 2단계: 모바일 Spacing 최적화, 목록 도구 통합 및 브랜딩 명칭("자료실") 통일 (완료)
+  - 3단계: 리스트/카드 보기 모드 토글 기능 및 CSS 레이아웃 최적화 (완료)
+  - 4단계: 밝게/어둡게 보기(테마 토글 기능, 다크 네이비 테마) 구현 및 Vercel 상용 배포 완결 (완료)
 - 다른 PC에서 Git clone 후 로컬 PostgreSQL/API 기반 개발 환경을 재현할 수 있는 상태를 유지한다.
 
 ## 진행 중 작업
@@ -14,10 +19,14 @@
 - Stitch MCP hosted image/code URL 수집은 인증 문제로 대기
 
 ## 최근 완료 작업
+- 2026-07-05: 다크모드 리스트 뷰에서 파일 목록 로우(.file-row)의 배경색 미지정으로 인해 파일명 텍스트(흰색 계열)와 배경이 겹쳐 파일명이 보이지 않던 버그 수정 및 재배포 완료.
+- 2026-07-05: 어둡게/밝게 보기(테마 토글 기능)를 다크 네이비(Dark Navy) 전용 오버라이드 스타일과 함께 추가 구현하고, Git 원격 푸시 및 Vercel 실서버 상용 릴리즈 배포(`npx vercel --prod`) 최종 완료.
+- 2026-07-05: 이미지/파일 미리보기 모달창(.modal-backdrop)에 z-index(1000)를 추가하여, 바탕 화면에 있는 파일 목록 선택 체크박스들이 모달 레이어 위로 노출되는 겹침 현상 해결.
+- 2026-07-05: 카드형 보기 모드에서 이미지 썸네일이 노출되지 않던 현상 수정. 데이터 필드 구조상 `publicUrl` 대신 `downloadUrl`을 참조하도록 경로 정정.
+- 2026-07-05: 파일 목록의 보기 방식을 리스트형과 카드형(그리드)으로 전환할 수 있는 카드 뷰 토글(Card View Mode) UI 및 CSS 스타일 최적화 구현 완료.
 - 2026-07-05: 카테고리 필터 탭 영역의 텍스트 라벨들을 전부 제거하고 정사각의 HSL 액센트 컬러풀 아이콘 형태로 개편. 가로폭이 매우 좁은 모바일 규격 하에서도 1열 flex 정렬 흐름이 개행 없이 고정 배치되도록 CSS 오버라이드.
 - 2026-07-05: 아카이브 목록 제어 도구(모두선택 체크박스, 선택 개수 텍스트, 선택/전체삭제 버튼, 총 개수, 목록 드롭다운)를 단일 컨테이너인 `.list-tools`로 최종 통합하여 단 하나의 행(Single Row)에 정렬하고, 모바일 500px 뷰포트에서도 수평 정렬을 유지하도록 Spacing 최적화 완료.
-- 2026-07-05: 메인 툴바의 타이틀과 인증 폼의 eyebrow 텍스트 등에서 "Archive Store"와 "아카이브" 용어를 완전히 제거하고, 이를 대표 한글 텍스트인 `"자료실"`로 일괄 명칭 변경 완료.
-- 2026-07-05: Git 원격 저장소(`main` 브랜치) 푸시 및 Vercel 실서버 상용 릴리즈 배포(`npx vercel --prod`) 최종 정상 완료.
+- 2026-07-05: 메인 툴바의 타이틀 and 인증 폼의 eyebrow 텍스트 등에서 "Archive Store"와 "아카이브" 용어를 완전히 제거하고, 이를 대표 한글 텍스트인 `"자료실"`로 일괄 명칭 변경 완료.
 - 2026-07-04: Archive Store 기능 단위 분리 최종 반영. `useArchiveAuth.js`는 Firebase/PIN 인증과 비밀번호 재설정, `useArchiveListControls.js`는 필터/검색/페이지네이션/선택 상태, `useArchiveMutations.js`는 업로드/삭제/드롭/붙여넣기 처리를 담당하도록 분리. `ArchiveView.jsx`는 데이터/화면 조립만 담당하도록 축소.
 - 2026-07-04: 로그인 화면과 작업 화면을 같은 `ArchiveView.jsx`에 두던 구조를 분리. `ArchiveAuthScreen.jsx`는 로그인/PIN/비밀번호 재설정 화면 전용, `ArchiveWorkspaceScreen.jsx`는 파일 작업 화면 전용, `ArchiveView.jsx`는 인증/데이터 상태 연결 컨테이너로 역할을 제한.
 - 2026-07-04: project-control 중앙 작업룰에 기능 단위 및 화면 단위 소스 분리 규칙을 추가. 다른 목적의 화면을 같은 파일에 섞지 않고, 화면 컴포넌트와 프로그램 로직 책임을 분리하도록 명문화.
@@ -25,30 +34,9 @@
 - 2026-07-04: 로컬 변경사항(선택삭제/전체삭제 기능 개선 및 API)을 GitHub 원격 저장소(`main` 브랜치)에 최종 커밋 및 푸시 완료.
 - 2026-07-04: 로컬 개발 환경 종속성 설치 및 빌드 검증을 완료하고, `scripts\start.cmd`를 기동해 로컬 DB(PostgreSQL 18.4), API(5175), Web App(5174) 프로세스 활성화 완료.
 - 2026-07-04: Archive Store 파일 목록에 체크박스 기반 선택삭제와 현재 목록 전체삭제 기능 추가. Firebase 모드에서는 Storage 객체 삭제가 성공했거나 객체가 이미 없는 경우에만 Firestore 문서를 삭제해 실제 스토리지와 화면 목록 정합성을 유지. 로컬 API 모드에서는 실제 업로드 파일 삭제 후 PostgreSQL row를 삭제하도록 구현. 삭제 전 확인창을 표시하며, 삭제 실패 시 권한 오류를 명확히 표시.
-- 2026-07-04: Firebase Auth 전환 후 로그인 화면/프로세스를 정리. Firebase 백엔드 모드에서는 `계정 로그인` 화면을 표시하고, Firebase 로그인 오류를 한국어 메시지로 변환하며, 업로드 시 고정 `single-user`가 아니라 실제 로그인 사용자의 `auth.uid`를 전달하도록 수정.
-- 2026-07-04: Firebase 업로드 `Failed to fetch` 원인 분석 후 2번 방향으로 개선 진행. Firebase 백엔드 모드에서 PIN 대신 Email/Password Auth 로그인 화면을 사용하고, Firestore/Storage 경로를 로그인 사용자의 실제 `auth.uid` 기준으로 사용하도록 변경. 기존 Rules의 `request.auth.uid == userId` 정책과 코드 경로가 일치하도록 정리.
-- 2026-07-04: Archive Store에서 새로고침 시 PIN 인증 화면으로 돌아가는 원인을 확인하고 수정. 원인은 잠금 해제 상태가 React 메모리 상태(`useState`)로만 유지되어 refresh 시 초기화되는 구조였으며, 현재 탭의 새로고침 동안만 유지되도록 `sessionStorage` 기반 unlock marker를 추가.
-- `archive_store` 폴더 파일 확인 및 프로젝트 등록
-- `project_control/states/archive_store_current.md` 상태 파일 생성 및 갱신
-- React/Vite/Firebase-ready 앱 기본 구조 생성
-- Firebase Hosting, Firestore Rules, Storage Rules 초안 생성
-- 로컬 PostgreSQL 클러스터 구성: `127.0.0.1:54324/archive_store`
-- 로컬 API 구성: `http://127.0.0.1:5175`
-- Windows 실행/종료 스크립트 생성: `scripts\start.cmd`, `scripts\end.cmd`
-- 업로드 smoke test 완료: `README.md` 업로드 및 DB row 확인
-- UI 개선 반영: 좌우 레이아웃, 좌측 아카이브 현황/업로드, 우측 필터/검색/목록/페이지네이션
-- UI 개선 반영: 업로드 영역 강조, 카테고리 버튼 동일 크기/아이콘 적용, 파일 목록 텍스트 배지 아이콘화
-- 민감정보 정리: PIN은 `VITE_ARCHIVE_PIN` 환경변수로 이동, `.env.local` 및 `docs\required_user_inputs.md`는 Git 제외
-- GitHub 원격 저장소 연결 및 푸시 완료: `https://github.com/mohenz/archive-store.git`
-- PC 이관 가이드 추가: `docs\transfer_guide.md`
-- 루트 정리: `start.cmd`, `end.cmd`를 `scripts\`로 이동하고, `firestore.rules`, `storage.rules`를 `firebase\`로 이동
-- 루트 정리: `.env.example`, `vite.config.js`를 `config\`로 이동하고, `firebase.json`을 `firebase\`로 이동. `package.json`, `package-lock.json`, `index.html`은 npm/Vite 표준 루트 파일이라 유지.
-- PostgreSQL 실행 스크립트 개선: 설치된 최신 PostgreSQL bin 자동 감지로 변경. 현재 PC에서는 PostgreSQL 18.4를 선택해 로컬 DB 실행 확인.
-- 로컬 실행 확인: `scripts\start.cmd`로 DB/API/Vite 시작, API health `{"ok":true,...}` 응답 및 앱 `http://127.0.0.1:5174/` HTTP 200 확인.
-- PostgreSQL 18 업그레이드: `winget` 기준 `PostgreSQL.PostgreSQL.18` 버전 `18.4-1` 설치 확인. Windows 서비스 `postgresql-x64-18`은 `Running / Automatic`, 기존 `postgresql-x64-16`은 `Stopped / Automatic`.
-- archive_store DB 전환: 기존 16 데이터 폴더 `local\postgres-data`는 보존하고, 18용 `local\postgres-data-18`을 새로 초기화해 포트 `54324`에서 PostgreSQL 18.4 서버 실행 확인.
-- GitHub 배포 완료: `05928cf` (`chore: organize project root and postgres scripts`)를 `origin/main`에 push 완료.
-- Firebase 인프라 준비: `firebase-tools` dev dependency 추가, Firebase CLI scripts 추가, `firebase/firebase.json`에 Hosting/Firestore/Storage/emulator 설정 추가.
+
+## 주요 마일스톤 요약
+- Firebase 연동 준비: Firebase CLI 도구 설정, `.firebaserc` 활성화, deploy 환경 준비 완료.
 - Firebase project id 반영: 로컬 `.firebaserc`와 `firebase\.firebaserc.example` 기본 프로젝트를 `archive-store-fae71`로 설정.
 - Firebase env 예시 추가: `config\.env.firebase.example`에 `VITE_FIREBASE_PROJECT_ID=archive-store-fae71`, `VITE_DATA_BACKEND=firebase` 기준 예시 추가.
 - Firebase 연결 문서 추가: `docs\firebase_infra_setup.md`에 로그인, 프로젝트 선택, emulator, deploy 명령 정리.
@@ -57,9 +45,13 @@
 - repository: `https://github.com/mohenz/archive-store.git`
 - branch: `main`
 - latest_commits:
-  - `05928cf chore: organize project root and postgres scripts`
-  - `1ed1f86 Add PC transfer guide`
-  - `9bb551e Initial archive store app`
+  - `9dc84d3 fix: resolve invisible file names in dark mode list view`
+  - `af908de feat: add light/dark theme toggle and darknavy mode overrides`
+  - `d933bcc fix: add z-index to modal backdrop to prevent background checkbox overlap`
+  - `eb6559b fix: correct image thumbnail preview url to downloadUrl`
+  - `d80caff feat: add card view mode toggle UI and styles`
+  - `f1f6161 fix: resolve refresh auth flickering by isolating loading screen state`
+  - `ed8e3bb style: rename archive terminology to data-room and remove remaining Archive Store labels`
 - local_status: `main...origin/main`, 추적 대상 변경 없음
 - ignored_local_only:
   - `.env.local`
@@ -107,39 +99,10 @@
   - `config\.env.example`
   - `config\.env.firebase.example`
   - `src\config\archivePolicy.js`
-  - `src\core\fileValidation.js`
-  - `src\App.jsx`
+  - `src\styles.css`
+  - `src\views\ArchiveWorkspaceScreen.jsx`
   - `src\views\ArchiveView.jsx`
   - `src\views\ArchiveAuthScreen.jsx`
-  - `src\views\ArchiveWorkspaceScreen.jsx`
-  - `src\features\archive\archiveService.js`
-  - `src\features\archive\localArchiveApi.js`
-  - `src\firebase\client.js`
-  - `src\features\archive\useArchiveAuth.js`
-  - `src\features\archive\useArchiveFiles.js`
-  - `src\features\archive\useArchiveListControls.js`
-  - `src\features\archive\useArchiveMutations.js`
-  - `server\local-api.js`
-  - `local\schema.sql`
-  - `scripts\start-local-db.ps1`
-  - `scripts\stop-local-db.ps1`
-  - `scripts\start.cmd`
-  - `scripts\end.cmd`
-  - `firebase\firebase.json`
-  - `firebase\.firebaserc.example`
-  - `firebase\firestore.rules`
-  - `firebase\storage.rules`
-  - `integrations\stitch\stitch-manifest.json`
-  - `integrations\stitch\scripts\download-stitch-assets.ps1`
-
-## 리스크 / 주의사항
-- `.env.local`과 `docs\required_user_inputs.md`는 Git에 포함하지 않는다.
-- `.firebaserc`는 로컬 Firebase project 선택 파일이며 Git에는 포함하지 않는다. 현재 로컬 기본 프로젝트는 `archive-store-fae71`.
-- 기존 PC의 실제 업로드 파일과 DB 데이터는 GitHub로 이관되지 않는다.
-- 로컬 PostgreSQL 스크립트는 PostgreSQL 18 Windows 기본 설치 경로를 전제로 한다.
-- 클라이언트 PIN은 편의용 잠금이며 강한 인증이 아니므로 외부 공개 범위가 생기면 Firebase Auth 적용이 필요하다.
-- Stitch MCP는 문서상 인증 완료로 기록되어 있으나 도구 호출은 `Auth required`로 차단되어 실제 이미지/코드 URL 다운로드가 아직 불가하다.
-- Firebase Storage Outbound 트래픽 증가 시 예기치 않은 과금이 발생할 수 있으므로 예산 알림과 캐싱 정책이 필요하다.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: `archive_store/docs/firebase_infra_setup.md`, `archive_store/docs/firebase_setup.md`, `archive_store/README.md`
@@ -148,9 +111,9 @@
 
 ## Handoff
 - current_goal: `archive_store`를 Firebase project `archive-store-fae71`에 연결 가능한 준비 상태로 전환
-- done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료.
+- done_latest: Firebase CLI/dev dependency, Firebase scripts, emulator/deploy 설정, `.firebaserc` 로컬 선택 파일, `.env.firebase.example`, `docs/firebase_infra_setup.md` 준비 완료. 추가적으로 리스트/카드 뷰 모드 토글(Card View Mode) UI, CSS 스타일 최적화, 이미지 썸네일 노출, 모달창 z-index 겹침 버그 패치 및 어둡게/밝게 보기(테마 토글 기능, 다크 네이비 테마) 구현, 다크모드 리스트 뷰 텍스트 겹침 버그 수정 및 배포 완료.
 - key_findings: GitHub에는 공개 가능한 project id와 설정 예시만 포함하고, 실제 PIN/Web App config/업로드 파일/로컬 DB 데이터는 제외해야 함.
-- changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`
-- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정, Firebase Auth 로그인 전환, 로그인 화면/uid 업로드 경로 정리 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 2026-07-04 파일 선택삭제/전체삭제를 Storage/Firestore 정합성 기준으로 수정하고 삭제 UI 물리적 분리, 로그인/작업 화면 소스 분리, 인증/목록/업로드·삭제 기능 훅 분리 반영 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 로컬 앱 `http://127.0.0.1:5174/` HTTP 200 확인.
+- changed_files: `archive_store/package.json`, `archive_store/package-lock.json`, `archive_store/.gitignore`, `archive_store/config/.env.firebase.example`, `archive_store/firebase/*`, `archive_store/README.md`, `archive_store/docs/firebase_setup.md`, `archive_store/docs/firebase_infra_setup.md`, `project_control/project_registry.md`, `project_control/project_docs/PROJECT_ARCHITECTURE_MAP.md`, `project_control/states/archive_store_current.md`, `archive_store/src/styles.css`, `archive_store/src/views/ArchiveWorkspaceScreen.jsx`, `archive_store/src/views/ArchiveView.jsx`, `archive_store/src/views/ArchiveAuthScreen.jsx`
+- verification: `npm.cmd run check:syntax` 통과, `npm.cmd run build` 통과, Firebase CLI `15.22.4` 출력 확인. CLI update-check 저장소 권한으로 종료 코드는 1이지만 버전 출력은 확인됨. 2026-07-04 refresh 잠금 유지 수정, Firebase Auth 로그인 전환, 로그인 화면/uid 업로드 경로 정리 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 2026-07-04 파일 선택삭제/전체삭제를 Storage/Firestore 정합성 기준으로 수정하고 삭제 UI 물리적 분리, 로그인/작업 화면 소스 분리, 인증/목록/업로드·삭제 기능 훅 분리 반영 후 `npm.cmd run check:syntax`, `npm.cmd run build` 재통과. 2026-07-05 테마 토글 및 다크 네이비 테마 로컬 검증 완료 후 Git 푸시 및 Vercel 실서버 상용 배포(`npx vercel --prod`) 통과. 다크모드 리스트 뷰의 파일명 텍스트 시인성 개선 후 재배포 완료. 상용 도메인 `https://archive-store-pi.vercel.app/` 정상 운영 확인.
 - next_action: Firebase Console에서 Email/Password 제공업체와 운영 계정을 만든 뒤 Vercel에 환경변수를 반영하고 실제 로그인/업로드 검증.
 - risks_or_blockers: Firebase Console에서 Email/Password 제공업체 활성화와 운영 계정 생성이 필요함. 실제 업로드 파일/DB 데이터 이관 필요 여부는 별도 결정 필요.
