@@ -4,7 +4,7 @@
 - project_key: personal_memo
 - last_updated: 2026-07-20
 - owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: `archive_store`를 기본 운영 기준으로 삼아 `personalMemo` 통합 앱을 Firebase-only 구조로 전환하고 `archive-store-fae71` Firebase Hosting에 재배포 완료
+- current_status: 캘린더 월 이동 선택일 유지 수정본 커밋·푸시 및 Firebase Hosting 배포 완료
 
 ## 현재 목표
 - 개인 메모 PWA를 Galaxy Tab 중심의 Digital Stationery 디자인 방향에 맞게 정리한다.
@@ -16,6 +16,21 @@
 ## 최근 완료 작업
 - 2026-07-15 원격 `origin/main` 변경사항을 로컬 `main`에 fast-forward 동기화 (`4bd47b9` → `e463ebe`, 충돌 없음)
 - 동기화로 캘린더 시스템 날짜 사용 및 월간 이동 시 선택 날짜 유지 수정, Firebase/자료실 통합 변경사항 반영
+- 캘린더 선택일 유지 수정 커밋 `e463ebe`를 `origin/main`에 푸시하고 원격 HEAD 일치 확인
+- Firebase Hosting 운영 버전 `eba1955b41d7bd2e` 배포 및 새 자산 `index-12Ne3OHS.js` HTTP 200 확인
+- 월 이동 시 `setSelectedDay(1)` 강제 선택 제거
+- 대상 월에 같은 선택일을 유지하고, 해당 날짜가 없을 때만 월 마지막 날로 보정
+- Vitest 8건, TypeScript 검사, 프로덕션 빌드, `git diff --check` 통과
+- Firebase Hosting `archive-store-fae71` 운영 버전 `af2e2b88236fc85c` 배포 완료
+- 공개 HTML이 새 자산 `index-B_m4bKQV.js`를 참조하고 해당 자산 HTTP 200 응답 확인
+- 캘린더 `오늘` 기준을 고정 날짜에서 시스템 현재 날짜로 수정
+- Vitest 5건, TypeScript 검사, 프로덕션 빌드 통과
+- 로컬 커밋 `716bda8`, `a6ce1b3`을 `origin/main`에 푸시하고 원격 HEAD 일치 확인
+- `Out-File -NoNewline` 재기록으로 한 줄화·문자 인코딩·JSX가 손상된 `src/components/CalendarView.tsx`를 Git `HEAD` 원본으로 복구
+- 캘린더 기본 선택일을 2026년 7월 15일에서 14일로 변경
+- 고정 2026년 7월 배열을 현재 조회 월 기준 날짜 계산으로 교체하고 이전 달/다음 달/오늘 네비게이션 추가
+- 월 이동 시 연·월 제목, 날짜 그리드, 요일 색상, 메모 조회·추가 날짜가 함께 갱신되도록 정리
+- `npm.cmd run lint`, `npm.cmd run build`, `git diff --check` 통과; 원격 배포는 수행하지 않음
 - `D:\workspace\personalMemo`에 GitHub 저장소 클론
 - Stitch MCP 연결 및 프로젝트 `projects/10144202817033188951` 화면/디자인 시스템 확인
 - 디자인 토큰 누락 보정: `text-primary`, `text-secondary`, 24px 노트 패턴, 약한 그림자
@@ -60,12 +75,14 @@
 - 모바일 최소 기능 기획 문서 추가: `personalMemo\docs\mobile_minimum_feature_plan.md`
 
 ## 다음 작업
+- 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
 - 실제 로그인 계정으로 폴더 생성, personalMemo 메모 저장, 자료실 파일 업로드, Storage 이미지 업로드 동작 확인
 - 필요 시 자료실 CSS가 메모 화면에 미치는 글로벌 스타일 영향 정리
 - 배포 스크립트에 운영 데이터 프로젝트 ID 고정 검증을 추가해 잘못된 Firebase 설정이면 빌드 또는 배포가 실패하도록 구성
 - 다른 PC에서 이어 진행할 사용자 확대 작업은 "공유 없는 단독 사용자별 데이터 분리" 범위로 한정
 - 가족/소규모 사용자 수는 5인 이내로 가정하되, 가족 공간·초대·공유·공동 편집·관리자 권한 모델은 만들지 않음
 - 현재 Firebase Auth 로그인 사용자 자동 인식(`uid`)을 그대로 사용하고, 데이터베이스/Storage 경로 차원에서만 사용자 데이터를 분리·검증
+- Firebase 전환 전 내용을 유지 중인 `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md` 현행화
 
 ## 사용자 분리 구조 계획
 - 목표: `MEMOry`를 가족 5인 이내가 각자 독립 계정으로 사용하는 개인 디지털 메모장으로 유지
@@ -102,8 +119,13 @@
 
 ## 리스크 / 주의사항
 - Chrome DevTools MCP가 2026-07-06 세션에서 장시간 타임아웃되어 브라우저 시각 검수는 완료하지 못함
+- Chrome DevTools 연결이 2026-07-14에도 장시간 타임아웃되어 캘린더 브라우저 시각 검수는 완료하지 못함
+- 소스 파일 수정에 `Out-File` 전체 재기록을 사용하지 말고, 문맥이 작은 `apply_patch` 방식만 사용
 - 앱 운영 데이터는 `archive-store-v2-3d020`의 Firebase Auth/Firestore/Storage에 저장됨. Hosting 프로젝트 `archive-store-fae71`의 Firebase SDK 설정으로 빌드하면 기존 데이터가 사라진 것처럼 보이므로 두 프로젝트를 혼동하지 말 것
+- 앱 데이터의 운영 기준은 Firebase이며, localStorage는 로그인 이메일·테마 같은 로컬 설정에만 사용됨
 - 데이터 초기화·복사·마이그레이션 작업은 사전 백업과 사용자 승인 없이 수행 금지
+- 운영 Hosting은 2026-07-15 05:58 KST 배포본과 새 JavaScript 자산 모두 HTTP 200 확인
+- `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md`는 아직 localStorage 단독 구조를 기술해 실제 Firebase-only 코드와 불일치
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 
 ## 인수인계 메모
@@ -111,11 +133,11 @@
 - 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: Stitch 디자인 시스템 기반 개인 메모 앱 UI 개선
-- done_latest: 클론, MCP 조회, 반응형 및 디자인 토큰 개선, lint/build 통과
+- current_goal: 배포된 캘린더 월 이동 선택일 유지 동작의 브라우저 실기 검수
+- done_latest: 1일 강제 선택 제거, Vitest 8건·lint·build 통과, 커밋 `e463ebe` 푸시 및 Hosting 배포 완료
 - key_findings: Stitch 최신 관련 프로젝트는 Digital Stationery System이며 대시보드/에디터/검색/캘린더 화면 산출물이 있음
-- changed_files: `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\Sidebar.tsx`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
-- verification: `npm run lint` 통과, `npm run build` 통과, Firebase rules 배포 완료, `http://localhost:5179` HTTP 200 확인, Firebase-only 재배포 후 `https://archive-store-fae71.web.app` HTTP 200 확인, 폴더 입력 수정본/사이드바 프로필 확대/위치 정보 제거/스플래시 문구 제거/첨부 이미지 확대 모달/읽기창 폭 확대/다크모드 툴바 대비 수정본 Hosting 배포 후 HTTP 200 확인
-- next_action: 실계정 로그인/업로드 E2E 확인
-- risks_or_blockers: 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
+- changed_files: latest `src\components\CalendarView.tsx`; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\Sidebar.tsx`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
+- verification: `npm run lint`, `npm run build`, `git diff --check` 통과; Firebase rules 및 Hosting 배포 완료; 브라우저 자동화 테스트는 드라이버 오류 후 사용자 지시로 중단
+- next_action: 로그인 기반 캘린더·Firestore·Storage 실동작 검수
+- risks_or_blockers: 로그인 계정 기반 브라우저 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
 - deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
