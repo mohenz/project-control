@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-20
+- last_updated: 2026-07-22
 - owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: 캘린더 월 이동 선택일 유지 수정본 커밋·푸시 및 Firebase Hosting 배포 완료
+- current_status: `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선본을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
 
 ## 현재 목표
 - 개인 메모 PWA를 Galaxy Tab 중심의 Digital Stationery 디자인 방향에 맞게 정리한다.
@@ -73,6 +73,17 @@
 - `MEMOry` 변경 빌드를 Firebase Hosting `archive-store-fae71`에 배포 완료
 - 운영 URL 검증 완료: HTML title `MEMOry`, manifest `name`/`short_name` `MEMOry`, 원격 JS 번들 `MEMOry` 포함 및 `Personal Notes` 미포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
 - 모바일 최소 기능 기획 문서 추가: `personalMemo\docs\mobile_minimum_feature_plan.md`
+- 2026-07-21 조용한 자동저장 기능 추가: `src\App.tsx`, `src\components\NoteEditor.tsx` 수정 및 문서 `docs\autosave_implementation_plan.md` 추가
+- 자동저장은 `NoteEditor`에서 제목/본문/그룹/이미지/체크리스트 변경을 1.2초 debounce 후 부모 `onAutoSave`로 전달하고, `App`의 기존 `notes` 상태 변경 -> `saveMemoCloudState` 흐름으로 Firebase 저장
+- 자동저장 커밋 `0c1aef8 Add quiet note autosave`를 `origin/main`에 푸시 완료
+- 2026-07-21 자료실 파일 업로드 오류 대응: 통합 로그인 사용자(`integratedUser`)가 있으면 자료실 backend를 `firebase`로 강제하도록 `ArchiveView`/`useArchiveFiles` 수정
+- 자료실 업로드 실패 시 Storage 권한/Firestore 권한/네트워크/취소 오류를 한국어 상태 메시지로 표시하도록 `useArchiveMutations` 보강
+- 자료실 업로드 수정 커밋 `ef9ea8b Fix archive upload backend selection`를 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- 2026-07-21 사용자 계정 운영 방식 문서화: 앱 내부 회원가입 없이 Firebase Console `archive-store-v2-3d020 > Authentication > Users`에서 운영자가 최대 5명 수동 생성
+- 사용자 계정 운영 문서 `personalMemo\docs\manual_user_account_operations.md` 추가 및 커밋 `32c4969 Document manual user account operations` 푸시 완료
+- 2026-07-21 로그아웃 가시성 개선: 설정 모달 문구를 `MEMOry 로그아웃`으로 변경하고 자료실 상단 로그아웃 아이콘에 `로그아웃` 텍스트 추가
+- 로그아웃 UI 개선 커밋 `4e43184 Improve logout visibility`를 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- 로그아웃 운영 배포 검증 완료: 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 원격 JS에 `MEMOry 로그아웃` 포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
 
 ## 다음 작업
 - 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
@@ -85,7 +96,7 @@
 - Firebase 전환 전 내용을 유지 중인 `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md` 현행화
 - 사용자 계정은 앱 내부 회원가입 기능을 만들지 않고 Firebase Console `archive-store-v2-3d020 > Authentication > Users`에서 운영자가 직접 생성
 - 가족/소규모 사용자 5인 제한은 앱 코드로 강제하지 않고 Firebase Console 사용자 목록 기준으로 운영 관리
-- 사용자 운영 절차 문서 추가 필요: `personalMemo\docs\manual_user_account_operations.md`
+- 신규 소유자/IAM 추가와 Firebase Authentication 사용자 생성은 별개임을 운영 안내에 반영하고, 로그인 불가 시 `archive-store-v2-3d020 > Authentication > Users`에 계정이 있는지 먼저 확인
 
 ## 사용자 분리 구조 계획
 - 목표: `MEMOry`를 가족 5인 이내가 각자 독립 계정으로 사용하는 개인 디지털 메모장으로 유지
@@ -123,6 +134,8 @@
 - deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
 - post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
 - deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
+- latest_program_head: `4e43184 Improve logout visibility`
+- latest_verified_bundle: JS `assets/index-gcD3glXy.js`, CSS `assets/index-BWIMTqjn.css`
 - sync_verification: 2026-07-15 `HEAD`, `origin/main`, `origin/HEAD` 모두 `e463ebe`; 작업 트리 깨끗함
 
 ## 핵심 경로
