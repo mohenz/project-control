@@ -83,6 +83,9 @@
 - 가족/소규모 사용자 수는 5인 이내로 가정하되, 가족 공간·초대·공유·공동 편집·관리자 권한 모델은 만들지 않음
 - 현재 Firebase Auth 로그인 사용자 자동 인식(`uid`)을 그대로 사용하고, 데이터베이스/Storage 경로 차원에서만 사용자 데이터를 분리·검증
 - Firebase 전환 전 내용을 유지 중인 `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md` 현행화
+- 사용자 계정은 앱 내부 회원가입 기능을 만들지 않고 Firebase Console `archive-store-v2-3d020 > Authentication > Users`에서 운영자가 직접 생성
+- 가족/소규모 사용자 5인 제한은 앱 코드로 강제하지 않고 Firebase Console 사용자 목록 기준으로 운영 관리
+- 사용자 운영 절차 문서 추가 필요: `personalMemo\docs\manual_user_account_operations.md`
 
 ## 사용자 분리 구조 계획
 - 목표: `MEMOry`를 가족 5인 이내가 각자 독립 계정으로 사용하는 개인 디지털 메모장으로 유지
@@ -97,6 +100,16 @@
 - 계정 전환 안전장치: 로그아웃 시 화면 상태를 비우고, 새 로그인 시 해당 `uid` 경로 데이터만 로드해야 함
 - 검증 시나리오: A 계정 작성 데이터가 B 계정에서 보이지 않아야 하며, B 계정 작성 데이터도 A 계정에서 보이지 않아야 함
 - 배포 불변조건: Hosting은 `archive-store-fae71`, 실제 Auth/Firestore/Storage 데이터 프로젝트는 `archive-store-v2-3d020` 유지
+
+## 사용자 계정 운영 방식
+- 확정 방식: 앱 내부 `계정 만들기` 기능을 추가하지 않고, 운영자가 Firebase Console에서 계정을 수동 생성
+- Firebase 프로젝트: 실제 Auth 프로젝트인 `archive-store-v2-3d020`
+- Console 경로: `Authentication > Users > 사용자 추가`
+- 사용자 전달 정보: 접속 URL `https://archive-store-fae71.web.app`, 로그인 이메일, 임시 비밀번호
+- 사용자는 발급받은 계정으로 로그인하며, 로그인 후 Firebase Auth `uid` 기준으로 메모와 자료실 데이터가 자동 분리됨
+- 최대 사용자 수 5명 제한은 운영자가 Firebase Console 사용자 목록을 보고 수동 관리
+- 앱에 추가하지 않는 기능: 회원가입, 가족 공간, 초대, 공유, 공동 편집, 앱 내 관리자 권한
+- 관련 문서: `personalMemo\docs\manual_user_account_operations.md`
 
 ## 실행 / 검증
 - run_command: `npm.cmd run dev`
