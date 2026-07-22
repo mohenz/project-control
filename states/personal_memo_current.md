@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-22
+- last_updated: 2026-07-23
 - owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선본을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- current_status: `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목 기능을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
 
 ## 현재 목표
 - 개인 메모 PWA를 Galaxy Tab 중심의 Digital Stationery 디자인 방향에 맞게 정리한다.
@@ -84,6 +84,13 @@
 - 2026-07-21 로그아웃 가시성 개선: 설정 모달 문구를 `MEMOry 로그아웃`으로 변경하고 자료실 상단 로그아웃 아이콘에 `로그아웃` 텍스트 추가
 - 로그아웃 UI 개선 커밋 `4e43184 Improve logout visibility`를 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
 - 로그아웃 운영 배포 검증 완료: 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 원격 JS에 `MEMOry 로그아웃` 포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
+- 2026-07-22 메모 상세 화면 하단 툴바에 Markdown 단건 다운로드 기능 추가
+- Markdown export 유틸 `src\utils\markdownExport.ts` 및 테스트 `src\utils\markdownExport.test.ts` 추가; 메모 제목/그룹/작성일/수정일/날짜/본문/체크리스트/첨부 이미지 링크를 `.md`로 변환
+- 저장 시 자동 제목 유틸 `src\utils\autoTitle.ts` 및 테스트 `src\utils\autoTitle.test.ts` 추가
+- 자동 제목 규칙: 저장 시 최종 선택 그룹 기준으로 `프로젝트` 그룹은 `YYYY-MM-DD_프로젝트_일정`, `일정` 그룹은 `YYYY-MM-DD_일정`으로 제목 자동 확정; 그 외 그룹은 입력 제목 또는 `제목 없는 메모` 유지
+- 자동 제목은 `App`의 저장 처리에서 적용해 그룹 변경 후 저장 시 최종 그룹 기준으로 제목이 변경되도록 구현
+- 커밋 `6e97d61 Add markdown export and auto titles`를 `origin/main`에 푸시 완료
+- Markdown 다운로드/자동 제목 배포 검증 완료: Vitest 17건, TypeScript 검사, 프로덕션 빌드 통과; 운영 URL HTTP 200, 원격 JS `assets/index-4B3fVs01.js`에 `Markdown 다운로드` 및 `프로젝트_일정` 포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
 
 ## 다음 작업
 - 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
@@ -134,8 +141,8 @@
 - deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
 - post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
 - deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
-- latest_program_head: `4e43184 Improve logout visibility`
-- latest_verified_bundle: JS `assets/index-gcD3glXy.js`, CSS `assets/index-BWIMTqjn.css`
+- latest_program_head: `6e97d61 Add markdown export and auto titles`
+- latest_verified_bundle: JS `assets/index-4B3fVs01.js`, CSS `assets/index-BWIMTqjn.css`
 - sync_verification: 2026-07-15 `HEAD`, `origin/main`, `origin/HEAD` 모두 `e463ebe`; 작업 트리 깨끗함
 
 ## 핵심 경로
