@@ -4,16 +4,47 @@
 - project_key: personal_memo
 - last_updated: 2026-07-23
 - owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목 기능을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- current_status: 월간·주간·일간 선택 버튼을 메모 검색 왼쪽으로 이동하고 원격 저장소 및 Firebase Hosting 배포 완료
 
 ## 현재 목표
-- 개인 메모 PWA를 Galaxy Tab 중심의 Digital Stationery 디자인 방향에 맞게 정리한다.
+- 캘린더 월간·주간·일간 보기와 공통 날짜 탐색을 안정적으로 제공한다.
 
 ## 진행 중 작업
 - 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
 - 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
 
 ## 최근 완료 작업
+- 2026-07-23 캘린더 보기 선택 버튼 위치 변경을 커밋 `409bbc5 Move calendar view controls beside search`로 `origin/main`에 푸시
+- Firebase Hosting `archive-store-fae71` 버전 `b0684ec90298af2e` 배포 완료
+- 운영 HTML HTTP 200 및 새 번들 `assets/index-CiIODjbD.js` 반영 확인
+- 운영 번들 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 잘못된 Hosting SDK 설정 미포함 확인
+- 2026-07-23 캘린더 월간·주간·일간 선택 그룹을 제목 행에서 검색·새 메모 행으로 이동해 메모 검색 바로 왼쪽에 배치
+- 툴바 DOM 순서 회귀 테스트 추가, TypeScript 검사·Vitest 27건·프로덕션 빌드 통과
+- 2026-07-23 오늘 변경 전체를 커밋 `a11e305 Add calendar views and fix memo editing`으로 `origin/main`에 푸시
+- Firebase Hosting `archive-store-fae71` 버전 `aaa9aad6fa813a8b` 배포 완료
+- 운영 HTML과 새 번들 `assets/index-DjZhspSO.js` HTTP 200 확인
+- 운영 번들에 월간·주간·일간 UI와 데이터 프로젝트 `archive-store-v2-3d020` 포함, 잘못된 Hosting SDK 설정 미포함 확인
+- 2026-07-23 Playwright를 추가하고 1920×1080·375×812 로그인 진입 화면 E2E 2건 통과
+- Windows 테스트 서버 종료 및 Vitest/Jest/Playwright 수집 범위 충돌 수정
+- 최종 검증: TypeScript, Vitest 26건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과
+- 배포 전 번들의 데이터 프로젝트 `archive-store-v2-3d020` 포함 및 잘못된 Hosting SDK 설정 미포함 확인
+- Playwright 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_배포전_Playwright_20260723.md`
+- 2026-07-23 배포 전 2단계 Jest 30 테스트 환경을 기존 Vitest와 독립적으로 추가
+- Jest 캘린더·검색·제목 회귀 테스트 8건 통과
+- Jest 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_배포전_Jest_20260723.md`
+- 2026-07-23 프로젝트·일정 그룹 저장 시 자동 제목이 사용자 입력 제목을 덮어쓰는 결함 수정
+- 사용자 입력 제목을 우선 보존하고 제목이 비었거나 기본값일 때만 그룹 자동 제목을 적용하도록 `resolveNoteTitle` 우선순위 변경
+- 제목 회귀 테스트 포함 Vitest 26건, TypeScript 검사, 프로덕션 빌드 통과
+- 제목 수정 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_메모제목수정_20260723.md`
+- 2026-07-23 새 폴더 추가 모달의 고정 흰색 배경과 다크 모드 흰색 글자 충돌 수정
+- 모달·입력창 배경을 테마 토큰으로 통일하고 입력 글자·placeholder·caret 색상 및 dialog/input 접근성 속성 보강
+- 새 폴더 입력 UI 수정 후 TypeScript 검사와 프로덕션 빌드 통과
+- 2026-07-23 캘린더를 월간·주간·일간 Screen 컴포넌트로 분리하고 공통 보기 전환·검색·날짜 탐색 구현
+- 선택 날짜 단일 상태, 월말 날짜 보정, 일요일 시작 주간 범위, 인접 월 날짜 선택, 날짜별 메모 Map 적용
+- TypeScript 검사, Vitest 24건, 프로덕션 빌드, `git diff --check` 통과
+- 1단계 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_캘린더_월간주간일간_20260723.md`
+- 2026-07-23 원격 `origin/main`의 커밋 `6e97d61 Add markdown export and auto titles`를 로컬 `main`에 fast-forward 동기화 (`4e43184` → `6e97d61`, 충돌 없음)
+- 동기화로 메모 자동 제목 생성, Markdown 내보내기 기능 및 관련 테스트 반영
 - 2026-07-15 원격 `origin/main` 변경사항을 로컬 `main`에 fast-forward 동기화 (`4bd47b9` → `e463ebe`, 충돌 없음)
 - 동기화로 캘린더 시스템 날짜 사용 및 월간 이동 시 선택 날짜 유지 수정, Firebase/자료실 통합 변경사항 반영
 - 캘린더 선택일 유지 수정 커밋 `e463ebe`를 `origin/main`에 푸시하고 원격 HEAD 일치 확인
@@ -93,6 +124,7 @@
 - Markdown 다운로드/자동 제목 배포 검증 완료: Vitest 17건, TypeScript 검사, 프로덕션 빌드 통과; 운영 URL HTTP 200, 원격 JS `assets/index-4B3fVs01.js`에 `Markdown 다운로드` 및 `프로젝트_일정` 포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
 
 ## 다음 작업
+- 로그인 가능한 브라우저에서 월간·주간·일간 전환과 375px·1920px 반응형 렌더링 검수
 - 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
 - 실제 로그인 계정으로 폴더 생성, personalMemo 메모 저장, 자료실 파일 업로드, Storage 이미지 업로드 동작 확인
 - 필요 시 자료실 CSS가 메모 화면에 미치는 글로벌 스타일 영향 정리
@@ -141,9 +173,9 @@
 - deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
 - post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
 - deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
-- latest_program_head: `6e97d61 Add markdown export and auto titles`
-- latest_verified_bundle: JS `assets/index-4B3fVs01.js`, CSS `assets/index-BWIMTqjn.css`
-- sync_verification: 2026-07-15 `HEAD`, `origin/main`, `origin/HEAD` 모두 `e463ebe`; 작업 트리 깨끗함
+- latest_program_head: `409bbc5 Move calendar view controls beside search`
+- latest_verified_bundle: JS `assets/index-CiIODjbD.js`, CSS `assets/index-CDc7RxKn.css`
+- sync_verification: 2026-07-23 `HEAD`와 `origin/main` 모두 `409bbc5`; 작업 트리 깨끗함
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
@@ -166,11 +198,11 @@
 - 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: 배포된 캘린더 월 이동 선택일 유지 동작의 브라우저 실기 검수
-- done_latest: 1일 강제 선택 제거, Vitest 8건·lint·build 통과, 커밋 `e463ebe` 푸시 및 Hosting 배포 완료
-- key_findings: Stitch 최신 관련 프로젝트는 Digital Stationery System이며 대시보드/에디터/검색/캘린더 화면 산출물이 있음
-- changed_files: latest `src\components\CalendarView.tsx`; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\Sidebar.tsx`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
-- verification: `npm run lint`, `npm run build`, `git diff --check` 통과; Firebase rules 및 Hosting 배포 완료; 브라우저 자동화 테스트는 드라이버 오류 후 사용자 지시로 중단
-- next_action: 로그인 기반 캘린더·Firestore·Storage 실동작 검수
-- risks_or_blockers: 로그인 계정 기반 브라우저 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
+- current_goal: 배포된 월간·주간·일간 캘린더와 메모 편집 개선 사항의 로그인 기반 실기 검수
+- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시, Hosting 버전 `b0684ec90298af2e` 배포 및 운영 번들 검증 완료
+- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름
+- changed_files: `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일
+- verification: TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 운영 URL HTTP 200 및 번들 데이터 프로젝트 ID 검증 완료
+- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage 동작을 브라우저에서 검수
+- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS의 전역 스타일 영향 점검 필요
 - deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
