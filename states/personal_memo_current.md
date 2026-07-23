@@ -4,7 +4,7 @@
 - project_key: personal_memo
 - last_updated: 2026-07-23
 - owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: 월간·주간·일간 선택 버튼을 메모 검색 왼쪽으로 이동하고 원격 저장소 및 Firebase Hosting 배포 완료
+- current_status: 월간·주간·일간 선택 버튼 이동, 메모 편집 개선, `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목, 자료실 파일 목록 가독성/다운로드 액션 개선을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
 
 ## 현재 목표
 - 캘린더 월간·주간·일간 보기와 공통 날짜 탐색을 안정적으로 제공한다.
@@ -122,6 +122,11 @@
 - 자동 제목은 `App`의 저장 처리에서 적용해 그룹 변경 후 저장 시 최종 그룹 기준으로 제목이 변경되도록 구현
 - 커밋 `6e97d61 Add markdown export and auto titles`를 `origin/main`에 푸시 완료
 - Markdown 다운로드/자동 제목 배포 검증 완료: Vitest 17건, TypeScript 검사, 프로덕션 빌드 통과; 운영 URL HTTP 200, 원격 JS `assets/index-4B3fVs01.js`에 `Markdown 다운로드` 및 `프로젝트_일정` 포함, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
+- 2026-07-23 자료실 목록형 파일 행에서 긴 MIME 타입이 파일명 영역을 밀어내 파일명이 보이지 않는 문제 수정
+- 자료실 파일 행 구조를 아이콘 + 파일정보 2열 중심으로 정리하고, 파일명은 굵은 한 줄 말줄임/`title` 전체 파일명 표시, MIME/용량은 하단 보조정보로 분리
+- 자료실 파일 행에 다운로드 액션 추가 후 사용자 요청에 따라 텍스트 노출을 제거하고 아이콘 전용 버튼으로 정리; 마우스 오버 `title="다운로드"`와 `aria-label`은 유지
+- 관련 커밋 `d758776 Improve archive file name visibility`, `6ebbc72 Add archive file row download button`, `450a86d Use icon-only archive row download action`를 `personalMemo` `origin/main`에 푸시 완료
+- Firebase Hosting `archive-store-fae71`에 최신 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 다운로드 아이콘 CSS 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
 
 ## 다음 작업
 - 로그인 가능한 브라우저에서 월간·주간·일간 전환과 375px·1920px 반응형 렌더링 검수
@@ -173,9 +178,9 @@
 - deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
 - post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
 - deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
-- latest_program_head: `409bbc5 Move calendar view controls beside search`
-- latest_verified_bundle: JS `assets/index-CiIODjbD.js`, CSS `assets/index-CDc7RxKn.css`
-- sync_verification: 2026-07-23 `HEAD`와 `origin/main` 모두 `409bbc5`; 작업 트리 깨끗함
+- latest_program_head: `450a86d Use icon-only archive row download action`
+- latest_verified_bundle: JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css`
+- sync_verification: 2026-07-23 `personalMemo` `HEAD`와 `origin/main` 모두 `450a86d`; Firebase Hosting 운영 번들 JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css` 확인
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
@@ -198,11 +203,11 @@
 - 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: 배포된 월간·주간·일간 캘린더와 메모 편집 개선 사항의 로그인 기반 실기 검수
-- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시, Hosting 버전 `b0684ec90298af2e` 배포 및 운영 번들 검증 완료
-- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름
-- changed_files: `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일
-- verification: TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 운영 URL HTTP 200 및 번들 데이터 프로젝트 ID 검증 완료
-- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage 동작을 브라우저에서 검수
-- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS의 전역 스타일 영향 점검 필요
+- current_goal: 배포된 월간·주간·일간 캘린더/메모 편집 개선 사항과 자료실 파일 행 액션 UI의 로그인 기반 실기 검수
+- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시·배포 완료; 이후 자료실 파일 목록 파일명 가독성 개선, 파일 행 다운로드 액션 추가, 다운로드 액션 아이콘 전용 디자인 반영, 커밋 `450a86d` 푸시 및 Hosting 배포 완료
+- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름. 자료실 파일 행 액션은 아이콘 전용 + `title`/`aria-label` 유지 기준으로 디자인한다
+- changed_files: latest `src\archiveStore\views\ArchiveWorkspaceScreen.jsx`, `src\archiveStore\styles.css`; recent calendar/editing `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
+- verification: 캘린더/편집 개선 시 TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 자료실 행 액션 변경 시 `npm.cmd run build`, `npm.cmd run test:vitest` 통과; Firebase Hosting 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인. `npm.cmd run lint`는 기존 미설치 타입 의존성 `@playwright/test`, `@jest/globals`로 실패 상태
+- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage·자료실 파일 다운로드 동작을 브라우저에서 검수
+- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
 - deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
