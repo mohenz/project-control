@@ -57,6 +57,7 @@
 
 ## 공통 운영 기준
 
+- 모든 원격 배포는 `project_docs/DEPLOYMENT_PREVENTION_STANDARD.md`의 사전검증·최초 실패 분류·사후검증 절차를 적용한다.
 - 레지스트리 등록 프로젝트는 `project_registry.md`의 경로/명령을 우선한다.
 - 상태 파일만 있는 프로젝트는 작업 전에 레지스트리 등록 여부를 먼저 결정한다.
 - 로컬 DB, 업로드 파일, `.env.local`, 토큰, PIN, 인증정보는 Git에 포함하지 않는다.

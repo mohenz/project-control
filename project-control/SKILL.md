@@ -71,7 +71,12 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Update the matched state file with completed work, verification result, next work, relevant risks, and the handoff section when the work changed execution context or left a next-session dependency.
 
 ### `/project deploy <alias>`
-- Follow the deploy method recorded in the registry or state file.
+- Read `project_docs/DEPLOYMENT_PREVENTION_STANDARD.md`.
+- Resolve the exact deploy target, command, checks, and invariants from the registry and matched state file.
+- Confirm explicit user deployment approval.
+- Run the recorded pre-deploy check before the deploy command.
+- Run the recorded post-deploy check and update the matched state file.
+- Do not repeat a failed deploy command without classifying and fixing the first error.
 
 ### `/project sync <alias> [--in|--out]`
 - Trigger cloud synchronization for the matched project.
@@ -111,6 +116,7 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Read `references/command-spec.md` for command grammar and action meanings.
 - Read `references/workflow-map.md` for the control-file reading order and switch procedure.
 - Read `references/state-update-rules.md` when updating or closing project state files.
+- After locating the workspace-level `project_control` folder, read `project_control/project_docs/DEPLOYMENT_PREVENTION_STANDARD.md` before any deployment.
 
 
 

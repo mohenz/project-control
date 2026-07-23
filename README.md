@@ -23,6 +23,7 @@
 - `project_governance_rules.md`
 - `project_registry.md`
 - `project_docs/PROJECT_ARCHITECTURE_MAP.md`
+- `project_docs/DEPLOYMENT_PREVENTION_STANDARD.md`
 - `project_switch_workflow.md`
 - `project_selection_prompt_list.md`
 - `skill_install_manual.md`
@@ -42,6 +43,7 @@
 - `/project status <alias>`: 현재 상태 요약
 - `/project handoff <alias>`: 다음 세션용 인수인계 요약 생성
 - `/project close <alias>`: 완료, 검증, 다음 작업, 리스크 기록
+- `/project deploy <alias>`: 글로벌 사전검증·배포·사후검증 표준에 따라 배포
 
 ## 현재 등록 프로젝트
 - `defect_manage`

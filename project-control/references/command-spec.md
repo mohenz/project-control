@@ -71,7 +71,11 @@
 - Switch to the project and start a new task.
 
 ### `deploy`
-- Use the registered deploy method.
+- Read the global deployment prevention standard.
+- Confirm explicit deployment approval.
+- Run the registered pre-deploy check, deploy method, and post-deploy check in order.
+- Record commit, release, asset, and verification results.
+- Stop after the first failure; classify and fix it before restarting from preflight.
 
 ### `sync`
 - Synchronize project data with cloud storage (e.g., GCS).

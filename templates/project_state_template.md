@@ -23,6 +23,11 @@
 - verify_command:
 - port_or_runtime:
 - deploy_method:
+- deploy_check_command:
+- deploy_post_check:
+- deploy_invariants:
+- deploy_abort_condition:
+- latest_deployment:
 
 ## 핵심 경로
 - project_root:

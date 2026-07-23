@@ -2,18 +2,54 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-23
-- owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: 월간·주간·일간 선택 버튼 이동, 메모 편집 개선, `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목, 자료실 파일 목록 가독성/다운로드 액션 개선을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- last_updated: 2026-07-24
+- owner_request: MEMOry 자료실 화면의 스크롤 불가 원인 확인 및 개선
+- current_status: 자료실 세로 스크롤 복구와 배포 예방 자동화를 `origin/main` 및 Firebase Hosting 운영 환경에 배포하고 로그인 화면 검증까지 완료
 
 ## 현재 목표
-- 캘린더 월간·주간·일간 보기와 공통 날짜 탐색을 안정적으로 제공한다.
+- 자료실 긴 파일 목록의 세로 스크롤을 안정적으로 제공한다.
 
 ## 진행 중 작업
 - 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
 - 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
 
 ## 최근 완료 작업
+- 2026-07-24 배포 예방 자동화 커밋 `dd2e2c3 Add deployment safety checks`와 자료실 스크롤 수정 커밋 `4e45bf6 Fix archive screen scrolling`을 `origin/main`에 푸시
+- 표준 명령 `npm.cmd run deploy:hosting`을 재시도 없이 1회 성공하고 Firebase Hosting 버전 `59dab75d73371692` 배포
+- 운영 URL HTTP 200, JS `assets/index-BDGVm9KV.js`, CSS `assets/index-DRlGFTNy.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
+- 최종 검증: TypeScript, Vitest 34건, Jest 13건, Playwright 데스크톱·모바일 4건, 프로덕션 빌드 통과
+- 로그인된 운영 자료실에서 스크롤 래퍼 `overflowY=auto`, `clientHeight=1069`, `scrollHeight=1914`, 최대 스크롤 845px 및 `scrollTop=500` 이동 확인
+- 2026-07-24 자료실 화면의 상위 `h-screen`/`overflow-hidden` 구조 안에서 자료실 슬롯까지 `overflow-hidden`이 적용되어 긴 파일 목록이 잘리고 스크롤 컨테이너가 생성되지 않는 원인 확인
+- `src/App.tsx`의 자료실 슬롯을 `overflow-y-auto overscroll-contain custom-scrollbar`로 변경해 자료실 화면 내부 세로 스크롤 복구
+- 운영 DOM에서 `clientHeight=1059`, `scrollHeight=1732`, `overflowY=hidden`을 재현하고 임시 `auto` 적용 후 데스크톱 `scrollTop=500`, 축소 화면 `scrollTop=400` 이동 확인
+- `src/archiveStore/archiveScrollLayout.test.ts`에 스크롤 클래스 및 `overflow-hidden` 재도입 방지 테스트 2건 추가
+- 1단계 검증: TypeScript, Vitest 7개 파일 34건, 프로덕션 빌드, `git diff --check` 통과; 원격 배포는 수행하지 않음
+- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_자료실스크롤_Vitest_20260724.md`
+- 2026-07-23 배포 예방 공통 원칙을 `project_control/project_docs/DEPLOYMENT_PREVENTION_STANDARD.md` 글로벌 표준으로 승격하고, MEMOry 문서는 프로젝트 고유 명령·불변조건만 유지
+- 2026-07-23 배포 실패 원인을 전역 Firebase CLI PATH 의존, Jest 구성 누락, 수동 분산 검증, 운영 캐시 판별 문제로 정리
+- `npm.cmd run deploy:check`에 원격 fetch, TypeScript, Vitest, Jest, Playwright, 빌드, 환경·번들·Git 불변조건 검증을 통합
+- `npm.cmd run deploy:hosting`에 고정 버전 `firebase-tools@15.24.0` 실행과 배포 후 운영 HTML·번들 검증을 통합
+- `firebase.json`의 Hosting site를 `archive-store-fae71`로 고정하고 데이터 프로젝트 `archive-store-v2-3d020` 오배포 차단
+- 사전검증 정상 경로, 미커밋 작업 트리 차단, Firebase CLI 버전, 운영 HTTP 200·번들 검증 스크립트 동작 확인
+- 배포 운영 문서 생성: `D:\workspace\personalMemo\docs\deployment_runbook.md`
+- 2026-07-23 국경일·공휴일 기능을 커밋 `7cdc9a3 Add Korean holidays to calendar`로 `origin/main`에 푸시
+- Firebase Hosting `archive-store-fae71` 버전 `3f156a6805fe5016` 배포 완료
+- 운영 URL HTTP 200 및 새 번들 `assets/index-CUt7IJnF.js` 반영 확인
+- 운영 번들에 공휴일 데이터와 데이터 프로젝트 `archive-store-v2-3d020` 포함, 잘못된 Hosting Auth 도메인 미포함 확인
+- 2단계 Jest 구성 누락 결함을 수정하고 Jest 11건 전체 통과
+- 3단계 Playwright 1920×1080·375×812 공개 진입 E2E 2건 통과
+- 최종 검증: TypeScript, Vitest 32건, Jest 11건, Playwright 2건, 프로덕션 빌드, 번들 불변조건 통과
+- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Jest_20260723.md`, `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Playwright_20260723.md`
+- 2026-07-23 한국천문연구원 특일 정보 API의 `getRestDeInfo`, `getHoliDeInfo`를 이용해 2018~2027년 국경일·공휴일 200건 동기화
+- API 인증키는 추적되지 않는 `.env.local`의 `KASI_HOLIDAY_API_KEY`로만 사용하고, 브라우저 번들 및 저장소에는 포함하지 않음
+- 법정 국경일은 삼일절·제헌절·광복절·개천절·한글날 5종으로 별도 분류하고 노동절·대체공휴일 등을 국경일로 오분류하지 않도록 보정
+- 월간·주간·일간 화면과 선택일 패널에 공휴일 배지 및 날짜 접근성 문구 반영
+- 1단계 검증: TypeScript 검사, Vitest 6개 파일 32건, 프로덕션 빌드, `git diff --check` 통과
+- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Vitest_20260723.md`
+- 2026-07-23 원격 `origin/main`의 커밋 4건을 로컬 `main`에 fast-forward 동기화 (`409bbc5` → `450a86d`, 충돌 없음)
+- 동기화 커밋: `6e02be1 Use icon-only archive logout button`, `d758776 Improve archive file name visibility`, `6ebbc72 Add archive file row download button`, `450a86d Use icon-only archive row download action`
+- 변경 파일: `src/archiveStore/styles.css`, `src/archiveStore/views/ArchiveWorkspaceScreen.jsx` (자료실 화면 아이콘 전용 버튼/파일명 가시성 개선)
+- 로컬 빌드/테스트/배포는 아직 재실행하지 않음 — 다음 작업 전 검증 필요
 - 2026-07-23 캘린더 보기 선택 버튼 위치 변경을 커밋 `409bbc5 Move calendar view controls beside search`로 `origin/main`에 푸시
 - Firebase Hosting `archive-store-fae71` 버전 `b0684ec90298af2e` 배포 완료
 - 운영 HTML HTTP 200 및 새 번들 `assets/index-CiIODjbD.js` 반영 확인
@@ -129,6 +165,9 @@
 - Firebase Hosting `archive-store-fae71`에 최신 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 다운로드 아이콘 CSS 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
 
 ## 다음 작업
+- 필요 시 실제 모바일 기기에서 자료실 터치 스크롤 감각만 추가 확인
+- 로그인 가능한 브라우저에서 월간·주간·일간 공휴일 배지와 다중 공휴일 날짜를 시각 검수
+- 2028년 데이터가 필요해지기 전에 `npm.cmd run holidays:sync`를 재실행해 정적 스냅샷 갱신
 - 로그인 가능한 브라우저에서 월간·주간·일간 전환과 375px·1920px 반응형 렌더링 검수
 - 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
 - 실제 로그인 계정으로 폴더 생성, personalMemo 메모 저장, 자료실 파일 업로드, Storage 이미지 업로드 동작 확인
@@ -170,17 +209,17 @@
 - run_command: `npm.cmd run dev`
 - verify_command: `npm.cmd run lint`, `npm.cmd run build`
 - port_or_runtime: Vite dev server `http://localhost:5179/`
-- deploy_method: Firebase Hosting `archive-store-fae71`; 자료실 Firebase 프로젝트를 기본 운영 기준으로 사용
+- deploy_method: `npm.cmd run deploy:hosting`
+- deploy_check_command: `npm.cmd run deploy:check`
+- deploy_post_check: `node scripts/verify-deployment.mjs`; 기존 로그인 계정으로 메모·일정·개인설정 smoke 확인
+- deploy_invariants: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`, branch=`main`, public=`dist`, Hosting only
+- deploy_abort_condition: 테스트·빌드 실패, dirty/divergent/no-upstream, 필수 환경변수 누락, 번들 프로젝트 불일치, 운영 자산 해시·데이터 프로젝트 불일치
+- latest_deployment: commit=`4e45bf6`, Firebase Hosting version=`59dab75d73371692`, JS=`assets/index-BDGVm9KV.js`
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- deploy_invariant: Hosting 프로젝트와 데이터 프로젝트가 의도적으로 다르며, 프로덕션 번들의 `VITE_FIREBASE_PROJECT_ID`는 반드시 `archive-store-v2-3d020`이어야 함
-- pre_deploy_check: `.env.local` 존재 여부와 필수 `VITE_FIREBASE_*` 값 확인, 테스트/타입 검사/프로덕션 빌드 통과, 생성된 JS 번들에 `archive-store-v2-3d020` 포함 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
-- deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
-- post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
-- deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
-- latest_program_head: `450a86d Use icon-only archive row download action`
-- latest_verified_bundle: JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css`
-- sync_verification: 2026-07-23 `personalMemo` `HEAD`와 `origin/main` 모두 `450a86d`; Firebase Hosting 운영 번들 JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css` 확인
+- latest_program_head: `4e45bf6 Fix archive screen scrolling`
+- latest_verified_bundle: 운영 JS `assets/index-BDGVm9KV.js`, CSS `assets/index-DRlGFTNy.css`
+- sync_verification: 2026-07-24 `HEAD`와 `origin/main` 모두 `4e45bf6`; Hosting 버전 `59dab75d73371692` 운영 반영 및 로그인 자료실 스크롤 확인
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
@@ -203,11 +242,11 @@
 - 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: 배포된 월간·주간·일간 캘린더/메모 편집 개선 사항과 자료실 파일 행 액션 UI의 로그인 기반 실기 검수
-- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시·배포 완료; 이후 자료실 파일 목록 파일명 가독성 개선, 파일 행 다운로드 액션 추가, 다운로드 액션 아이콘 전용 디자인 반영, 커밋 `450a86d` 푸시 및 Hosting 배포 완료
-- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름. 자료실 파일 행 액션은 아이콘 전용 + `title`/`aria-label` 유지 기준으로 디자인한다
-- changed_files: latest `src\archiveStore\views\ArchiveWorkspaceScreen.jsx`, `src\archiveStore\styles.css`; recent calendar/editing `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
-- verification: 캘린더/편집 개선 시 TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 자료실 행 액션 변경 시 `npm.cmd run build`, `npm.cmd run test:vitest` 통과; Firebase Hosting 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인. `npm.cmd run lint`는 기존 미설치 타입 의존성 `@playwright/test`, `@jest/globals`로 실패 상태
-- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage·자료실 파일 다운로드 동작을 브라우저에서 검수
-- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
+- current_goal: 자료실 긴 파일 목록의 세로 스크롤 복구와 안전한 원격 배포 완료
+- done_latest: 자료실 직속 래퍼에 세로 스크롤을 부여하고 회귀 테스트를 추가한 뒤 `origin/main` 푸시 및 Firebase Hosting 배포 완료
+- key_findings: `.app-shell` 콘텐츠는 화면보다 길지만 직속 래퍼의 `overflow-hidden` 때문에 스크롤 소유자가 없었음
+- changed_files: `src\App.tsx`, `src\archiveStore\archiveScrollLayout.test.ts`; 기존 배포 자동화 변경 파일 유지
+- verification: TypeScript, Vitest 34건, Jest 13건, Playwright 4건, 프로덕션 빌드, 운영 HTTP·번들·데이터 프로젝트, 로그인 자료실 실제 스크롤 통과
+- next_action: 필수 후속 작업 없음
+- risks_or_blockers: 빌드 청크 크기 경고만 존재하며 배포 및 기능 동작에는 영향 없음
 - deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
