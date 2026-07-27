@@ -2,18 +2,65 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-24
-- owner_request: MEMOry 자료실 화면의 스크롤 불가 원인 확인 및 개선
-- current_status: 자료실 세로 스크롤 복구와 배포 예방 자동화를 `origin/main` 및 Firebase Hosting 운영 환경에 배포하고 로그인 화면 검증까지 완료
+- last_updated: 2026-07-25
+- owner_request: 최소한의 설명과 버튼으로 구성된 MEMOry 모바일 디자인을 Google Stitch에 의뢰할 작업지시서 작성
+- current_status: `c9d7159`(캐시 헤더 수정) 배포 후에도 사용자가 **시크릿 모드에서** "검색 아이콘 안 보임 / + 버튼 아예 안 보임 / 같은 탭에서 새로고침해도 스플래시 재생" 재확인 — 시크릿 모드는 캐시가 원천적으로 없으므로 캐싱 문제가 아니라는 게 확정됨. 스크린샷 캡처가 시크릿 모드에서 막혀 있어 텍스트 문답으로 진단. 스크롤 테스트는 화면 자체가 `overflow-hidden`이라 무의미했음. 유력한 원인 후보로 모바일 브라우저의 잘 알려진 `100vh` 버그(주소창 표시 여부에 따라 실제 보이는 영역보다 `100vh`가 커져 하단 요소가 화면 밖으로 밀려남)를 특정해 앱 전체의 `h-screen`(100vh)을 `h-dvh`(100dvh, 실제 보이는 뷰포트에 반응)로 교체, 커밋 `dd3e116`로 배포(사용자 명시 지시). **검색 아이콘이 안 보이는 것은 이 이론으로 설명이 안 돼 미해결** — 원인 후보를 좁히기 위해 PC 원격 디버깅(chrome://inspect) 가능 여부를 사용자에게 재확인 중(이전 답변이 "기타"로 표시됐으나 텍스트 미확인)
+- latest_local_fix: 메모 FAB의 스크롤 컨테이너 종속을 제거하고 하단바 레이어·safe-area·`100vh` 대체 높이·검색 아이콘 대비를 수정한 커밋 `735894f`를 `origin/main`과 Firebase Hosting에 배포함.
+- 로컬 dev 서버가 사용자 요청으로 `http://localhost:3000` 에서 실행 중 (0.0.0.0 바인딩)
 
 ## 현재 목표
-- 자료실 긴 파일 목록의 세로 스크롤을 안정적으로 제공한다.
+- `docs/mobile_minimum_feature_plan.md`의 구현 순서 1~4단계 완료. 남은 것은 실 계정 라이브 검증과 5단계 마무리.
 
 ## 진행 중 작업
 - 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
 - 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
+- 모바일 셸 전체(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드)는 로그인 게이트 때문에 실제 계정으로 라이브 검증을 아직 못함 (아래 리스크 참고)
 
 ## 최근 완료 작업
+- 2026-07-25 모바일 하단바 수정 커밋 `735894f Fix mobile bottom bar visibility`을 `origin/main`에 푸시
+- 표준 명령 `npm.cmd run deploy:hosting` 성공, Firebase Hosting 버전 `186b83b66c298c75` 운영 배포
+- 운영 URL HTTP 200, JS `assets/index-Bb2BqvO6.js`, CSS `assets/index-BfGpWJg7.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
+- 최종 검증: Vitest 51건, Jest 13건, Playwright 375px·1920px 4건, TypeScript, 프로덕션 빌드 통과
+- Jest·Playwright 결과서: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_Jest_20260725.md`, `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_Playwright_20260725.md`
+- 2026-07-25 모바일 하단바 재수정: 메모 FAB를 스크롤 영역 밖으로 이동, 메모·파일 FAB `z-20`, 하단바 `relative z-30`, 목록 `pb-20`, 화면 `overflow-hidden` 적용
+- `100vh` 후 `100dvh`를 적용하는 `viewport-height`, `html/body/#root` 높이 기준, `viewport-fit=cover` 추가
+- 검색 아이콘을 강조색·굵은 선으로 변경하고 레이아웃 회귀 테스트 보강
+- 검증: Vitest 11개 파일 51건, TypeScript, 프로덕션 빌드, `git diff --check` 통과
+- 결과서: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_20260725.md`
+- 브라우저 자동 연결 타임아웃과 인증 세션 부재로 로그인 후 Android 실기 검증은 미완료
+- 2026-07-25 (`5762353` 배포 이후, 사용자 실기 확인 피드백 반영 2차):
+  - `src/mobile/screens/MobileNoteListScreen.tsx`, `MobileFileListScreen.tsx`: "새 메모"/"파일 업로드" FAB와 업로드 진행 패널을 `position: fixed` + 임의 픽셀 오프셋(`bottom-20`/`bottom-36`, 뷰포트 전체 기준)에서 `position: absolute` + 작은 오프셋(`bottom-4`/`bottom-20`, 자신의 콘텐츠 컨테이너 기준)으로 변경. 이 컨테이너는 하단 탭바(`MobileBottomNav`)와 flex 형제 관계라 탭바의 실제 렌더링 높이(safe-area 포함, 기기마다 다름)를 몰라도 항상 탭바 바로 위에 위치하게 됨 — 매직 넘버 추측 대신 레이아웃 구조로 정확성을 보장하는 방식
+  - 검증: `CalendarView`/`SettingsModal`에 이어 이번엔 `MobileAppShell` 전체를 실제 앱과 동일한 flex 구조로 감싼 임시 프리뷰 하네스로 마운트, 375×812와 375×640(주소창 노출 등으로 짧아진 뷰포트 시뮬레이션) 두 높이에서 FAB와 하단 탭 버튼의 바운딩 박스가 겹치지 않음을 좌표로 직접 확인 + 스크린샷 육안 확인. 프리뷰 하네스는 확인 후 삭제, 커밋에 미포함
+- 2026-07-25 (`b9857f3` 배포 이후, 사용자 실기 확인 피드백 반영):
+  - `src/components/SettingsModal.tsx`: 탭 버튼 라벨 텍스트를 `hidden md:inline`으로 감춰 아이콘 3개(프로필/테마/자료실)가 375px에서 스크롤 없이 모두 보이도록 수정, 대신 `title`/`aria-label`로 접근성 유지. 기존 `overflow-x-auto` 안전망은 유지
+  - `src/components/calendar/MonthCalendarScreen.tsx`: 그리드 컨테이너의 `min-w-[680px]`를 `md:min-w-[680px]`로 좁혀 모바일에서 가로 스크롤 강제되던 문제 제거. 날짜 셀 패딩/원형 배지 크기를 `md:` 기준 축소(`p-1.5 md:p-3`, `w-6 h-6 md:w-8 md:h-8`), 셀당 메모 제목 칩 목록은 `hidden md:flex`로 데스크톱에서만 노출(모바일은 "메모 있음" 점 표시만, 상세는 하단 `SelectedDayPanel`에서 확인), 행 높이를 `auto-rows-[minmax(56px,1fr)] md:auto-rows-[minmax(112px,1fr)]`로 축소. 주간/일간 뷰와 `SelectedDayPanel`은 이미 반응형이라 변경 없음
+  - 검증 방법: 로그인 계정이 없어 실 인증 흐름으로는 확인 불가하므로, `CalendarView`/`SettingsModal`을 목 데이터로 직접 마운트하는 임시 프리뷰 페이지(`dev-preview.html` + `src/dev-preview-entry.tsx`, 로그인 우회)를 만들어 375×812에서 월간/주간/일간 캘린더와 설정 모달을 실제로 스크린샷 확인(가로 스크롤 없음, 탭 3개 모두 노출 확인) 후 프리뷰 파일은 삭제하고 커밋에 포함하지 않음
+- 2026-07-25 (배포 이후 추가 세션) 스플래시 새로고침 스킵 + 모바일 캘린더/프로필 접근 추가:
+  - `src/App.tsx`: `sessionStorage`(`memory_splash_shown`) 기반으로 같은 탭 세션에서 새로고침 시 스플래시를 건너뛰도록 `getInitialScreen()` 추가. 사이드바의 수동 "스플래시 다시 보기" 버튼은 영향 없음
+  - **버그 수정**: 모바일 셸(`MobileAppShell`)이 `{screen === 'DASHBOARD' && <MobileAppShell/>}` 형태로 조건부 마운트되어 있어, 메모 수정 후 뒤로 오면 상세 화면이 아니라 목록으로 리셋되는 문제가 있었음(이전 세션에서 "hidden 클래스로만 감춤"이라고 상태 파일에 잘못 기록했던 부분). `hidden` 클래스로 숨기고 항상 마운트 상태를 유지하도록 수정해 tab/상세뷰 상태가 EDITOR 왕복 후에도 보존되게 함
+  - 모바일 하단 탭을 2개(`메모`/`파일`)에서 3개(`메모`/`캘린더`/`파일`)로 확장. `MobileAppShell`이 데스크톱과 동일한 `CalendarView` 컴포넌트를 그대로 재사용(월간/주간/일간, 공휴일 배지 포함, 새 컴포넌트 작성 없음); 캘린더에서 메모 선택 시 메모 탭 상세뷰로 이동, "새 메모"는 날짜가 채워진 채로 기존 `handleStartAddNote(date)` 재사용
+  - 프로필/설정 접근 추가: 메모 목록·파일 목록·캘린더 탭 각 헤더에 프로필 아바타 버튼을 추가해 기존 데스크톱 `SettingsModal`을 그대로 열도록 연결(신규 모바일 전용 설정 화면을 만들지 않고 기존 모달 재사용). `SettingsModal`의 탭 바가 375px 폭에서 잘리는 문제를 발견해 `overflow-x-auto`/`shrink-0` 추가로 가로 스크롤 가능하게 수정(이 모달이 처음으로 모바일 폭에서 실제 도달 가능해짐에 따라 필요해진 최소 수정)
+- 2026-07-25 모바일 MVP 2~4단계 구현 (1단계에 이어서, 같은 세션):
+  - `src/mobile/screens/MobileNoteEditorScreen.tsx`: 제목·본문만 노출하는 전체화면 에디터, 1200ms debounce 자동저장(`onAutoSave` 재사용), 뒤로가기 시 미저장 변경분 즉시 flush(별도 저장 버튼/확인 팝업 없음 — 자동저장 원칙 유지를 위한 의도적 설계), 상단 `저장 중`/`저장됨` 상태 표시. App.tsx에서 모바일 EDITOR 화면을 데스크톱 `NoteEditor` 대신 이 컴포넌트로 분기
+  - `src/mobile/screens/MobileFileListScreen.tsx`, `MobileFilePreviewScreen.tsx`: 기존 `useArchiveFiles`/`useArchiveMutations`/`archiveStore/core/fileTypes.js`를 그대로 재사용해 파일 목록(검색, 빈 상태), 미리보기(이미지 전체표시, PDF/텍스트 새 탭 열기, 기타 파일 아이콘+메타+다운로드), 단일 파일 업로드(우측 하단 업로드 버튼 → 진행률 패널 → 성공/실패+다시시도)를 구현. Firebase 경로·컬렉션 구조 변경 없음
+  - `MobileAppShell.tsx`가 `useArchiveFiles(userId, 'firebase')`/`useArchiveMutations(...)`를 직접 호출해 파일 탭 상태를 소유; 업로드 성공/실패 판정은 `useArchiveMutations`의 `mutationStatus` 텍스트 형태("파일명 업로드 준비" / "파일명 N%")를 화이트리스트로 구분하는 방식(원 훅이 구조화된 성공/실패 콜백을 제공하지 않아 채택한 어댑터 방식 — 훅 자체는 수정하지 않음)
+- Stitch 산출물(`design/stitch_mobile_personalMemo`, `design/stitch_memory_pwa`) 검수: 로그인 라벨 한국어화는 반영됐으나 파일 목록·업로드 화면 햄버거 메뉴 미제거, 프로필 설정 화면 잔존, 파일 업로드 화면에 정렬/항목별 메뉴/폴더 기능이 추가로 발견됨 — 구현에는 반영하지 않고 작업지시서(`docs/google_stitch_mobile_design_work_order.md`) 기준으로만 구현
+- 검증: `npm.cmd run lint`(tsc) 통과; `npm.cmd run test:vitest` 51건 통과(신규 모바일 컴포넌트 정적 렌더 테스트 17건 포함); `npm.cmd run test:unit`(Jest) 13건 통과; `npm.cmd run test:e2e`(Playwright, desktop-1920 + mobile-375) 4건 통과; `npm.cmd run build` 프로덕션 빌드 성공. Playwright system Chrome 채널로 375×812 뷰포트 스모크 재확인(콘솔 오류 없음, 가로 스크롤 없음) — 다만 Firebase 로그인 계정이 없어 인증 이후의 실제 모바일 화면(목록/상세/에디터/파일)은 라이브 브라우저로 검증하지 못함, Vitest 정적 렌더 테스트와 코드 리뷰로만 확인
+- 5단계 관련: 터치 영역 44px 이상(아이콘 버튼 `w-11 h-11`=44px, FAB `w-14 h-14`=56px, 리스트 행 `min-h-[64px]`), 360px대 뷰포트 가로 스크롤 없음(스모크로 확인)까지는 완료. 실 기기 검증과 PWA 설치 흐름의 모바일 셸 전용 재검증은 미수행(기존 앱 전역 PWA 설치 로직은 이전 세션에 이미 구현됨, 이번 범위에서 변경 없음)
+- 2026-07-25 사용자 명시 지시("커밋하고 원격까지 배포해줘")로 커밋·배포 진행:
+  - `git fetch` 결과 `origin/main`이 로컬보다 2커밋 앞서 있음을 확인(다른 세션에서 푸시한 `fc2e4b8 Add clipboard image upload and forced preview downloads`, `e9cd04f Fix preview download CORS failure` — `NoteEditor.tsx`/`FilePreviewModal.jsx`/`archiveStore/styles.css` 변경, 이번 모바일 작업과 파일 충돌 없음)
+  - 모바일 MVP 변경분을 커밋 `df1e4bc Add mobile MVP shell: note list/detail/editor and file list/preview/upload`로 기록, `origin/main`을 병합(머지 커밋 `efb12ac`, 충돌 없음)한 뒤 `origin/main`에 푸시 완료
+  - 표준 명령 `npm.cmd run deploy:hosting` 1회 실행으로 사전검증(`git fetch`, lint, Vitest 51건, Jest 13건, Playwright e2e 4건, 프로덕션 빌드, 배포 불변조건 스크립트)을 재시도 없이 통과
+  - Firebase Hosting `archive-store-fae71`에 배포 완료, 새 번들 `assets/index-DCD95yVu.js`; 배포 사전·사후검증 스크립트 모두 `site=archive-store-fae71, data=archive-store-v2-3d020` 일치 및 운영 URL HTTP 200 확인
+  - 로그인 게이트로 인해 배포된 모바일 화면(목록/상세/에디터/파일)의 실제 육안 확인은 여전히 미수행 상태로 배포됨 — 다음 세션에서 반드시 실 계정으로 라이브 검수 필요
+- 2026-07-25 `docs/google_stitch_mobile_design_work_order.md` 작성
+- 설명 문구·버튼명 최소화, 화면당 강조 버튼 1개, `메모`·`파일` 2탭, Font Awesome 아이콘 우선 기준 확정
+- 로그인·메모·파일·업로드 화면별 디자인 지시, 시각 토큰, 금지 사항, 검수 기준과 Google Stitch 입력용 요청문 문서화
+- 2026-07-25 `docs/mobile_minimum_feature_plan.md`를 메모·파일 중심의 모바일 MVP 설계로 개편
+- 모바일 정보 구조를 `메모`·`파일` 하단 탭으로 단순화하고 목록·상세·편집·업로드·미리보기 화면 정의
+- 기존 Firebase Auth, 메모 문서, 자료실 Firestore/Storage 경로와 서비스 재사용 원칙 확정
+- `src/mobile/screens/*` 화면 분리 구조, 반응형 기준, 오류 상태, 구현 순서, 완료 기준 문서화
+- 문서 변경 `git diff --check` 통과; 코드 구현·테스트·배포는 수행하지 않음
 - 2026-07-24 배포 예방 자동화 커밋 `dd2e2c3 Add deployment safety checks`와 자료실 스크롤 수정 커밋 `4e45bf6 Fix archive screen scrolling`을 `origin/main`에 푸시
 - 표준 명령 `npm.cmd run deploy:hosting`을 재시도 없이 1회 성공하고 Firebase Hosting 버전 `59dab75d73371692` 배포
 - 운영 URL HTTP 200, JS `assets/index-BDGVm9KV.js`, CSS `assets/index-DRlGFTNy.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
@@ -165,6 +212,12 @@
 - Firebase Hosting `archive-store-fae71`에 최신 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 다운로드 아이콘 CSS 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
 
 ## 다음 작업
+- **배포됨 (2026-07-25, `5762353`)**. 캘린더/설정 탭은 사용자가 직접 확인해 버그 2건을 제보·수정까지 완료됨. 메모 목록/상세/작성/자동저장, 파일 목록/검색/미리보기/업로드는 여전히 실사용자 라이브 확인 이력이 없어 다음 우선순위
+- 5단계 마무리: 360px 실제 기기 기준 접근성·터치·키보드 검증, PWA 설치 흐름을 모바일 셸 화면에서 재확인
+- 업로드 성공/실패 판정에 쓰인 `mutationStatus` 문자열 화이트리스트 방식이 실제 네트워크 오류 문구와 계속 어긋나지 않는지, 필요하면 `useArchiveMutations`에 구조화된 상태 콜백 추가를 검토
+- Stitch 산출물의 미해결 위반(파일 화면 햄버거 메뉴, 프로필 설정 화면, 파일 업로드 화면의 정렬/개별 메뉴/폴더 기능) 재수정 지시 여부 결정
+- Google Stitch에 작업지시서의 입력용 요청문을 전달하고 모바일 화면 10종 생성
+- 360px 실제 기기 기준 접근성·터치·키보드·PWA 동작 검증
 - 필요 시 실제 모바일 기기에서 자료실 터치 스크롤 감각만 추가 확인
 - 로그인 가능한 브라우저에서 월간·주간·일간 공휴일 배지와 다중 공휴일 날짜를 시각 검수
 - 2028년 데이터가 필요해지기 전에 `npm.cmd run holidays:sync`를 재실행해 정적 스냅샷 갱신
@@ -214,17 +267,17 @@
 - deploy_post_check: `node scripts/verify-deployment.mjs`; 기존 로그인 계정으로 메모·일정·개인설정 smoke 확인
 - deploy_invariants: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`, branch=`main`, public=`dist`, Hosting only
 - deploy_abort_condition: 테스트·빌드 실패, dirty/divergent/no-upstream, 필수 환경변수 누락, 번들 프로젝트 불일치, 운영 자산 해시·데이터 프로젝트 불일치
-- latest_deployment: commit=`4e45bf6`, Firebase Hosting version=`59dab75d73371692`, JS=`assets/index-BDGVm9KV.js`
+- latest_deployment: commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js`
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- latest_program_head: `4e45bf6 Fix archive screen scrolling`
-- latest_verified_bundle: 운영 JS `assets/index-BDGVm9KV.js`, CSS `assets/index-DRlGFTNy.css`
-- sync_verification: 2026-07-24 `HEAD`와 `origin/main` 모두 `4e45bf6`; Hosting 버전 `59dab75d73371692` 운영 반영 및 로그인 자료실 스크롤 확인
+- latest_program_head: `dd3e116 Use dvh instead of vh so mobile browser chrome can't clip content`
+- latest_verified_bundle: 운영 JS `assets/index-0JBwVk3o.js`
+- sync_verification: 2026-07-25 `HEAD`와 `origin/main` 모두 `dd3e116`; `npm.cmd run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200. 캐싱(서비스워커+Hosting 헤더)까지는 시크릿 모드 재현으로 원인에서 배제됨. dvh 수정이 FAB/하단탭 클리핑을 해결하는지, 검색 아이콘 미표시가 남는지는 사용자 재확인 대기 중
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
-- key_docs: `README.md`, `docs\technical_architecture.md`, `docs\codex_handover.md`
-- key_files: `src\App.tsx`, `src\index.css`, `src\components\*.tsx`
+- key_docs: `README.md`, `docs\technical_architecture.md`, `docs\codex_handover.md`, `docs\mobile_minimum_feature_plan.md`, `docs\google_stitch_mobile_design_work_order.md`
+- key_files: `src\App.tsx`, `src\index.css`, `src\components\*.tsx`, `src\mobile\MobileAppShell.tsx`, `src\mobile\MobileBottomNav.tsx`, `src\mobile\screens\MobileNoteListScreen.tsx`, `src\mobile\screens\MobileNoteDetailScreen.tsx`, `src\mobile\screens\MobileNoteEditorScreen.tsx`, `src\mobile\screens\MobileFileListScreen.tsx`, `src\mobile\screens\MobileFilePreviewScreen.tsx`
 
 ## 리스크 / 주의사항
 - Chrome DevTools MCP가 2026-07-06 세션에서 장시간 타임아웃되어 브라우저 시각 검수는 완료하지 못함
@@ -236,17 +289,22 @@
 - 운영 Hosting은 2026-07-15 05:58 KST 배포본과 새 JavaScript 자산 모두 HTTP 200 확인
 - `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md`는 아직 localStorage 단독 구조를 기술해 실제 Firebase-only 코드와 불일치
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
+- 모바일 셸은 Firebase 로그인 이후에만 렌더링되어(`archiveUser` 필요) 실제 계정 없이는 브라우저에서 목록/상세/에디터/파일 화면을 볼 수 없음 — 다음 세션에서 로그인 계정으로 라이브 검증 우선 필요
+- `src/App.tsx`의 화면 전환은 `screen`(전역) 상태 하나를 데스크톱·모바일이 공유하므로, EDITOR로 전환됐다가 DASHBOARD로 복귀할 때 모바일 쪽 목록/상세 뷰 상태(`MobileAppShell` 내부 `noteView`)가 유지되도록 모바일 셸을 언마운트하지 않고 `hidden` 클래스로만 감춤 — 이 구조를 건드릴 때 조건부 렌더링(`{screen === 'DASHBOARD' && ...}`)으로 되돌리면 편집 후 상세 화면으로 안 돌아가고 목록으로 리셋되는 회귀가 생김
+- 모바일 파일 업로드의 성공/실패 판정은 `useArchiveMutations.mutationStatus` 문자열 형태("파일명 업로드 준비" / "파일명 N%"만 진행중으로 인식, 그 외는 실패로 간주)를 근거로 하는 어댑터라 원본 훅의 문구가 바뀌면 오탐 가능 — 훅 자체는 수정하지 않았음(재사용 원칙 유지)
+- 로컬 dev 서버가 사용자 요청으로 `http://localhost:3000`에 떠 있는 상태일 수 있음(0.0.0.0 바인딩); 다음 세션에서 포트 충돌 시 먼저 확인
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `src\App.tsx`, `src\index.css`, Stitch 프로젝트 `디자인 작업 명세 이행`
-- 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
+- 다음 시작 시 먼저 볼 것: `src\mobile\MobileAppShell.tsx`, `src\App.tsx`의 데스크톱/모바일 분기부, `docs\mobile_minimum_feature_plan.md`의 "9. 구현 순서" 5단계(남은 항목)
+- 확인이 필요한 미결사항: 실 계정 로그인 후 모바일 목록·상세·에디터·파일 목록/업로드/미리보기 브라우저 검수, Stitch 산출물 미해결 위반사항 재수정 여부, 커밋/배포 여부
 
 ## Handoff
-- current_goal: 자료실 긴 파일 목록의 세로 스크롤 복구와 안전한 원격 배포 완료
-- done_latest: 자료실 직속 래퍼에 세로 스크롤을 부여하고 회귀 테스트를 추가한 뒤 `origin/main` 푸시 및 Firebase Hosting 배포 완료
-- key_findings: `.app-shell` 콘텐츠는 화면보다 길지만 직속 래퍼의 `overflow-hidden` 때문에 스크롤 소유자가 없었음
-- changed_files: `src\App.tsx`, `src\archiveStore\archiveScrollLayout.test.ts`; 기존 배포 자동화 변경 파일 유지
-- verification: TypeScript, Vitest 34건, Jest 13건, Playwright 4건, 프로덕션 빌드, 운영 HTTP·번들·데이터 프로젝트, 로그인 자료실 실제 스크롤 통과
-- next_action: 필수 후속 작업 없음
-- risks_or_blockers: 빌드 청크 크기 경고만 존재하며 배포 및 기능 동작에는 영향 없음
-- deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
+- current_goal: `docs/mobile_minimum_feature_plan.md` 구현 순서에 따라 모바일 MVP를 단계적으로 구현 (1~4단계 완료, 5단계는 자동화 가능한 범위만 완료)
+- done_latest: 모바일 셸 1단계(하단 탭, 메모 목록/검색/빈상태, 메모 상세)에 이어 같은 세션에서 2단계(모바일 메모 작성·자동저장 화면), 3~4단계(파일 목록·검색·미리보기·단일 업로드·진행상태)까지 구현. `App.tsx` 768px 기준 데스크톱/모바일 분기, 기존 Firebase·자동저장·자료실 훅(`useArchiveFiles`/`useArchiveMutations`)은 변경 없이 재사용
+- key_findings: Stitch 산출물은 원 지시서 대비 위반(햄버거 메뉴, 프로필 설정 화면, 파일 화면 정렬/폴더/개별메뉴)이 남아있어 구현은 Stitch 이미지가 아니라 `docs/google_stitch_mobile_design_work_order.md`와 `docs/mobile_minimum_feature_plan.md`를 기준으로 진행함; 모바일 셸은 로그인 게이트 뒤에 있어 실 계정 없이는 라이브 검증 불가; `useArchiveMutations`가 구조화된 성공/실패 콜백이 없어 문자열 패턴 매칭으로 업로드 상태를 판정하는 어댑터를 추가함(원 훅 미수정)
+- changed_files: `src/App.tsx`(수정); `src/mobile/MobileAppShell.tsx`, `MobileBottomNav.tsx`; `src/mobile/screens/MobileNoteListScreen.tsx`, `MobileNoteDetailScreen.tsx`, `MobileNoteEditorScreen.tsx`, `MobileFileListScreen.tsx`, `MobileFilePreviewScreen.tsx`; `src/mobile/components/MobileEmptyState.tsx`; 신규 테스트 `src/mobile/MobileAppShell.test.tsx`, `src/mobile/screens/MobileNoteEditorScreen.test.tsx`, `MobileFileListScreen.test.tsx`, `MobileFilePreviewScreen.test.tsx`; 상태 기록 `states/personal_memo_current.md`
+- verification: `npm.cmd run lint` 통과; `npm.cmd run test:vitest` 51건 통과(신규 17건); `npm.cmd run test:unit`(Jest) 13건 통과; `npm.cmd run test:e2e`(Playwright desktop-1920+mobile-375) 4건 통과; `npm.cmd run build` 성공; `npm.cmd run deploy:hosting` 사전·사후검증 스크립트 통과, 운영 URL HTTP 200 — 인증 이후 실제 모바일 화면(목록/상세/에디터/파일)은 여전히 라이브 브라우저로 미검증(로그인 계정 없음)한 채로 배포됨
+- next_action: 실 계정으로 운영 사이트에서 모바일 목록/상세/에디터/파일 흐름 라이브 검증 (최우선 — 배포 후 아직 미확인)
+- risks_or_blockers: 모바일 브라우저에 따라 `download` 속성을 무시할 수 있어 새 탭 열기 대안 필요(파일 미리보기에 이미 반영); `required_decision`: Stitch 산출물의 미해결 위반사항을 재수정 요청할지 여부; 인증 게이트 뒤 화면이 실사용자 계정으로 한 번도 확인되지 않은 상태로 프로덕션에 배포되었음(`do_not_do`: 이 사실을 다음 세션에서 누락하지 말 것)
+- latest_fix_pending: 자동 검증과 원격 배포는 완료했으며 실제 Android Chrome 로그인 후 하단바·FAB 재확인만 남음
+- deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수; 이번 변경은 커밋 `df1e4bc`/머지 `efb12ac`로 `origin/main`에 푸시됨, Hosting 배포 완료(2026-07-25)

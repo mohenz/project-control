@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-07-01 KST
+- last_updated: 2026-07-27 KST
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`, `D:\workspace\cinetube\docs\requirements\cinetube 기능추가요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
 - current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. `docs\requirements\cinetube 기능추가요구사항.txt` 기준 관심작품과 갤러리 게시판 기능 구현 완료.
 
@@ -29,6 +29,11 @@
 - CineTube 원격은 `origin/main` 및 `origin/rename/persona_full` 모두 커밋 `eda99ef` 기준 최신 상태. 작업트리는 clean.
 
 ## 최근 완료 작업
+- 2026-07-27: 관리자 갤러리 이미지 영역 아래에 `파일선택`과 `저장` 버튼을 동일 너비의 2열로 나란히 배치하고, 기존 하단 중복 저장 버튼을 제거했다. 이미지 제거 버튼 문구는 `갤러리 이미지 삭제`에서 `파일삭제`로 변경했다. 로컬 브라우저에서 저장 submit 1개, 파일 input 1개, 버튼 배치와 콘솔 오류 없음 확인.
+- 2026-07-26: 관리자 갤러리 이미지 입력에서 브라우저 기본 파일명과 클립보드 안내 문구는 숨기고 `파일선택` 버튼 텍스트는 전용 파일 선택 버튼으로 복원했다. 이미지 입력 그리드를 갤러리 화면에서만 1열로 확장하고 붙여넣기/미리보기 영역을 `1:1` 정사각형으로 변경했으며 붙여넣기 기능은 유지했다.
+- 2026-07-26: 관리자 갤러리 등록 목록에서 `Gallery ID` 열을 제거하고, 상세/수정/삭제 동작을 기존 Material Symbols 아이콘 폰트 버튼으로 변경했다. 아이콘 버튼에 `aria-label`과 `title`을 유지했으며 갤러리 전용 열 너비를 5열 구성에 맞게 조정했다. 로컬 브라우저에서 5열·아이콘 3종·접근성 이름·콘솔 오류 없음 확인 후 커밋 `123b980`을 `origin/rename/persona_full`과 `origin/main`에 푸시해 Vercel 배포했다. 운영 HTML/CSS/JS는 200 응답 및 신규 캐시 키 반영을 확인했으나, 운영 관리자 데이터 API는 기존 설정의 `127.0.0.1:54322` 연결 실패로 500 응답하므로 목록 데이터 렌더링 사후검증은 보류 상태다.
+- 2026-07-25: 갤러리 이미지 경로 표시 및 복사 시 로컬 마크다운 이미지 뷰어 연동을 위해 `http://localhost:8080/` 도메인 접두사를 자동으로 붙여주도록 수정했다. `pages/gallery.html`에서 JS 캐시 버전을 `gallery-copy-localhost`로 갱신했다. 검증 결과 `node --check assets/js/pages/gallery.js` 통과.
+- 2026-07-25: 갤러리 상세 화면에 이미지 파일 경로 표시 및 클립보드 복사 기능을 추가했다. `navigator.clipboard`를 활용하며 미지원 환경에서는 dummy textarea fallback을 적용했다. 복사 성공 시 버튼 텍스트/테두리 색상이 변경되는 마이크로 인터랙션을 반영했다. `pages/gallery.html`에서 JS 캐시 버전을 `gallery-copy-path`로 갱신했다. 검증 결과 `node --check assets/js/pages/gallery.js` 통과.
 - 2026-07-11: Javdock 작품 가져오기 저장 시 인라인 `data:image`가 상대 URL로 변환되어 `/media/import-url`에서 403을 유발하던 문제를 수정했다. `absolute_url()`이 `data:` 스킴을 `None`으로 반환해 원격 이미지 후보에서 제외하도록 처리. `python -m py_compile scripts/local_api.py`, 인라인 이미지 제외 회귀 검사, `git diff --check` 통과.
 - 2026-07-11: 123AV/MissAV 작품 가져오기에서 `여배우` 값이 없을 때 페이지 전체 `/actresses/` 링크의 추천 배우 4명을 작품 배우로 오인하던 fallback을 제거했다. 배우 정보가 없으면 빈 목록을 유지한다. `python -m py_compile scripts/local_api.py`, 추천 배우 링크만 포함한 회귀 검사, `git diff --check` 통과. 기존 오등록 데이터는 변경하지 않음.
 - 2026-07-11: 관리자 영화정보 화면의 주연배우 선택 리스트를 배우명 오름차순으로 변경. 초기 렌더링과 가져오기 후 옵션 재구성 경로에 같은 정렬을 적용했다. 검증 결과 `node --check assets\js\shared\admin-page.js`, `git diff --check` 통과. 브라우저 자동화 도구는 현재 세션에서 사용할 수 없어 화면 실기 확인은 미수행.
@@ -261,9 +266,9 @@
 - manual_run_command: `.\scripts\start_local_db.ps1`, `python -m http.server 8080`
 - stop_command: `.\scripts\stop_local_db.ps1`
 - verify_command: `node --check assets/js/shared/store.js`, local API `http://127.0.0.1:3001`, browser inspect 주요 페이지
-- latest_verification: 2026-07-01 배포 전 `node --check assets\js\shared\admin-page.js`, `node --check assets\js\shared\store.js`, `node --check assets\js\shared\ui.js`, `node --check assets\js\pages\gallery.js`, `python -m py_compile scripts\local_api.py`, `git diff --check` 통과. 배포 후 `https://cinetube-gray.vercel.app` 200 응답 및 `origin/main`, `origin/rename/persona_full` 모두 `eda99ef` 확인.
+- latest_verification: 2026-07-25 배포 전 `node --check assets\js\shared\admin-page.js`, `node --check assets\js\shared\store.js`, `node --check assets\js\shared\ui.js`, `node --check assets\js\pages\gallery.js`, `python -m py_compile scripts\local_api.py`, `git diff --check` 통과. 배포 후 `https://cinetube-gray.vercel.app` 200 응답 및 `origin/main`, `origin/rename/persona_full` 모두 `bf0d003` 확인.
 - port_or_runtime: `8080` static web app, `3001` local API, `54322` local PostgreSQL
-- deploy_method: Vercel deployment from GitHub `origin/main`; latest deployed commit confirmed as `eda99ef`.
+- deploy_method: Vercel deployment from GitHub `origin/main`; latest deployed commit confirmed as `bf0d003`.
 
 ## 핵심 경로
 - project_root: `D:\Workspace\cinetube`
