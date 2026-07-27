@@ -2,21 +2,45 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-25
-- owner_request: 최소한의 설명과 버튼으로 구성된 MEMOry 모바일 디자인을 Google Stitch에 의뢰할 작업지시서 작성
-- current_status: `c9d7159`(캐시 헤더 수정) 배포 후에도 사용자가 **시크릿 모드에서** "검색 아이콘 안 보임 / + 버튼 아예 안 보임 / 같은 탭에서 새로고침해도 스플래시 재생" 재확인 — 시크릿 모드는 캐시가 원천적으로 없으므로 캐싱 문제가 아니라는 게 확정됨. 스크린샷 캡처가 시크릿 모드에서 막혀 있어 텍스트 문답으로 진단. 스크롤 테스트는 화면 자체가 `overflow-hidden`이라 무의미했음. 유력한 원인 후보로 모바일 브라우저의 잘 알려진 `100vh` 버그(주소창 표시 여부에 따라 실제 보이는 영역보다 `100vh`가 커져 하단 요소가 화면 밖으로 밀려남)를 특정해 앱 전체의 `h-screen`(100vh)을 `h-dvh`(100dvh, 실제 보이는 뷰포트에 반응)로 교체, 커밋 `dd3e116`로 배포(사용자 명시 지시). **검색 아이콘이 안 보이는 것은 이 이론으로 설명이 안 돼 미해결** — 원인 후보를 좁히기 위해 PC 원격 디버깅(chrome://inspect) 가능 여부를 사용자에게 재확인 중(이전 답변이 "기타"로 표시됐으나 텍스트 미확인)
-- latest_local_fix: 메모 FAB의 스크롤 컨테이너 종속을 제거하고 하단바 레이어·safe-area·`100vh` 대체 높이·검색 아이콘 대비를 수정한 커밋 `735894f`를 `origin/main`과 Firebase Hosting에 배포함.
+- last_updated: 2026-07-28
+- owner_request: 캘린더에 시간 단위 일정(스케줄) 관리 기능 추가 — 메모는 점(dot)으로 축소, 일정 중심 시간축 UI, 일정 CRUD, "고정"(종일) 일정, 3단계 우선순위 색상 구분
+- current_status: 캘린더 시간 단위 일정관리 기능(별도 `Schedule` 엔티티, 일간·주간 시간축, 종일/우선순위, CRUD)을 구현·배포(`c9d9672`)한 뒤 사용자 요청으로 UX 3건(30분 단위 스냅, 설정 폴더 이름 수정, 선택일 패널 일정/메모 분리, "일정확인"+X닫기)을 추가 구현·배포(`af631dc`)함. 이후 사용자가 실 계정으로 처음 라이브 테스트하며 "스케쥴이 저장이 안 됨"을 제보 — 원인은 Firestore가 `undefined` 필드(종일 일정의 시간 필드, 빈 메모)를 거부해 메모·그룹·일정이 함께 들어있는 단일 상태 문서 전체 저장이 조용히 실패하던 것. `ignoreUndefinedProperties: true`로 Firestore 초기화를 수정해 배포 완료(`93e165e`, 최신). 이 수정 이전 배포 기간에 실 계정으로 만들었던 일정은 저장되지 않았을 수 있음 — 다음 세션에서 실 계정으로 "일정 생성 후 새로고침해도 유지되는지" 최우선 확인 필요
 - 로컬 dev 서버가 사용자 요청으로 `http://localhost:3000` 에서 실행 중 (0.0.0.0 바인딩)
 
 ## 현재 목표
-- `docs/mobile_minimum_feature_plan.md`의 구현 순서 1~4단계 완료. 남은 것은 실 계정 라이브 검증과 5단계 마무리.
+- 방금 배포한 일정 저장 버그 수정을 실 계정으로 라이브 검증 (최우선)
+- 그 다음: `docs/mobile_minimum_feature_plan.md`의 구현 순서 1~4단계는 완료, 5단계(360px 실기기 접근성·터치·키보드, PWA 설치 흐름)와 모바일 셸(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드) 실 계정 라이브 검증이 남음
 
 ## 진행 중 작업
+- 일정 관리 기능(시간축, CRUD, 우선순위, 폴더 이름 수정, 선택일 패널) 실 계정 라이브 검증 — 로그인 게이트 때문에 이번 세션엔 브라우저 자동화로 못 하고 임시 프리뷰 하네스로만 확인함
 - 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
 - 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
 - 모바일 셸 전체(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드)는 로그인 게이트 때문에 실제 계정으로 라이브 검증을 아직 못함 (아래 리스크 참고)
 
 ## 최근 완료 작업
+- 2026-07-28 **일정 저장 안 되던 심각한 버그 수정 및 배포** — 사용자가 실 계정으로 처음 테스트하며 "스케쥴이 저장이 안 됨" 제보, 원인 확인 후 즉시 수정·배포. 커밋 `93e165e`를 `origin/main`에 푸시(`af631dc..93e165e`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-DhSMwqpa.js`), 운영 URL HTTP 200·데이터 프로젝트 `archive-store-v2-3d020` 일치 확인:
+  - **근본 원인**: `src/firebase/client.ts`가 `getFirestore()`를 옵션 없이 호출해 `ignoreUndefinedProperties`가 기본값 `false`. `App.tsx`의 `handleAddSchedule`/`handleUpdateSchedule`는 종일(고정) 일정이면 `startTime`/`endTime`을, 메모를 비워두면(대다수 케이스) `memo`를 `undefined`로 설정 — Firestore SDK는 `undefined` 필드가 있으면 저장 자체를 거부(`Unsupported field value: undefined`). 메모·그룹·다크모드·일정이 전부 단일 문서(`users/{uid}/apps/personalMemo`)에 함께 저장되는 구조라, 일정 하나에만 `undefined` 필드가 있어도 **문서 전체 저장이 조용히 실패**(로컬 상태는 바뀌어 화면상 저장된 것처럼 보이지만 클라우드엔 반영 안 됨)
+  - **수정**: `initializeFirestore(app, { ignoreUndefinedProperties: true })`로 초기화 방식 변경(Vite HMR 등으로 이미 초기화된 경우엔 `getFirestore`로 안전하게 폴백)
+  - **검증**: 가짜 프로젝트로 로컬에서 직접 재현 — 수정 전 설정은 `setDoc()`이 즉시 `"Unsupported field value: undefined"`를 던졌고, 수정 후 설정은 같은 데이터로 에러 없이 네트워크 전송 단계까지 진행되는 것을 확인(가짜 프로젝트라 이후 권한 에러는 정상). TypeScript, Vitest 62건, Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 이 버그는 Firestore SDK 특성상 Vitest로 직접 재현/회귀 테스트하기 어려워 별도 자동화 테스트는 추가하지 않음(로컬 SDK 재현 스크립트로 검증 후 삭제)
+  - **주의**: 이번 배포 전까지 배포된 일정 관련 기능(`c9d9672`, `af631dc`)은 전부 이 버그가 있는 상태로 운영에 있었음 — 그 기간에 사용자가 만든 일정은 실제로 저장되지 않았을 가능성이 높음(로컬 브라우저 세션에는 남아있었을 수 있으나 새로고침/재로그인 시 사라졌을 것)
+- 2026-07-28 일정 UX 개선 3건을 커밋 `af631dc`로 `origin/main`에 푸시(`c9d9672..af631dc`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-C-kug2r-.js`), 운영 URL HTTP 200·데이터 프로젝트 `archive-store-v2-3d020` 일치 확인:
+  - 일정 시작/종료 시간을 30분 단위로 스냅(모달 시간 입력 `step`+자동 보정, 일간·주간 그리드 클릭 슬롯도 1시간→30분 단위 분할, 정시/30분 줄 실선·점선으로 구분)
+  - 설정에 "폴더 이름 관리" 탭 추가 — 그룹 폴더 이름을 인라인으로 수정(blur/Enter 저장, 빈 이름 자동 복원), `SettingsModal.test.tsx` 신규
+  - 월간/주간 오른쪽 선택일 패널(`SelectedDayPanel`)을 "일정"(상단, 우선순위 색상)+"메모"(하단) 두 섹션으로 재구성 — 기존 `CalendarView.test.tsx` 케이스 1건이 헤더 구조 변경으로 깨져서 함께 수정
+  - 일정 확인/수정 팝업 제목을 "일정 수정"→"일정확인"으로 변경, 오른쪽 상단 X 닫기 버튼 추가
+  - 검증: TypeScript, Vitest 62건, Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 로컬 dev 서버(`localhost:3000`)에 임시 프리뷰로 30분 스냅, 폴더 이름 변경/빈값 복원, 패널 순서, 모달 제목·X버튼 닫기까지 브라우저에서 직접 확인 후 프리뷰 파일 삭제(커밋 미포함)
+- 2026-07-28 캘린더 시간 단위 일정관리 기능 구현 완료(커밋 `c9d9672`, 배포 완료):
+  - 신규 데이터 엔티티 `Schedule`(`src/types.ts`) — 메모와 완전히 분리, 기존 단일 Firestore 문서(`users/{uid}/apps/personalMemo`)에 `schedules` 필드로 저장(새 컬렉션/rules 변경 없음)
+  - `src/components/calendar/scheduleUtils.ts`(시간 변환, 날짜별 그룹핑, 3단계 우선순위 색상 — 기존 테마 토큰 재사용) + 단위 테스트 7건
+  - `ScheduleFormModal.tsx`(등록/수정/삭제), `TimeGrid.tsx`(일간 1열·주간 7열 공용 시간축, 종일 일정 상단 고정 스트립), `CalendarNoteDots.tsx`(메모를 점으로 축소 표시)
+  - `DayCalendarScreen`/`WeekCalendarScreen` 전면 재구성(시간 그리드 중심), `MonthCalendarScreen`은 일정 유무를 점으로만 추가(시간축 없음, 범위 밖)
+  - `App.tsx`·`MobileAppShell.tsx`(데스크톱+모바일 공용 컴포넌트라 양쪽 모두) 상태·CRUD 핸들러·props 배선
+  - 헤더에 "새 일정" 버튼 추가하면서 375px 폭에서 버튼이 잘리던 회귀를 `flex-wrap` 추가로 즉시 수정(임시 프리뷰 하네스로 실측 발견 후 수정, 하네스는 삭제)
+  - 검증: TypeScript, Vitest 58건(신규 7건 포함), Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 임시 로그인 우회 프리뷰 하네스로 Day/Week/Month CRUD 흐름과 데스크톱(1280px)·모바일(375px) 렌더링을 브라우저에서 직접 확인(하네스 파일은 삭제, 커밋 미포함)
+  - 사용자 지시("원격에 배포해줘")로 커밋 `c9d9672 Add hour-based schedule management to the calendar`를 `origin/main`에 푸시(`735894f..c9d9672`, fast-forward, 충돌 없음)
+  - 표준 명령 `npm.cmd run deploy:hosting` 1회 실행으로 사전검증(git fetch, TypeScript, Vitest 58건, Jest 13건, Playwright 4건, 프로덕션 빌드, 배포 불변조건 스크립트)을 재시도 없이 통과
+  - Firebase Hosting `archive-store-fae71`에 배포 완료, 새 번들 `assets/index-9H5FDYW0.js`; 사전·사후검증 스크립트 모두 `site=archive-store-fae71, data=archive-store-v2-3d020` 일치 및 운영 URL HTTP 200 확인
+  - 로그인 게이트로 인해 배포된 일정 CRUD 화면의 실제 육안 확인(실 계정)은 아직 미수행 — 다음 세션 우선 확인 필요
 - 2026-07-25 모바일 하단바 수정 커밋 `735894f Fix mobile bottom bar visibility`을 `origin/main`에 푸시
 - 표준 명령 `npm.cmd run deploy:hosting` 성공, Firebase Hosting 버전 `186b83b66c298c75` 운영 배포
 - 운영 URL HTTP 200, JS `assets/index-Bb2BqvO6.js`, CSS `assets/index-BfGpWJg7.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
@@ -212,6 +236,8 @@
 - Firebase Hosting `archive-store-fae71`에 최신 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 다운로드 아이콘 CSS 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
 
 ## 다음 작업
+- **최우선**: 2026-07-28 일정 저장 실패 버그(Firestore `undefined` 필드 거부) 수정을 `93e165e`로 배포 완료 — 실 계정으로 로그인해 일정을 만들고 새로고침(또는 재로그인) 후에도 유지되는지 반드시 확인. 이 수정 이전(`c9d9672`~`af631dc` 배포 기간)에 만들었던 일정은 저장되지 않았을 수 있음
+- 2026-07-28 캘린더 일정관리 기능 + UX 개선 3건 모두 배포 완료(`af631dc`) — 일간/주간 시간축(30분 단위), 종일 일정, 우선순위 색상, "일정확인"+X닫기, 월간/주간 선택일 패널의 일정/메모 분리, 설정의 폴더 이름 변경이 운영에서 실제로 동작하는지 라이브 확인 필요(로그인 게이트로 이번 세션엔 미수행)
 - **배포됨 (2026-07-25, `5762353`)**. 캘린더/설정 탭은 사용자가 직접 확인해 버그 2건을 제보·수정까지 완료됨. 메모 목록/상세/작성/자동저장, 파일 목록/검색/미리보기/업로드는 여전히 실사용자 라이브 확인 이력이 없어 다음 우선순위
 - 5단계 마무리: 360px 실제 기기 기준 접근성·터치·키보드 검증, PWA 설치 흐름을 모바일 셸 화면에서 재확인
 - 업로드 성공/실패 판정에 쓰인 `mutationStatus` 문자열 화이트리스트 방식이 실제 네트워크 오류 문구와 계속 어긋나지 않는지, 필요하면 `useArchiveMutations`에 구조화된 상태 콜백 추가를 검토
@@ -267,12 +293,13 @@
 - deploy_post_check: `node scripts/verify-deployment.mjs`; 기존 로그인 계정으로 메모·일정·개인설정 smoke 확인
 - deploy_invariants: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`, branch=`main`, public=`dist`, Hosting only
 - deploy_abort_condition: 테스트·빌드 실패, dirty/divergent/no-upstream, 필수 환경변수 누락, 번들 프로젝트 불일치, 운영 자산 해시·데이터 프로젝트 불일치
-- latest_deployment: commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js`
+- latest_deployment: commit=`93e165e`, JS=`assets/index-DhSMwqpa.js`
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- latest_program_head: `dd3e116 Use dvh instead of vh so mobile browser chrome can't clip content`
-- latest_verified_bundle: 운영 JS `assets/index-0JBwVk3o.js`
-- sync_verification: 2026-07-25 `HEAD`와 `origin/main` 모두 `dd3e116`; `npm.cmd run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200. 캐싱(서비스워커+Hosting 헤더)까지는 시크릿 모드 재현으로 원인에서 배제됨. dvh 수정이 FAB/하단탭 클리핑을 해결하는지, 검색 아이콘 미표시가 남는지는 사용자 재확인 대기 중
+- latest_program_head: `93e165e Fix silent save failure from undefined Firestore field values`
+- latest_verified_bundle: 운영 JS `assets/index-DhSMwqpa.js`
+- sync_verification: 2026-07-28 `HEAD`와 `origin/main` 모두 `93e165e`; `npm.cmd run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200. **일정 저장 실패 버그(Firestore `undefined` 필드 거부) 수정 반영됨** — 실 계정으로 일정 생성 후 새로고침해도 유지되는지 다음 세션에서 최우선 확인 필요. 폴더 이름 변경·선택일 패널 화면도 로그인 게이트 때문에 실 계정 라이브 확인 아직 미수행
+- 이전 배포 이력(모바일 하단바 등): commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js` — 검색 아이콘 미표시 등 미해결 항목은 [[personal_memo_current]] 리스크 섹션 참고, dvh 수정으로 재현되지 않는 것까지는 확인됨(이전 세션)
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
