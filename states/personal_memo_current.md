@@ -18,6 +18,7 @@
 - 모바일 셸 전체(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드)는 로그인 게이트 때문에 실제 계정으로 라이브 검증을 아직 못함 (아래 리스크 참고)
 
 ## 최근 완료 작업
+- 2026-07-28 사이드바 메뉴 순서 변경 요청(UI 수정 요청서, selector 기반)을 반영해 배포 완료. 순서: 캘린더 → 모든 메모 → 중요 메모 → 그룹 폴더(+하위 폴더) → 자료실 → 태그 및 검색 → 휴지통(구분선 유지). `src/components/Sidebar.tsx`는 JSX 블록 순서만 재배치, 각 항목의 마크업·동작은 변경 없음. 커밋 `f7e3c95`를 `origin/main`에 푸시(`a4177bd..f7e3c95`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-CmHyJ3V_.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과(메뉴 순서 검증하는 기존 자동 테스트는 없었음) + 로컬 dev 서버에 `Sidebar`를 직접 마운트하는 임시 프리뷰로 좁은 폭(가로 스크롤)·데스크톱 폭(세로 목록) 둘 다 순서 스크린샷 확인 후 프리뷰 파일 삭제
 - 2026-07-28 **일정 저장 버그 2차 수정 및 배포(진짜 원인)** — 1차 수정(`93e165e`) 배포 후에도 사용자가 "새 일정을 저장하면 화면엔 보였다가 새로고침하면 사라진다"고 재제보. 1차 수정이 `src/firebase/client.ts` 한 곳만 고쳐서 무효화되고 있었음을 확인. 커밋 `a4177bd`를 `origin/main`에 푸시(`93e165e..a4177bd`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-D5t7ktgQ.js`), 운영 URL HTTP 200·데이터 프로젝트 일치 확인:
   - **진짜 근본 원인**: 이 프로젝트엔 Firebase 클라이언트 초기화 코드가 `src/firebase/client.ts`(메모·일정용, 1차 수정 대상)와 `src/archiveStore/firebase/client.js`(자료실/파일업로드용, 이식된 별도 모듈) 두 곳에 있고 **같은 Firebase 앱 인스턴스를 공유**함. `App.tsx`가 `ArchiveView`/`MobileAppShell`(→ archiveStore 클라이언트)을 `services/archiveIntegration`(→ 메인 클라이언트)보다 먼저 import하기 때문에, 옵션 없는 `getFirestore()`가 먼저 실행되어 Firestore 인스턴스를 "기본 설정"(ignoreUndefinedProperties=false)으로 확정지어 버림. 그 뒤 1차 수정의 `initializeFirestore(...)` 호출은 "이미 초기화됨" 에러로 그 확정된(고쳐지지 않은) 인스턴스에 조용히 폴백 — 즉 1차 수정 코드는 배포는 됐지만 런타임에 실질적으로 무효화되고 있었음
   - **수정**: `src/archiveStore/firebase/client.js`에도 동일한 `initializeFirestore(app, { ignoreUndefinedProperties: true })` + 안전 폴백 패턴 적용. 이제 두 클라이언트 중 어느 쪽이 먼저 초기화되든 결과 인스턴스가 항상 올바르게 설정됨
@@ -298,12 +299,12 @@
 - deploy_post_check: `node scripts/verify-deployment.mjs`; 기존 로그인 계정으로 메모·일정·개인설정 smoke 확인
 - deploy_invariants: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`, branch=`main`, public=`dist`, Hosting only
 - deploy_abort_condition: 테스트·빌드 실패, dirty/divergent/no-upstream, 필수 환경변수 누락, 번들 프로젝트 불일치, 운영 자산 해시·데이터 프로젝트 불일치
-- latest_deployment: commit=`a4177bd`, JS=`assets/index-D5t7ktgQ.js`
+- latest_deployment: commit=`f7e3c95`, JS=`assets/index-CmHyJ3V_.js`
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- latest_program_head: `a4177bd Fix the actual undefined-field save failure (dual Firestore client race)`
-- latest_verified_bundle: 운영 JS `assets/index-D5t7ktgQ.js`
-- sync_verification: 2026-07-28 `HEAD`와 `origin/main` 모두 `a4177bd`; `npm.cmd run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200. **일정 저장 실패 버그의 진짜 원인(듀얼 Firebase 클라이언트 초기화 경쟁)까지 수정 반영됨** — 실 계정으로 일정 생성 후 새로고침해도 유지되는지 다음 세션에서 최우선 확인 필요. 폴더 이름 변경·선택일 패널 화면도 로그인 게이트 때문에 실 계정 라이브 확인 아직 미수행
+- latest_program_head: `f7e3c95 Reorder sidebar menu: Calendar, All notes, Starred, Folders, Archive, Search, Trash`
+- latest_verified_bundle: 운영 JS `assets/index-CmHyJ3V_.js`
+- sync_verification: 2026-07-28 `HEAD`와 `origin/main` 모두 `f7e3c95`; `npm.cmd run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200. 사이드바 메뉴 순서 변경 반영됨. **일정 저장 실패 버그의 진짜 원인(듀얼 Firebase 클라이언트 초기화 경쟁) 수정(`a4177bd`)도 이 배포에 포함** — 실 계정으로 일정 생성 후 새로고침해도 유지되는지 다음 세션에서 최우선 확인 필요. 폴더 이름 변경·선택일 패널·사이드바 순서 화면도 로그인 게이트 때문에 실 계정 라이브 확인 아직 미수행
 - 이전 배포 이력(모바일 하단바 등): commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js` — 검색 아이콘 미표시 등 미해결 항목은 [[personal_memo_current]] 리스크 섹션 참고, dvh 수정으로 재현되지 않는 것까지는 확인됨(이전 세션)
 
 ## 핵심 경로
