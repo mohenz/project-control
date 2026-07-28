@@ -4,7 +4,7 @@
 - project_key: personal_memo
 - last_updated: 2026-07-29
 - owner_request: MEMOry 탐색·스플래시·사이드바·캘린더 UI를 정리하고, 일정을 선택한 요일에 매주 반복하는 기능과 반복 종료일 달력 선택 기능을 추가해 원격 배포
-- current_status: 2026-07-29 UI·캘린더 표시 개선(`daffd86`)과 매주 반복 일정 기능(`dd0ab64`)을 구현해 `origin/main` 및 Firebase Hosting에 배포 완료. 반복 일정은 월~일 복수 요일과 선택적 종료일을 지원하며 월간·주간·일간 화면의 보이는 날짜 범위에만 발생 일정을 확장함. 최종 검증은 TypeScript, Vitest 70건, Jest 13건, Playwright 4건, 프로덕션 빌드 및 배포 사전·사후 검증 모두 통과. 운영 URL HTTP 200, 번들 `assets/index-C3_I0vDV.js`, Auth/Firestore/Storage 프로젝트 `archive-store-v2-3d020` 유지 확인. 작업 기록 커밋 `0935e04`까지 원격 반영 완료
+- current_status: 2026-07-29 UI·캘린더 표시 개선(`daffd86`)과 매주 반복 일정 기능(`dd0ab64`)을 구현해 `origin/main` 및 Firebase Hosting에 배포 완료. 반복 일정은 월~일 복수 요일과 선택적 종료일을 지원하며 월간·주간·일간 화면의 보이는 날짜 범위에만 발생 일정을 확장함. 최종 검증은 TypeScript, Vitest 70건, Jest 13건, Playwright 4건, 프로덕션 빌드 및 배포 사전·사후 검증 모두 통과. 운영 URL HTTP 200, 번들 `assets/index-C3_I0vDV.js`, Auth/Firestore/Storage 프로젝트 `archive-store-v2-3d020` 유지 확인. 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`까지 원격 반영 완료
 - 로컬 dev 서버는 `http://localhost:3000`에서 실행 중일 수 있으므로 다음 세션에서 포트 충돌 시 먼저 확인
 
 ## 현재 목표
@@ -18,7 +18,7 @@
 - 모바일 셸 전체(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드)는 로그인 게이트 때문에 실제 계정으로 라이브 검증을 아직 못함 (아래 리스크 참고)
 
 ## 최근 완료 작업
-- 2026-07-29 매주 반복 일정 기능 구현 및 배포. `ScheduleRecurrence` 타입과 선택 요일별 발생 계산을 추가하고, 일정 등록·수정 모달에 "매주 반복"·요일 복수 선택·선택적 반복 종료일·달력 열기 버튼을 구현. 캘린더는 현재 월·주·일의 가시 날짜 범위에서만 반복 일정을 확장하며 단일 일정 동작은 유지. 기능 커밋 `dd0ab64`, 작업 기록 커밋 `0935e04`를 `personalMemo` `origin/main`에 푸시. `npm run deploy:hosting` 통과 후 Firebase Hosting `archive-store-fae71` 배포 완료, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. 검증: TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
+- 2026-07-29 매주 반복 일정 기능 구현 및 배포. `ScheduleRecurrence` 타입과 선택 요일별 발생 계산을 추가하고, 일정 등록·수정 모달에 "매주 반복"·요일 복수 선택·선택적 반복 종료일·달력 열기 버튼을 구현. 캘린더는 현재 월·주·일의 가시 날짜 범위에서만 반복 일정을 확장하며 단일 일정 동작은 유지. 기능 커밋 `dd0ab64`, 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`을 `personalMemo` `origin/main`에 푸시. `npm run deploy:hosting` 통과 후 Firebase Hosting `archive-store-fae71` 배포 완료, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. 검증: TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
 - 2026-07-29 탐색·스플래시·사이드바·캘린더 UI 개선 후 배포. 프로필 클릭 시 첫 화면 이동, 스플래시 최초 구동 1회 제한, 사이드바 글자·세로폭 축소, 상단 설정 버튼 제거, 일정 표기를 `시간 → 일정명` 순서로 통일, 캘린더 본문은 일정만 표시하고 선택일 패널은 일정·메모를 함께 표시, 월간 일정 글자 크기 축소. 소스 커밋 `daffd86`, 작업 기록 커밋 `cdf8cdf`를 원격 반영했으며 해당 작업은 후속 반복 일정 배포본에도 포함
 - 2026-07-28 사이드바 "그룹 폴더" 목록과 "자료실" 사이에 구분선 추가(휴지통 앞 구분선과 동일 스타일) 후 배포. 커밋 `7a7d4a7`를 `origin/main`에 푸시(`534d318..7a7d4a7`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-CTyWZi8T.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과 + 로컬 프리뷰로 구분선 2개(자료실 앞·휴지통 앞) 렌더 확인 후 프리뷰 파일 삭제
 - 2026-07-28 주간 캘린더 요일 헤더/시간 그리드 열 정렬 불일치 버그 수정 및 배포. 원인: `TimeGrid`는 왼쪽에 시간축 표시용 여백(`w-10 md:w-14`)이 있는데 `WeekCalendarScreen`의 요일 헤더 행엔 이 여백이 없어 요일 칸 7개가 그리드보다 왼쪽으로 밀려 있었음. 헤더 행에 동일한 폭의 빈 여백을 추가해 정렬. 커밋 `534d318`를 `origin/main`에 푸시(`f7e3c95..534d318`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-DNH1GeDa.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과 + 브라우저에서 요일 칸과 그리드 칸의 왼쪽 좌표를 실측해 픽셀 단위로 일치함을 확인(`[73, 209, 344, 480, 616, 752, 887]` 양쪽 동일), 스크린샷 육안 확인 후 프리뷰 파일 삭제
@@ -306,9 +306,9 @@
 - latest_deployment: commit=`dd0ab64`, JS=`assets/index-C3_I0vDV.js`
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- latest_program_head: `dd0ab64 Add weekly recurring schedules` (후속 문서 HEAD `0935e04 Document recurring schedule deployment`)
+- latest_program_head: `dd0ab64 Add weekly recurring schedules` (후속 문서 HEAD `f29da36 Record project control synchronization`)
 - latest_verified_bundle: 운영 JS `assets/index-C3_I0vDV.js`
-- sync_verification: 2026-07-29 `personalMemo` `HEAD`와 `origin/main` 모두 `0935e04`; 기능 소스 `dd0ab64` 기준 `npm run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200, 운영 JS `assets/index-C3_I0vDV.js`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
+- sync_verification: 2026-07-29 `personalMemo` `HEAD`와 `origin/main` 모두 `f29da36`; 기능 소스 `dd0ab64` 기준 `npm run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200, 운영 JS `assets/index-C3_I0vDV.js`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
 - 이전 배포 이력(모바일 하단바 등): commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js` — 검색 아이콘 미표시 등 미해결 항목은 [[personal_memo_current]] 리스크 섹션 참고, dvh 수정으로 재현되지 않는 것까지는 확인됨(이전 세션)
 
 ## 핵심 경로

@@ -10,7 +10,7 @@
 - 프로젝트별 `states/*.md`를 최신 운영 사실 중심으로 관리.
 
 ## 최근 완료 작업
-- 2026-07-29: MEMOry UI·캘린더 개선 커밋 `daffd86`, 매주 반복 일정 기능 커밋 `dd0ab64`, 작업 기록 커밋 `0935e04`, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 전체 테스트 통과 결과를 `states/personal_memo_current.md`에 기록.
+- 2026-07-29: MEMOry UI·캘린더 개선 커밋 `daffd86`, 매주 반복 일정 기능 커밋 `dd0ab64`, 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 전체 테스트 통과 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: MEMOry 자료실 스크롤 수정 커밋 `4e45bf6`, Firebase Hosting 버전 `59dab75d73371692`, 운영 스크롤 검증 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: `schedule_manager` 프로젝트를 레지스트리·아키텍처 맵에 등록하고 상태 파일 생성.
 - 2026-07-24: 원격 선행 커밋 `a0bdc21`의 자료실 UI 배포 기록을 보존하면서 최신 MEMOry 상태와 통합.
