@@ -2,14 +2,15 @@
 
 ## 기본 정보
 - project_key: project_control
-- last_updated: 2026-07-24
-- current_status: 글로벌 배포 실패 예방 표준, MEMOry 최신 배포 상태, 일정관리 프로젝트 등록을 중앙 관리 문서에 반영하고 `origin/main` 업데이트 완료
+- last_updated: 2026-07-29
+- current_status: MEMOry의 2026-07-29 UI·캘린더 개선과 매주 반복 일정 기능, 검증 및 Firebase Hosting 배포 결과를 중앙 상태 문서에 반영
 
 ## 현재 목표
 - `D:\workspace` 내 등록 프로젝트의 상태 복구, 전환, 상태 저장 기준을 안정적으로 유지.
 - 프로젝트별 `states/*.md`를 최신 운영 사실 중심으로 관리.
 
 ## 최근 완료 작업
+- 2026-07-29: MEMOry UI·캘린더 개선 커밋 `daffd86`, 매주 반복 일정 기능 커밋 `dd0ab64`, 작업 기록 커밋 `0935e04`, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 전체 테스트 통과 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: MEMOry 자료실 스크롤 수정 커밋 `4e45bf6`, Firebase Hosting 버전 `59dab75d73371692`, 운영 스크롤 검증 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: `schedule_manager` 프로젝트를 레지스트리·아키텍처 맵에 등록하고 상태 파일 생성.
 - 2026-07-24: 원격 선행 커밋 `a0bdc21`의 자료실 UI 배포 기록을 보존하면서 최신 MEMOry 상태와 통합.
@@ -34,7 +35,7 @@
 ## 실행 / 검증
 - run_command: N/A
 - verify_command: `git status --short --branch`
-- latest_verification: 2026-07-24 원격 선행 커밋 통합, `git diff --check`, 글로벌 표준 링크·필수 상태 필드·skill 참조 일관성 및 변경분 비밀정보 미포함 검증.
+- latest_verification: 2026-07-29 `personalMemo`와 `project_control`이 각각 `origin/main`과 동기화된 상태에서 MEMOry 작업·배포 사실을 중앙 상태에 반영하고 `git diff --check` 및 변경 범위를 검증.
 - deploy_method: `git push origin main`
 
 ## 핵심 경로
@@ -51,10 +52,10 @@
 
 ## Handoff
 - current_goal: 모든 등록 프로젝트에 동일한 배포 실패 예방 절차 적용.
-- done_latest: 글로벌 배포 예방 표준과 거버넌스·워크플로우·skill·상태 템플릿 연결, MEMOry 최신 배포 기록, 일정관리 프로젝트 등록 완료.
+- done_latest: MEMOry의 2026-07-29 UI·캘린더 개선, 매주 반복 일정 기능, 전체 검증 및 최신 Hosting 배포 상태를 중앙 기록에 동기화.
 - key_findings: 프로젝트별 배포 명령은 달라도 사전검증, 최초 실패 분류, 사후 자산 검증, 상태 기록 필드는 공통화할 수 있음.
-- changed_files: `project_docs/DEPLOYMENT_PREVENTION_STANDARD.md`, `project_governance_rules.md`, `project_switch_workflow.md`, `project-control/*`, `templates/project_state_template.md`, `README.md`, `project_registry.md`, 관련 상태 파일.
-- verification: 문서 링크·필수 키워드·Git diff 및 설치된 skill 내용 확인.
+- changed_files: `states/personal_memo_current.md`, `states/project_control_current.md`.
+- verification: 두 저장소 원격 동기화, MEMOry 기능·배포 커밋/번들/테스트 결과 일치, `git diff --check` 확인.
 - next_action: 필수 후속 작업 없음.
 - risks_or_blockers: 없음.
 
