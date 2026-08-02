@@ -33,6 +33,12 @@
 - verify: `npm.cmd run lint`(tsc --noEmit), `npm.cmd run test`(vitest run)
 - 사전 조건: `gcloud auth application-default login` 1회 필요(로컬 ADC), quota project는 `projectmgmt-e7dfd`로 설정됨.
 
+## 배포 (정정: 이전에 "미배포"로 잘못 기록했음)
+- Firebase App Hosting 백엔드가 이미 존재하고 실제로 배포되어 있음(2026-08-02 확인).
+- 서비스 URL: `https://projectmgmt--projectmgmt-e7dfd.asia-east1.hosted.app` (HTTP 200 확인)
+- 내부 Cloud Run 서비스: `https://projectmgmt-684587947713.asia-east1.run.app` (리전 `asia-east1`)
+- GitHub 저장소 `mohenz/projectmgmt`의 `main` 브랜치와 App Hosting 백엔드가 연결되어 있어, push 시 자동 재배포된다(`apphosting-github-conn-pespregi` 연결).
+
 ## 참고 자산
 - README.md, SYSTEM_DESIGN.md, docs/FIREBASE_FIRESTORE_ARCHITECTURE.md
 - `project_control\design\bloom_ui_design_standard.md` (UI 디자인 표준, 필수)
