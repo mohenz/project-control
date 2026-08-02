@@ -3,134 +3,23 @@
 ## 기본 정보
 - project_key: personal_memo
 - last_updated: 2026-07-29
-- owner_request: MEMOry 탐색·스플래시·사이드바·캘린더 UI를 정리하고, 일정을 선택한 요일에 매주 반복하는 기능과 반복 종료일 달력 선택 기능을 추가해 원격 배포
-- current_status: 2026-07-29 UI·캘린더 표시 개선(`daffd86`)과 매주 반복 일정 기능(`dd0ab64`)을 구현해 `origin/main` 및 Firebase Hosting에 배포 완료. 반복 일정은 월~일 복수 요일과 선택적 종료일을 지원하며 월간·주간·일간 화면의 보이는 날짜 범위에만 발생 일정을 확장함. 최종 검증은 TypeScript, Vitest 70건, Jest 13건, Playwright 4건, 프로덕션 빌드 및 배포 사전·사후 검증 모두 통과. 운영 URL HTTP 200, 번들 `assets/index-C3_I0vDV.js`, Auth/Firestore/Storage 프로젝트 `archive-store-v2-3d020` 유지 확인. 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`까지 원격 반영 완료
-- 로컬 dev 서버는 `http://localhost:3000`에서 실행 중일 수 있으므로 다음 세션에서 포트 충돌 시 먼저 확인
+- owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
+- current_status: 월간·주간·일간 선택 버튼 이동, 메모 편집 개선, `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목, 자료실 파일 목록 가독성/다운로드 액션 개선을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
 
 ## 현재 목표
-- 오늘 배포한 것 전체(일정 관리 기능, 저장 버그 수정, 사이드바/주간뷰 UI 변경)를 실 계정으로 라이브 검증 (최우선)
-- 그 다음: `docs/mobile_minimum_feature_plan.md`의 구현 순서 1~4단계는 완료, 5단계(360px 실기기 접근성·터치·키보드, PWA 설치 흐름)와 모바일 셸(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드) 실 계정 라이브 검증이 남음
+- 캘린더 월간·주간·일간 보기와 공통 날짜 탐색을 안정적으로 제공한다.
 
 ## 진행 중 작업
-- 일정 관리 기능(시간축, CRUD, 우선순위, 폴더 이름 수정, 선택일 패널) + 사이드바 메뉴 순서/구분선 + 주간뷰 열 정렬, 전부 실 계정 라이브 검증 필요 — 로그인 게이트 때문에 이번 세션엔 브라우저 자동화로 못 하고 임시 프리뷰 하네스로만 확인함
 - 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
 - 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
-- 모바일 셸 전체(메모 목록/상세/작성/자동저장, 파일 목록/미리보기/업로드)는 로그인 게이트 때문에 실제 계정으로 라이브 검증을 아직 못함 (아래 리스크 참고)
 
 ## 최근 완료 작업
-- 2026-07-29 매주 반복 일정 기능 구현 및 배포. `ScheduleRecurrence` 타입과 선택 요일별 발생 계산을 추가하고, 일정 등록·수정 모달에 "매주 반복"·요일 복수 선택·선택적 반복 종료일·달력 열기 버튼을 구현. 캘린더는 현재 월·주·일의 가시 날짜 범위에서만 반복 일정을 확장하며 단일 일정 동작은 유지. 기능 커밋 `dd0ab64`, 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`을 `personalMemo` `origin/main`에 푸시. `npm run deploy:hosting` 통과 후 Firebase Hosting `archive-store-fae71` 배포 완료, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. 검증: TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
-- 2026-07-29 탐색·스플래시·사이드바·캘린더 UI 개선 후 배포. 프로필 클릭 시 첫 화면 이동, 스플래시 최초 구동 1회 제한, 사이드바 글자·세로폭 축소, 상단 설정 버튼 제거, 일정 표기를 `시간 → 일정명` 순서로 통일, 캘린더 본문은 일정만 표시하고 선택일 패널은 일정·메모를 함께 표시, 월간 일정 글자 크기 축소. 소스 커밋 `daffd86`, 작업 기록 커밋 `cdf8cdf`를 원격 반영했으며 해당 작업은 후속 반복 일정 배포본에도 포함
-- 2026-07-28 사이드바 "그룹 폴더" 목록과 "자료실" 사이에 구분선 추가(휴지통 앞 구분선과 동일 스타일) 후 배포. 커밋 `7a7d4a7`를 `origin/main`에 푸시(`534d318..7a7d4a7`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-CTyWZi8T.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과 + 로컬 프리뷰로 구분선 2개(자료실 앞·휴지통 앞) 렌더 확인 후 프리뷰 파일 삭제
-- 2026-07-28 주간 캘린더 요일 헤더/시간 그리드 열 정렬 불일치 버그 수정 및 배포. 원인: `TimeGrid`는 왼쪽에 시간축 표시용 여백(`w-10 md:w-14`)이 있는데 `WeekCalendarScreen`의 요일 헤더 행엔 이 여백이 없어 요일 칸 7개가 그리드보다 왼쪽으로 밀려 있었음. 헤더 행에 동일한 폭의 빈 여백을 추가해 정렬. 커밋 `534d318`를 `origin/main`에 푸시(`f7e3c95..534d318`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-DNH1GeDa.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과 + 브라우저에서 요일 칸과 그리드 칸의 왼쪽 좌표를 실측해 픽셀 단위로 일치함을 확인(`[73, 209, 344, 480, 616, 752, 887]` 양쪽 동일), 스크린샷 육안 확인 후 프리뷰 파일 삭제
-- 2026-07-28 사이드바 메뉴 순서 변경 요청(UI 수정 요청서, selector 기반)을 반영해 배포 완료. 순서: 캘린더 → 모든 메모 → 중요 메모 → 그룹 폴더(+하위 폴더) → 자료실 → 태그 및 검색 → 휴지통(구분선 유지). `src/components/Sidebar.tsx`는 JSX 블록 순서만 재배치, 각 항목의 마크업·동작은 변경 없음. 커밋 `f7e3c95`를 `origin/main`에 푸시(`a4177bd..f7e3c95`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-CmHyJ3V_.js`), 운영 URL HTTP 200 확인. 검증: TypeScript·Vitest 62건·Jest 13건·Playwright 4건·빌드 통과(메뉴 순서 검증하는 기존 자동 테스트는 없었음) + 로컬 dev 서버에 `Sidebar`를 직접 마운트하는 임시 프리뷰로 좁은 폭(가로 스크롤)·데스크톱 폭(세로 목록) 둘 다 순서 스크린샷 확인 후 프리뷰 파일 삭제
-- 2026-07-28 **일정 저장 버그 2차 수정 및 배포(진짜 원인)** — 1차 수정(`93e165e`) 배포 후에도 사용자가 "새 일정을 저장하면 화면엔 보였다가 새로고침하면 사라진다"고 재제보. 1차 수정이 `src/firebase/client.ts` 한 곳만 고쳐서 무효화되고 있었음을 확인. 커밋 `a4177bd`를 `origin/main`에 푸시(`93e165e..a4177bd`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-D5t7ktgQ.js`), 운영 URL HTTP 200·데이터 프로젝트 일치 확인:
-  - **진짜 근본 원인**: 이 프로젝트엔 Firebase 클라이언트 초기화 코드가 `src/firebase/client.ts`(메모·일정용, 1차 수정 대상)와 `src/archiveStore/firebase/client.js`(자료실/파일업로드용, 이식된 별도 모듈) 두 곳에 있고 **같은 Firebase 앱 인스턴스를 공유**함. `App.tsx`가 `ArchiveView`/`MobileAppShell`(→ archiveStore 클라이언트)을 `services/archiveIntegration`(→ 메인 클라이언트)보다 먼저 import하기 때문에, 옵션 없는 `getFirestore()`가 먼저 실행되어 Firestore 인스턴스를 "기본 설정"(ignoreUndefinedProperties=false)으로 확정지어 버림. 그 뒤 1차 수정의 `initializeFirestore(...)` 호출은 "이미 초기화됨" 에러로 그 확정된(고쳐지지 않은) 인스턴스에 조용히 폴백 — 즉 1차 수정 코드는 배포는 됐지만 런타임에 실질적으로 무효화되고 있었음
-  - **수정**: `src/archiveStore/firebase/client.js`에도 동일한 `initializeFirestore(app, { ignoreUndefinedProperties: true })` + 안전 폴백 패턴 적용. 이제 두 클라이언트 중 어느 쪽이 먼저 초기화되든 결과 인스턴스가 항상 올바르게 설정됨
-  - **검증**: 로컬에서 실제 import 순서(archiveStore 클라이언트 먼저, 메인 클라이언트 나중)를 그대로 재현 — 메인 클라이언트만 고친 상태(1차 수정 배포본과 동일)에서는 여전히 `"Unsupported field value: undefined"`로 저장이 막혔고, 양쪽 다 고치면 에러 없이 정상 진행되는 것을 확인. TypeScript, Vitest 62건, Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 빌드 산출물에 `ignoreUndefinedProperties` 반영 확인
-  - **주의**: `93e165e`~`a4177bd` 배포 사이(1차 수정만 있던 기간)에도 일정 저장은 여전히 실패했을 것 — 그 기간 실 계정으로 만든 일정도 저장 안 됐을 가능성이 큼. 다음 세션에서 반드시 실 계정으로 "새 일정 생성 → 새로고침 → 유지 확인" 재검증 필요
-- 2026-07-28 **일정 저장 안 되던 심각한 버그 1차 수정 및 배포** — 사용자가 실 계정으로 처음 테스트하며 "스케쥴이 저장이 안 됨" 제보, 원인 확인 후 즉시 수정·배포. 커밋 `93e165e`를 `origin/main`에 푸시(`af631dc..93e165e`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-DhSMwqpa.js`), 운영 URL HTTP 200·데이터 프로젝트 `archive-store-v2-3d020` 일치 확인:
-  - **근본 원인**: `src/firebase/client.ts`가 `getFirestore()`를 옵션 없이 호출해 `ignoreUndefinedProperties`가 기본값 `false`. `App.tsx`의 `handleAddSchedule`/`handleUpdateSchedule`는 종일(고정) 일정이면 `startTime`/`endTime`을, 메모를 비워두면(대다수 케이스) `memo`를 `undefined`로 설정 — Firestore SDK는 `undefined` 필드가 있으면 저장 자체를 거부(`Unsupported field value: undefined`). 메모·그룹·다크모드·일정이 전부 단일 문서(`users/{uid}/apps/personalMemo`)에 함께 저장되는 구조라, 일정 하나에만 `undefined` 필드가 있어도 **문서 전체 저장이 조용히 실패**(로컬 상태는 바뀌어 화면상 저장된 것처럼 보이지만 클라우드엔 반영 안 됨)
-  - **수정**: `initializeFirestore(app, { ignoreUndefinedProperties: true })`로 초기화 방식 변경(Vite HMR 등으로 이미 초기화된 경우엔 `getFirestore`로 안전하게 폴백)
-  - **검증**: 가짜 프로젝트로 로컬에서 직접 재현 — 수정 전 설정은 `setDoc()`이 즉시 `"Unsupported field value: undefined"`를 던졌고, 수정 후 설정은 같은 데이터로 에러 없이 네트워크 전송 단계까지 진행되는 것을 확인(가짜 프로젝트라 이후 권한 에러는 정상). TypeScript, Vitest 62건, Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 이 버그는 Firestore SDK 특성상 Vitest로 직접 재현/회귀 테스트하기 어려워 별도 자동화 테스트는 추가하지 않음(로컬 SDK 재현 스크립트로 검증 후 삭제)
-  - **주의**: 이번 배포 전까지 배포된 일정 관련 기능(`c9d9672`, `af631dc`)은 전부 이 버그가 있는 상태로 운영에 있었음 — 그 기간에 사용자가 만든 일정은 실제로 저장되지 않았을 가능성이 높음(로컬 브라우저 세션에는 남아있었을 수 있으나 새로고침/재로그인 시 사라졌을 것)
-- 2026-07-28 일정 UX 개선 3건을 커밋 `af631dc`로 `origin/main`에 푸시(`c9d9672..af631dc`, 충돌 없음), `npm.cmd run deploy:hosting` 재시도 없이 통과, Firebase Hosting `archive-store-fae71` 배포 완료(새 번들 `assets/index-C-kug2r-.js`), 운영 URL HTTP 200·데이터 프로젝트 `archive-store-v2-3d020` 일치 확인:
-  - 일정 시작/종료 시간을 30분 단위로 스냅(모달 시간 입력 `step`+자동 보정, 일간·주간 그리드 클릭 슬롯도 1시간→30분 단위 분할, 정시/30분 줄 실선·점선으로 구분)
-  - 설정에 "폴더 이름 관리" 탭 추가 — 그룹 폴더 이름을 인라인으로 수정(blur/Enter 저장, 빈 이름 자동 복원), `SettingsModal.test.tsx` 신규
-  - 월간/주간 오른쪽 선택일 패널(`SelectedDayPanel`)을 "일정"(상단, 우선순위 색상)+"메모"(하단) 두 섹션으로 재구성 — 기존 `CalendarView.test.tsx` 케이스 1건이 헤더 구조 변경으로 깨져서 함께 수정
-  - 일정 확인/수정 팝업 제목을 "일정 수정"→"일정확인"으로 변경, 오른쪽 상단 X 닫기 버튼 추가
-  - 검증: TypeScript, Vitest 62건, Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 로컬 dev 서버(`localhost:3000`)에 임시 프리뷰로 30분 스냅, 폴더 이름 변경/빈값 복원, 패널 순서, 모달 제목·X버튼 닫기까지 브라우저에서 직접 확인 후 프리뷰 파일 삭제(커밋 미포함)
-- 2026-07-28 캘린더 시간 단위 일정관리 기능 구현 완료(커밋 `c9d9672`, 배포 완료):
-  - 신규 데이터 엔티티 `Schedule`(`src/types.ts`) — 메모와 완전히 분리, 기존 단일 Firestore 문서(`users/{uid}/apps/personalMemo`)에 `schedules` 필드로 저장(새 컬렉션/rules 변경 없음)
-  - `src/components/calendar/scheduleUtils.ts`(시간 변환, 날짜별 그룹핑, 3단계 우선순위 색상 — 기존 테마 토큰 재사용) + 단위 테스트 7건
-  - `ScheduleFormModal.tsx`(등록/수정/삭제), `TimeGrid.tsx`(일간 1열·주간 7열 공용 시간축, 종일 일정 상단 고정 스트립), `CalendarNoteDots.tsx`(메모를 점으로 축소 표시)
-  - `DayCalendarScreen`/`WeekCalendarScreen` 전면 재구성(시간 그리드 중심), `MonthCalendarScreen`은 일정 유무를 점으로만 추가(시간축 없음, 범위 밖)
-  - `App.tsx`·`MobileAppShell.tsx`(데스크톱+모바일 공용 컴포넌트라 양쪽 모두) 상태·CRUD 핸들러·props 배선
-  - 헤더에 "새 일정" 버튼 추가하면서 375px 폭에서 버튼이 잘리던 회귀를 `flex-wrap` 추가로 즉시 수정(임시 프리뷰 하네스로 실측 발견 후 수정, 하네스는 삭제)
-  - 검증: TypeScript, Vitest 58건(신규 7건 포함), Jest 13건, Playwright 4건, 프로덕션 빌드 통과. 임시 로그인 우회 프리뷰 하네스로 Day/Week/Month CRUD 흐름과 데스크톱(1280px)·모바일(375px) 렌더링을 브라우저에서 직접 확인(하네스 파일은 삭제, 커밋 미포함)
-  - 사용자 지시("원격에 배포해줘")로 커밋 `c9d9672 Add hour-based schedule management to the calendar`를 `origin/main`에 푸시(`735894f..c9d9672`, fast-forward, 충돌 없음)
-  - 표준 명령 `npm.cmd run deploy:hosting` 1회 실행으로 사전검증(git fetch, TypeScript, Vitest 58건, Jest 13건, Playwright 4건, 프로덕션 빌드, 배포 불변조건 스크립트)을 재시도 없이 통과
-  - Firebase Hosting `archive-store-fae71`에 배포 완료, 새 번들 `assets/index-9H5FDYW0.js`; 사전·사후검증 스크립트 모두 `site=archive-store-fae71, data=archive-store-v2-3d020` 일치 및 운영 URL HTTP 200 확인
-  - 로그인 게이트로 인해 배포된 일정 CRUD 화면의 실제 육안 확인(실 계정)은 아직 미수행 — 다음 세션 우선 확인 필요
-- 2026-07-25 모바일 하단바 수정 커밋 `735894f Fix mobile bottom bar visibility`을 `origin/main`에 푸시
-- 표준 명령 `npm.cmd run deploy:hosting` 성공, Firebase Hosting 버전 `186b83b66c298c75` 운영 배포
-- 운영 URL HTTP 200, JS `assets/index-Bb2BqvO6.js`, CSS `assets/index-BfGpWJg7.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
-- 최종 검증: Vitest 51건, Jest 13건, Playwright 375px·1920px 4건, TypeScript, 프로덕션 빌드 통과
-- Jest·Playwright 결과서: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_Jest_20260725.md`, `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_Playwright_20260725.md`
-- 2026-07-25 모바일 하단바 재수정: 메모 FAB를 스크롤 영역 밖으로 이동, 메모·파일 FAB `z-20`, 하단바 `relative z-30`, 목록 `pb-20`, 화면 `overflow-hidden` 적용
-- `100vh` 후 `100dvh`를 적용하는 `viewport-height`, `html/body/#root` 높이 기준, `viewport-fit=cover` 추가
-- 검색 아이콘을 강조색·굵은 선으로 변경하고 레이아웃 회귀 테스트 보강
-- 검증: Vitest 11개 파일 51건, TypeScript, 프로덕션 빌드, `git diff --check` 통과
-- 결과서: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_모바일하단바_20260725.md`
-- 브라우저 자동 연결 타임아웃과 인증 세션 부재로 로그인 후 Android 실기 검증은 미완료
-- 2026-07-25 (`5762353` 배포 이후, 사용자 실기 확인 피드백 반영 2차):
-  - `src/mobile/screens/MobileNoteListScreen.tsx`, `MobileFileListScreen.tsx`: "새 메모"/"파일 업로드" FAB와 업로드 진행 패널을 `position: fixed` + 임의 픽셀 오프셋(`bottom-20`/`bottom-36`, 뷰포트 전체 기준)에서 `position: absolute` + 작은 오프셋(`bottom-4`/`bottom-20`, 자신의 콘텐츠 컨테이너 기준)으로 변경. 이 컨테이너는 하단 탭바(`MobileBottomNav`)와 flex 형제 관계라 탭바의 실제 렌더링 높이(safe-area 포함, 기기마다 다름)를 몰라도 항상 탭바 바로 위에 위치하게 됨 — 매직 넘버 추측 대신 레이아웃 구조로 정확성을 보장하는 방식
-  - 검증: `CalendarView`/`SettingsModal`에 이어 이번엔 `MobileAppShell` 전체를 실제 앱과 동일한 flex 구조로 감싼 임시 프리뷰 하네스로 마운트, 375×812와 375×640(주소창 노출 등으로 짧아진 뷰포트 시뮬레이션) 두 높이에서 FAB와 하단 탭 버튼의 바운딩 박스가 겹치지 않음을 좌표로 직접 확인 + 스크린샷 육안 확인. 프리뷰 하네스는 확인 후 삭제, 커밋에 미포함
-- 2026-07-25 (`b9857f3` 배포 이후, 사용자 실기 확인 피드백 반영):
-  - `src/components/SettingsModal.tsx`: 탭 버튼 라벨 텍스트를 `hidden md:inline`으로 감춰 아이콘 3개(프로필/테마/자료실)가 375px에서 스크롤 없이 모두 보이도록 수정, 대신 `title`/`aria-label`로 접근성 유지. 기존 `overflow-x-auto` 안전망은 유지
-  - `src/components/calendar/MonthCalendarScreen.tsx`: 그리드 컨테이너의 `min-w-[680px]`를 `md:min-w-[680px]`로 좁혀 모바일에서 가로 스크롤 강제되던 문제 제거. 날짜 셀 패딩/원형 배지 크기를 `md:` 기준 축소(`p-1.5 md:p-3`, `w-6 h-6 md:w-8 md:h-8`), 셀당 메모 제목 칩 목록은 `hidden md:flex`로 데스크톱에서만 노출(모바일은 "메모 있음" 점 표시만, 상세는 하단 `SelectedDayPanel`에서 확인), 행 높이를 `auto-rows-[minmax(56px,1fr)] md:auto-rows-[minmax(112px,1fr)]`로 축소. 주간/일간 뷰와 `SelectedDayPanel`은 이미 반응형이라 변경 없음
-  - 검증 방법: 로그인 계정이 없어 실 인증 흐름으로는 확인 불가하므로, `CalendarView`/`SettingsModal`을 목 데이터로 직접 마운트하는 임시 프리뷰 페이지(`dev-preview.html` + `src/dev-preview-entry.tsx`, 로그인 우회)를 만들어 375×812에서 월간/주간/일간 캘린더와 설정 모달을 실제로 스크린샷 확인(가로 스크롤 없음, 탭 3개 모두 노출 확인) 후 프리뷰 파일은 삭제하고 커밋에 포함하지 않음
-- 2026-07-25 (배포 이후 추가 세션) 스플래시 새로고침 스킵 + 모바일 캘린더/프로필 접근 추가:
-  - `src/App.tsx`: `sessionStorage`(`memory_splash_shown`) 기반으로 같은 탭 세션에서 새로고침 시 스플래시를 건너뛰도록 `getInitialScreen()` 추가. 사이드바의 수동 "스플래시 다시 보기" 버튼은 영향 없음
-  - **버그 수정**: 모바일 셸(`MobileAppShell`)이 `{screen === 'DASHBOARD' && <MobileAppShell/>}` 형태로 조건부 마운트되어 있어, 메모 수정 후 뒤로 오면 상세 화면이 아니라 목록으로 리셋되는 문제가 있었음(이전 세션에서 "hidden 클래스로만 감춤"이라고 상태 파일에 잘못 기록했던 부분). `hidden` 클래스로 숨기고 항상 마운트 상태를 유지하도록 수정해 tab/상세뷰 상태가 EDITOR 왕복 후에도 보존되게 함
-  - 모바일 하단 탭을 2개(`메모`/`파일`)에서 3개(`메모`/`캘린더`/`파일`)로 확장. `MobileAppShell`이 데스크톱과 동일한 `CalendarView` 컴포넌트를 그대로 재사용(월간/주간/일간, 공휴일 배지 포함, 새 컴포넌트 작성 없음); 캘린더에서 메모 선택 시 메모 탭 상세뷰로 이동, "새 메모"는 날짜가 채워진 채로 기존 `handleStartAddNote(date)` 재사용
-  - 프로필/설정 접근 추가: 메모 목록·파일 목록·캘린더 탭 각 헤더에 프로필 아바타 버튼을 추가해 기존 데스크톱 `SettingsModal`을 그대로 열도록 연결(신규 모바일 전용 설정 화면을 만들지 않고 기존 모달 재사용). `SettingsModal`의 탭 바가 375px 폭에서 잘리는 문제를 발견해 `overflow-x-auto`/`shrink-0` 추가로 가로 스크롤 가능하게 수정(이 모달이 처음으로 모바일 폭에서 실제 도달 가능해짐에 따라 필요해진 최소 수정)
-- 2026-07-25 모바일 MVP 2~4단계 구현 (1단계에 이어서, 같은 세션):
-  - `src/mobile/screens/MobileNoteEditorScreen.tsx`: 제목·본문만 노출하는 전체화면 에디터, 1200ms debounce 자동저장(`onAutoSave` 재사용), 뒤로가기 시 미저장 변경분 즉시 flush(별도 저장 버튼/확인 팝업 없음 — 자동저장 원칙 유지를 위한 의도적 설계), 상단 `저장 중`/`저장됨` 상태 표시. App.tsx에서 모바일 EDITOR 화면을 데스크톱 `NoteEditor` 대신 이 컴포넌트로 분기
-  - `src/mobile/screens/MobileFileListScreen.tsx`, `MobileFilePreviewScreen.tsx`: 기존 `useArchiveFiles`/`useArchiveMutations`/`archiveStore/core/fileTypes.js`를 그대로 재사용해 파일 목록(검색, 빈 상태), 미리보기(이미지 전체표시, PDF/텍스트 새 탭 열기, 기타 파일 아이콘+메타+다운로드), 단일 파일 업로드(우측 하단 업로드 버튼 → 진행률 패널 → 성공/실패+다시시도)를 구현. Firebase 경로·컬렉션 구조 변경 없음
-  - `MobileAppShell.tsx`가 `useArchiveFiles(userId, 'firebase')`/`useArchiveMutations(...)`를 직접 호출해 파일 탭 상태를 소유; 업로드 성공/실패 판정은 `useArchiveMutations`의 `mutationStatus` 텍스트 형태("파일명 업로드 준비" / "파일명 N%")를 화이트리스트로 구분하는 방식(원 훅이 구조화된 성공/실패 콜백을 제공하지 않아 채택한 어댑터 방식 — 훅 자체는 수정하지 않음)
-- Stitch 산출물(`design/stitch_mobile_personalMemo`, `design/stitch_memory_pwa`) 검수: 로그인 라벨 한국어화는 반영됐으나 파일 목록·업로드 화면 햄버거 메뉴 미제거, 프로필 설정 화면 잔존, 파일 업로드 화면에 정렬/항목별 메뉴/폴더 기능이 추가로 발견됨 — 구현에는 반영하지 않고 작업지시서(`docs/google_stitch_mobile_design_work_order.md`) 기준으로만 구현
-- 검증: `npm.cmd run lint`(tsc) 통과; `npm.cmd run test:vitest` 51건 통과(신규 모바일 컴포넌트 정적 렌더 테스트 17건 포함); `npm.cmd run test:unit`(Jest) 13건 통과; `npm.cmd run test:e2e`(Playwright, desktop-1920 + mobile-375) 4건 통과; `npm.cmd run build` 프로덕션 빌드 성공. Playwright system Chrome 채널로 375×812 뷰포트 스모크 재확인(콘솔 오류 없음, 가로 스크롤 없음) — 다만 Firebase 로그인 계정이 없어 인증 이후의 실제 모바일 화면(목록/상세/에디터/파일)은 라이브 브라우저로 검증하지 못함, Vitest 정적 렌더 테스트와 코드 리뷰로만 확인
-- 5단계 관련: 터치 영역 44px 이상(아이콘 버튼 `w-11 h-11`=44px, FAB `w-14 h-14`=56px, 리스트 행 `min-h-[64px]`), 360px대 뷰포트 가로 스크롤 없음(스모크로 확인)까지는 완료. 실 기기 검증과 PWA 설치 흐름의 모바일 셸 전용 재검증은 미수행(기존 앱 전역 PWA 설치 로직은 이전 세션에 이미 구현됨, 이번 범위에서 변경 없음)
-- 2026-07-25 사용자 명시 지시("커밋하고 원격까지 배포해줘")로 커밋·배포 진행:
-  - `git fetch` 결과 `origin/main`이 로컬보다 2커밋 앞서 있음을 확인(다른 세션에서 푸시한 `fc2e4b8 Add clipboard image upload and forced preview downloads`, `e9cd04f Fix preview download CORS failure` — `NoteEditor.tsx`/`FilePreviewModal.jsx`/`archiveStore/styles.css` 변경, 이번 모바일 작업과 파일 충돌 없음)
-  - 모바일 MVP 변경분을 커밋 `df1e4bc Add mobile MVP shell: note list/detail/editor and file list/preview/upload`로 기록, `origin/main`을 병합(머지 커밋 `efb12ac`, 충돌 없음)한 뒤 `origin/main`에 푸시 완료
-  - 표준 명령 `npm.cmd run deploy:hosting` 1회 실행으로 사전검증(`git fetch`, lint, Vitest 51건, Jest 13건, Playwright e2e 4건, 프로덕션 빌드, 배포 불변조건 스크립트)을 재시도 없이 통과
-  - Firebase Hosting `archive-store-fae71`에 배포 완료, 새 번들 `assets/index-DCD95yVu.js`; 배포 사전·사후검증 스크립트 모두 `site=archive-store-fae71, data=archive-store-v2-3d020` 일치 및 운영 URL HTTP 200 확인
-  - 로그인 게이트로 인해 배포된 모바일 화면(목록/상세/에디터/파일)의 실제 육안 확인은 여전히 미수행 상태로 배포됨 — 다음 세션에서 반드시 실 계정으로 라이브 검수 필요
-- 2026-07-25 `docs/google_stitch_mobile_design_work_order.md` 작성
-- 설명 문구·버튼명 최소화, 화면당 강조 버튼 1개, `메모`·`파일` 2탭, Font Awesome 아이콘 우선 기준 확정
-- 로그인·메모·파일·업로드 화면별 디자인 지시, 시각 토큰, 금지 사항, 검수 기준과 Google Stitch 입력용 요청문 문서화
-- 2026-07-25 `docs/mobile_minimum_feature_plan.md`를 메모·파일 중심의 모바일 MVP 설계로 개편
-- 모바일 정보 구조를 `메모`·`파일` 하단 탭으로 단순화하고 목록·상세·편집·업로드·미리보기 화면 정의
-- 기존 Firebase Auth, 메모 문서, 자료실 Firestore/Storage 경로와 서비스 재사용 원칙 확정
-- `src/mobile/screens/*` 화면 분리 구조, 반응형 기준, 오류 상태, 구현 순서, 완료 기준 문서화
-- 문서 변경 `git diff --check` 통과; 코드 구현·테스트·배포는 수행하지 않음
-- 2026-07-24 배포 예방 자동화 커밋 `dd2e2c3 Add deployment safety checks`와 자료실 스크롤 수정 커밋 `4e45bf6 Fix archive screen scrolling`을 `origin/main`에 푸시
-- 표준 명령 `npm.cmd run deploy:hosting`을 재시도 없이 1회 성공하고 Firebase Hosting 버전 `59dab75d73371692` 배포
-- 운영 URL HTTP 200, JS `assets/index-BDGVm9KV.js`, CSS `assets/index-DRlGFTNy.css`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인
-- 최종 검증: TypeScript, Vitest 34건, Jest 13건, Playwright 데스크톱·모바일 4건, 프로덕션 빌드 통과
-- 로그인된 운영 자료실에서 스크롤 래퍼 `overflowY=auto`, `clientHeight=1069`, `scrollHeight=1914`, 최대 스크롤 845px 및 `scrollTop=500` 이동 확인
-- 2026-07-24 자료실 화면의 상위 `h-screen`/`overflow-hidden` 구조 안에서 자료실 슬롯까지 `overflow-hidden`이 적용되어 긴 파일 목록이 잘리고 스크롤 컨테이너가 생성되지 않는 원인 확인
-- `src/App.tsx`의 자료실 슬롯을 `overflow-y-auto overscroll-contain custom-scrollbar`로 변경해 자료실 화면 내부 세로 스크롤 복구
-- 운영 DOM에서 `clientHeight=1059`, `scrollHeight=1732`, `overflowY=hidden`을 재현하고 임시 `auto` 적용 후 데스크톱 `scrollTop=500`, 축소 화면 `scrollTop=400` 이동 확인
-- `src/archiveStore/archiveScrollLayout.test.ts`에 스크롤 클래스 및 `overflow-hidden` 재도입 방지 테스트 2건 추가
-- 1단계 검증: TypeScript, Vitest 7개 파일 34건, 프로덕션 빌드, `git diff --check` 통과; 원격 배포는 수행하지 않음
-- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_자료실스크롤_Vitest_20260724.md`
-- 2026-07-23 배포 예방 공통 원칙을 `project_control/project_docs/DEPLOYMENT_PREVENTION_STANDARD.md` 글로벌 표준으로 승격하고, MEMOry 문서는 프로젝트 고유 명령·불변조건만 유지
-- 2026-07-23 배포 실패 원인을 전역 Firebase CLI PATH 의존, Jest 구성 누락, 수동 분산 검증, 운영 캐시 판별 문제로 정리
-- `npm.cmd run deploy:check`에 원격 fetch, TypeScript, Vitest, Jest, Playwright, 빌드, 환경·번들·Git 불변조건 검증을 통합
-- `npm.cmd run deploy:hosting`에 고정 버전 `firebase-tools@15.24.0` 실행과 배포 후 운영 HTML·번들 검증을 통합
-- `firebase.json`의 Hosting site를 `archive-store-fae71`로 고정하고 데이터 프로젝트 `archive-store-v2-3d020` 오배포 차단
-- 사전검증 정상 경로, 미커밋 작업 트리 차단, Firebase CLI 버전, 운영 HTTP 200·번들 검증 스크립트 동작 확인
-- 배포 운영 문서 생성: `D:\workspace\personalMemo\docs\deployment_runbook.md`
-- 2026-07-23 국경일·공휴일 기능을 커밋 `7cdc9a3 Add Korean holidays to calendar`로 `origin/main`에 푸시
-- Firebase Hosting `archive-store-fae71` 버전 `3f156a6805fe5016` 배포 완료
-- 운영 URL HTTP 200 및 새 번들 `assets/index-CUt7IJnF.js` 반영 확인
-- 운영 번들에 공휴일 데이터와 데이터 프로젝트 `archive-store-v2-3d020` 포함, 잘못된 Hosting Auth 도메인 미포함 확인
-- 2단계 Jest 구성 누락 결함을 수정하고 Jest 11건 전체 통과
-- 3단계 Playwright 1920×1080·375×812 공개 진입 E2E 2건 통과
-- 최종 검증: TypeScript, Vitest 32건, Jest 11건, Playwright 2건, 프로덕션 빌드, 번들 불변조건 통과
-- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Jest_20260723.md`, `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Playwright_20260723.md`
-- 2026-07-23 한국천문연구원 특일 정보 API의 `getRestDeInfo`, `getHoliDeInfo`를 이용해 2018~2027년 국경일·공휴일 200건 동기화
-- API 인증키는 추적되지 않는 `.env.local`의 `KASI_HOLIDAY_API_KEY`로만 사용하고, 브라우저 번들 및 저장소에는 포함하지 않음
-- 법정 국경일은 삼일절·제헌절·광복절·개천절·한글날 5종으로 별도 분류하고 노동절·대체공휴일 등을 국경일로 오분류하지 않도록 보정
-- 월간·주간·일간 화면과 선택일 패널에 공휴일 배지 및 날짜 접근성 문구 반영
-- 1단계 검증: TypeScript 검사, Vitest 6개 파일 32건, 프로덕션 빌드, `git diff --check` 통과
-- 결과서 생성: `D:\workspace\unit_test\reports\DEV_TS_0003_단위테스트_결과서_personalMemo_국경일공휴일_Vitest_20260723.md`
-- 2026-07-23 원격 `origin/main`의 커밋 4건을 로컬 `main`에 fast-forward 동기화 (`409bbc5` → `450a86d`, 충돌 없음)
-- 동기화 커밋: `6e02be1 Use icon-only archive logout button`, `d758776 Improve archive file name visibility`, `6ebbc72 Add archive file row download button`, `450a86d Use icon-only archive row download action`
-- 변경 파일: `src/archiveStore/styles.css`, `src/archiveStore/views/ArchiveWorkspaceScreen.jsx` (자료실 화면 아이콘 전용 버튼/파일명 가시성 개선)
-- 로컬 빌드/테스트/배포는 아직 재실행하지 않음 — 다음 작업 전 검증 필요
+- 2026-07-29 일정 시작·종료 시간 입력과 시간 그리드 선택 간격을 30분에서 10분으로 변경
+- 시간 입력 `step=600` 회귀 테스트 추가; 전체 Vitest 70건과 프로덕션 빌드 통과, `git diff --check` 통과
+- TypeScript 검사는 기존 개발 의존성 인식 문제(`@playwright/test`, `@jest/globals`)로 실패했으며 이번 변경과 무관
+- 2026-07-29 원격 `origin/main`의 21개 커밋을 로컬 `main`에 fast-forward 동기화 (`e9cd04f` → `f29da36`, 충돌 없음)
+- 동기화로 모바일 MVP 화면, 시간 단위·주간 반복 일정, 캘린더/사이드바 UI 개선, Firebase 저장 오류 및 캐시 보정이 반영됨
+- 동기화 후 로컬 `HEAD`와 `origin/main`이 `f29da36`으로 일치함을 확인; 기존 미추적 `docs/2f2d85c972d6dbe7650e43fe1bc2deb0.jpg`는 보존
 - 2026-07-23 캘린더 보기 선택 버튼 위치 변경을 커밋 `409bbc5 Move calendar view controls beside search`로 `origin/main`에 푸시
 - Firebase Hosting `archive-store-fae71` 버전 `b0684ec90298af2e` 배포 완료
 - 운영 HTML HTTP 200 및 새 번들 `assets/index-CiIODjbD.js` 반영 확인
@@ -246,17 +135,6 @@
 - Firebase Hosting `archive-store-fae71`에 최신 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 다운로드 아이콘 CSS 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
 
 ## 다음 작업
-- **최우선**: 2026-07-28 일정 저장 실패 버그의 진짜 원인(듀얼 Firebase 클라이언트 초기화 경쟁)을 찾아 양쪽 다 수정하고 `a4177bd`로 배포 완료 — 실 계정으로 로그인해 일정을 만들고 새로고침(또는 재로그인) 후에도 유지되는지 반드시 확인. `c9d9672`~`a4177bd` 배포 기간 전체(1차 수정 `93e165e` 포함)에 만들었던 일정은 저장되지 않았을 가능성이 큼
-- 2026-07-28 캘린더 일정관리 기능 + UX 개선 3건 모두 배포 완료(`af631dc`) — 일간/주간 시간축(30분 단위), 종일 일정, 우선순위 색상, "일정확인"+X닫기, 월간/주간 선택일 패널의 일정/메모 분리, 설정의 폴더 이름 변경이 운영에서 실제로 동작하는지 라이브 확인 필요(로그인 게이트로 이번 세션엔 미수행)
-- **배포됨 (2026-07-25, `5762353`)**. 캘린더/설정 탭은 사용자가 직접 확인해 버그 2건을 제보·수정까지 완료됨. 메모 목록/상세/작성/자동저장, 파일 목록/검색/미리보기/업로드는 여전히 실사용자 라이브 확인 이력이 없어 다음 우선순위
-- 5단계 마무리: 360px 실제 기기 기준 접근성·터치·키보드 검증, PWA 설치 흐름을 모바일 셸 화면에서 재확인
-- 업로드 성공/실패 판정에 쓰인 `mutationStatus` 문자열 화이트리스트 방식이 실제 네트워크 오류 문구와 계속 어긋나지 않는지, 필요하면 `useArchiveMutations`에 구조화된 상태 콜백 추가를 검토
-- Stitch 산출물의 미해결 위반(파일 화면 햄버거 메뉴, 프로필 설정 화면, 파일 업로드 화면의 정렬/개별 메뉴/폴더 기능) 재수정 지시 여부 결정
-- Google Stitch에 작업지시서의 입력용 요청문을 전달하고 모바일 화면 10종 생성
-- 360px 실제 기기 기준 접근성·터치·키보드·PWA 동작 검증
-- 필요 시 실제 모바일 기기에서 자료실 터치 스크롤 감각만 추가 확인
-- 로그인 가능한 브라우저에서 월간·주간·일간 공휴일 배지와 다중 공휴일 날짜를 시각 검수
-- 2028년 데이터가 필요해지기 전에 `npm.cmd run holidays:sync`를 재실행해 정적 스냅샷 갱신
 - 로그인 가능한 브라우저에서 월간·주간·일간 전환과 375px·1920px 반응형 렌더링 검수
 - 로그인 가능한 브라우저에서 캘린더 이전 달/다음 달/오늘 이동을 시각 검수
 - 실제 로그인 계정으로 폴더 생성, personalMemo 메모 저장, 자료실 파일 업로드, Storage 이미지 업로드 동작 확인
@@ -298,23 +176,22 @@
 - run_command: `npm.cmd run dev`
 - verify_command: `npm.cmd run lint`, `npm.cmd run build`
 - port_or_runtime: Vite dev server `http://localhost:5179/`
-- deploy_method: `npm.cmd run deploy:hosting`
-- deploy_check_command: `npm.cmd run deploy:check`
-- deploy_post_check: `node scripts/verify-deployment.mjs`; 기존 로그인 계정으로 메모·일정·개인설정 smoke 확인
-- deploy_invariants: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`, branch=`main`, public=`dist`, Hosting only
-- deploy_abort_condition: 테스트·빌드 실패, dirty/divergent/no-upstream, 필수 환경변수 누락, 번들 프로젝트 불일치, 운영 자산 해시·데이터 프로젝트 불일치
-- latest_deployment: commit=`dd0ab64`, JS=`assets/index-C3_I0vDV.js`
+- deploy_method: Firebase Hosting `archive-store-fae71`; 자료실 Firebase 프로젝트를 기본 운영 기준으로 사용
 - hosting_project: `archive-store-fae71`
 - data_project: Firebase Auth/Firestore/Storage `archive-store-v2-3d020`
-- latest_program_head: `dd0ab64 Add weekly recurring schedules` (후속 문서 HEAD `f29da36 Record project control synchronization`)
-- latest_verified_bundle: 운영 JS `assets/index-C3_I0vDV.js`
-- sync_verification: 2026-07-29 `personalMemo` `HEAD`와 `origin/main` 모두 `f29da36`; 기능 소스 `dd0ab64` 기준 `npm run deploy:hosting` 사전·사후검증 통과, 운영 URL HTTP 200, 운영 JS `assets/index-C3_I0vDV.js`, 데이터 프로젝트 `archive-store-v2-3d020` 일치 확인. TypeScript·Vitest 70건·Jest 13건·Playwright 4건·프로덕션 빌드 통과
-- 이전 배포 이력(모바일 하단바 등): commit=`dd3e116`, JS=`assets/index-0JBwVk3o.js` — 검색 아이콘 미표시 등 미해결 항목은 [[personal_memo_current]] 리스크 섹션 참고, dvh 수정으로 재현되지 않는 것까지는 확인됨(이전 세션)
+- deploy_invariant: Hosting 프로젝트와 데이터 프로젝트가 의도적으로 다르며, 프로덕션 번들의 `VITE_FIREBASE_PROJECT_ID`는 반드시 `archive-store-v2-3d020`이어야 함
+- pre_deploy_check: `.env.local` 존재 여부와 필수 `VITE_FIREBASE_*` 값 확인, 테스트/타입 검사/프로덕션 빌드 통과, 생성된 JS 번들에 `archive-store-v2-3d020` 포함 및 `archive-store-fae71.firebaseapp.com` 미포함 확인
+- deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
+- post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
+- deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
+- latest_program_head: `f29da36 Record project control synchronization`
+- latest_verified_bundle: JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css`
+- sync_verification: 2026-07-29 `personalMemo` `HEAD`와 `origin/main` 모두 `f29da36`; 로컬 미추적 JPG 1개는 동기화 대상에서 제외해 보존
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
-- key_docs: `README.md`, `docs\technical_architecture.md`, `docs\codex_handover.md`, `docs\mobile_minimum_feature_plan.md`, `docs\google_stitch_mobile_design_work_order.md`
-- key_files: `src\App.tsx`, `src\index.css`, `src\components\*.tsx`, `src\mobile\MobileAppShell.tsx`, `src\mobile\MobileBottomNav.tsx`, `src\mobile\screens\MobileNoteListScreen.tsx`, `src\mobile\screens\MobileNoteDetailScreen.tsx`, `src\mobile\screens\MobileNoteEditorScreen.tsx`, `src\mobile\screens\MobileFileListScreen.tsx`, `src\mobile\screens\MobileFilePreviewScreen.tsx`
+- key_docs: `README.md`, `docs\technical_architecture.md`, `docs\codex_handover.md`
+- key_files: `src\App.tsx`, `src\index.css`, `src\components\*.tsx`
 
 ## 리스크 / 주의사항
 - Chrome DevTools MCP가 2026-07-06 세션에서 장시간 타임아웃되어 브라우저 시각 검수는 완료하지 못함
@@ -326,22 +203,17 @@
 - 운영 Hosting은 2026-07-15 05:58 KST 배포본과 새 JavaScript 자산 모두 HTTP 200 확인
 - `README.md`, `docs/technical_architecture.md`, `docs/codex_handover.md`는 아직 localStorage 단독 구조를 기술해 실제 Firebase-only 코드와 불일치
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
-- 모바일 셸은 Firebase 로그인 이후에만 렌더링되어(`archiveUser` 필요) 실제 계정 없이는 브라우저에서 목록/상세/에디터/파일 화면을 볼 수 없음 — 다음 세션에서 로그인 계정으로 라이브 검증 우선 필요
-- `src/App.tsx`의 화면 전환은 `screen`(전역) 상태 하나를 데스크톱·모바일이 공유하므로, EDITOR로 전환됐다가 DASHBOARD로 복귀할 때 모바일 쪽 목록/상세 뷰 상태(`MobileAppShell` 내부 `noteView`)가 유지되도록 모바일 셸을 언마운트하지 않고 `hidden` 클래스로만 감춤 — 이 구조를 건드릴 때 조건부 렌더링(`{screen === 'DASHBOARD' && ...}`)으로 되돌리면 편집 후 상세 화면으로 안 돌아가고 목록으로 리셋되는 회귀가 생김
-- 모바일 파일 업로드의 성공/실패 판정은 `useArchiveMutations.mutationStatus` 문자열 형태("파일명 업로드 준비" / "파일명 N%"만 진행중으로 인식, 그 외는 실패로 간주)를 근거로 하는 어댑터라 원본 훅의 문구가 바뀌면 오탐 가능 — 훅 자체는 수정하지 않았음(재사용 원칙 유지)
-- 로컬 dev 서버가 사용자 요청으로 `http://localhost:3000`에 떠 있는 상태일 수 있음(0.0.0.0 바인딩); 다음 세션에서 포트 충돌 시 먼저 확인
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `src\mobile\MobileAppShell.tsx`, `src\App.tsx`의 데스크톱/모바일 분기부, `docs\mobile_minimum_feature_plan.md`의 "9. 구현 순서" 5단계(남은 항목)
-- 확인이 필요한 미결사항: 실 계정 로그인 후 모바일 목록·상세·에디터·파일 목록/업로드/미리보기 브라우저 검수, Stitch 산출물 미해결 위반사항 재수정 여부, 커밋/배포 여부
+- 다음 시작 시 먼저 볼 것: `src\App.tsx`, `src\index.css`, Stitch 프로젝트 `디자인 작업 명세 이행`
+- 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: `docs/mobile_minimum_feature_plan.md` 구현 순서에 따라 모바일 MVP를 단계적으로 구현 (1~4단계 완료, 5단계는 자동화 가능한 범위만 완료)
-- done_latest: 모바일 셸 1단계(하단 탭, 메모 목록/검색/빈상태, 메모 상세)에 이어 같은 세션에서 2단계(모바일 메모 작성·자동저장 화면), 3~4단계(파일 목록·검색·미리보기·단일 업로드·진행상태)까지 구현. `App.tsx` 768px 기준 데스크톱/모바일 분기, 기존 Firebase·자동저장·자료실 훅(`useArchiveFiles`/`useArchiveMutations`)은 변경 없이 재사용
-- key_findings: Stitch 산출물은 원 지시서 대비 위반(햄버거 메뉴, 프로필 설정 화면, 파일 화면 정렬/폴더/개별메뉴)이 남아있어 구현은 Stitch 이미지가 아니라 `docs/google_stitch_mobile_design_work_order.md`와 `docs/mobile_minimum_feature_plan.md`를 기준으로 진행함; 모바일 셸은 로그인 게이트 뒤에 있어 실 계정 없이는 라이브 검증 불가; `useArchiveMutations`가 구조화된 성공/실패 콜백이 없어 문자열 패턴 매칭으로 업로드 상태를 판정하는 어댑터를 추가함(원 훅 미수정)
-- changed_files: `src/App.tsx`(수정); `src/mobile/MobileAppShell.tsx`, `MobileBottomNav.tsx`; `src/mobile/screens/MobileNoteListScreen.tsx`, `MobileNoteDetailScreen.tsx`, `MobileNoteEditorScreen.tsx`, `MobileFileListScreen.tsx`, `MobileFilePreviewScreen.tsx`; `src/mobile/components/MobileEmptyState.tsx`; 신규 테스트 `src/mobile/MobileAppShell.test.tsx`, `src/mobile/screens/MobileNoteEditorScreen.test.tsx`, `MobileFileListScreen.test.tsx`, `MobileFilePreviewScreen.test.tsx`; 상태 기록 `states/personal_memo_current.md`
-- verification: `npm.cmd run lint` 통과; `npm.cmd run test:vitest` 51건 통과(신규 17건); `npm.cmd run test:unit`(Jest) 13건 통과; `npm.cmd run test:e2e`(Playwright desktop-1920+mobile-375) 4건 통과; `npm.cmd run build` 성공; `npm.cmd run deploy:hosting` 사전·사후검증 스크립트 통과, 운영 URL HTTP 200 — 인증 이후 실제 모바일 화면(목록/상세/에디터/파일)은 여전히 라이브 브라우저로 미검증(로그인 계정 없음)한 채로 배포됨
-- next_action: 실 계정으로 운영 사이트에서 모바일 목록/상세/에디터/파일 흐름 라이브 검증 (최우선 — 배포 후 아직 미확인)
-- risks_or_blockers: 모바일 브라우저에 따라 `download` 속성을 무시할 수 있어 새 탭 열기 대안 필요(파일 미리보기에 이미 반영); `required_decision`: Stitch 산출물의 미해결 위반사항을 재수정 요청할지 여부; 인증 게이트 뒤 화면이 실사용자 계정으로 한 번도 확인되지 않은 상태로 프로덕션에 배포되었음(`do_not_do`: 이 사실을 다음 세션에서 누락하지 말 것)
-- latest_fix_pending: 자동 검증과 원격 배포는 완료했으며 실제 Android Chrome 로그인 후 하단바·FAB 재확인만 남음
-- deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수; 이번 변경은 커밋 `df1e4bc`/머지 `efb12ac`로 `origin/main`에 푸시됨, Hosting 배포 완료(2026-07-25)
+- current_goal: 배포된 월간·주간·일간 캘린더/메모 편집 개선 사항과 자료실 파일 행 액션 UI의 로그인 기반 실기 검수
+- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시·배포 완료; 이후 자료실 파일 목록 파일명 가독성 개선, 파일 행 다운로드 액션 추가, 다운로드 액션 아이콘 전용 디자인 반영, 커밋 `450a86d` 푸시 및 Hosting 배포 완료
+- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름. 자료실 파일 행 액션은 아이콘 전용 + `title`/`aria-label` 유지 기준으로 디자인한다
+- changed_files: latest `src\archiveStore\views\ArchiveWorkspaceScreen.jsx`, `src\archiveStore\styles.css`; recent calendar/editing `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
+- verification: 캘린더/편집 개선 시 TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 자료실 행 액션 변경 시 `npm.cmd run build`, `npm.cmd run test:vitest` 통과; Firebase Hosting 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인. `npm.cmd run lint`는 기존 미설치 타입 의존성 `@playwright/test`, `@jest/globals`로 실패 상태
+- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage·자료실 파일 다운로드 동작을 브라우저에서 검수
+- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
+- deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
