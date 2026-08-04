@@ -2,18 +2,31 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-07-29
-- owner_request: `mohenz/personalMemo.git` 클론 후 Stitch MCP 디자인 변경사항을 받아 UI 개선
-- current_status: 월간·주간·일간 선택 버튼 이동, 메모 편집 개선, `MEMOry` 브랜드 변경, 조용한 자동저장, 자료실 Firebase 업로드 backend 보정, 로그아웃 가시성 개선, Markdown 다운로드, 저장 시 자동 제목, 자료실 파일 목록 가독성/다운로드 액션 개선을 `origin/main`에 푸시하고 Firebase Hosting 배포 완료
+- last_updated: 2026-08-04
+- owner_request: 전체 소스 코드 리뷰 후 심각한 버그·논리 오류·숨겨진 버그를 모두 수정하고 Firebase Hosting 배포
+- current_status: 코드 리뷰로 발견한 버그 8건 수정(데이터 손실 방지 포함), 테스트 픽스처 보정, backup 스크립트 REST API 전환을 커밋하고 Firebase Hosting 배포 완료
 
 ## 현재 목표
-- 캘린더 월간·주간·일간 보기와 공통 날짜 탐색을 안정적으로 제공한다.
+- 코드 리뷰에서 발견된 버그를 모두 수정하고 안정적인 프로덕션 상태 유지
 
 ## 진행 중 작업
-- 통합 화면의 실제 브라우저 UI 확인 및 세부 스타일 정리 필요
-- 실제 로그인 계정 기반 Firestore 저장, Storage 이미지 업로드 E2E 확인 필요
+- 로그인 계정 기반 브라우저 E2E 검수 미완료
 
 ## 최근 완료 작업
+- 2026-08-04 전체 소스 코드 리뷰 수행 (17개 파일 검토)
+- 2026-08-04 커밋 `2eda666` — `cloudLoaded` 가드 추가로 Firestore 읽기 실패 시 빈 배열(`notes:[]`)로 Firestore를 덮어쓰는 데이터 손실 버그 수정
+- 2026-08-04 커밋 `8baff65` — 코드 리뷰에서 발견된 버그 6건 수정:
+  - `SearchView.tsx`: 초기 검색어 `'아이디어'` 하드코딩 제거 → `''`
+  - `SearchView.tsx`: 정렬 비교를 `new Date()` UTC 변환에서 YYYY-MM-DD 문자열 직접 비교로 교체 (timezone 오류 제거)
+  - `archiveService.js`: Storage 업로드 후 `addDoc` 실패 시 고아 파일을 `deleteObject`로 정리 (Storage/Firestore 불일치 방지)
+  - `notificationService.ts`: 리마인더 스캔 범위 14일 → 365일 (2주 이상 뒤 일정도 첫 타이머 등록)
+  - `scheduleFilter.ts`: 팝업 `reminders` 섹션을 `recurrence` 기준에서 `reminder.enabled` 기준으로 수정
+  - `useArchiveAuth.js`: `setAuthUser(null)` 호출을 `signOut()` 완료 이후로 이동 (경쟁 조건 제거)
+  - `NoteDetail.tsx`: 존재하지 않는 `/notes/:id` 공유 URL 대신 Web Share API + 클립보드 fallback으로 교체
+- 2026-08-04 커밋 `a2104c8` — `scheduleFilter.test.ts` 픽스처에 `reminder.enabled:true` 추가 (버그 수정에 맞게 테스트 재정렬)
+- 2026-08-04 커밋 `7633219` — backup 스크립트를 firebase-admin SDK(IAM 권한 필요) → Firestore REST API + 이메일/비밀번호 인증 방식으로 재작성
+- 2026-08-04 `origin/main` 푸시 (`1c38d0e` → `7633219`)
+- 2026-08-04 Firebase Hosting `archive-store-fae71` 배포 완료; 모든 테스트(Vitest 80건, Jest 13건, E2E 4건) 통과
 - 2026-07-29 일정 시작·종료 시간 입력과 시간 그리드 선택 간격을 30분에서 10분으로 변경
 - 시간 입력 `step=600` 회귀 테스트 추가; 전체 Vitest 70건과 프로덕션 빌드 통과, `git diff --check` 통과
 - TypeScript 검사는 기존 개발 의존성 인식 문제(`@playwright/test`, `@jest/globals`)로 실패했으며 이번 변경과 무관
@@ -184,9 +197,9 @@
 - deploy_command: Hosting 배포 대상은 반드시 `firebase deploy --only hosting --project archive-store-fae71`
 - post_deploy_check: Hosting HTTP 200, 새 번들 해시 반영, 원격 JS 번들의 데이터 프로젝트 ID 확인, 기존 계정 로그인 후 메모·일정·개인설정 조회 확인
 - deploy_abort_condition: Firebase 환경변수 누락, 데이터 프로젝트 불일치, 원격 번들 검증 실패 시 배포 중단 또는 즉시 직전 정상 버전으로 복구
-- latest_program_head: `f29da36 Record project control synchronization`
-- latest_verified_bundle: JS `assets/index-CK0U3Lw8.js`, CSS `assets/index-CUcZLQhr.css`
-- sync_verification: 2026-07-29 `personalMemo` `HEAD`와 `origin/main` 모두 `f29da36`; 로컬 미추적 JPG 1개는 동기화 대상에서 제외해 보존
+- latest_program_head: `7633219 Rewrite backup script to use Firestore REST API (no service account)`
+- latest_verified_bundle: JS `assets/index-5L1EKG2x.js`, CSS `assets/index-Ctq58AM3.css`
+- sync_verification: 2026-08-04 `personalMemo` `HEAD`와 `origin/main` 모두 `7633219`; Vitest 80건, Jest 13건, Playwright E2E 4건, 운영 URL HTTP 200 확인
 
 ## 핵심 경로
 - project_root: `D:\workspace\personalMemo`
@@ -209,11 +222,12 @@
 - 확인이 필요한 미결사항: 모바일/태블릿 실제 렌더링 스크린샷 검수
 
 ## Handoff
-- current_goal: 배포된 월간·주간·일간 캘린더/메모 편집 개선 사항과 자료실 파일 행 액션 UI의 로그인 기반 실기 검수
-- done_latest: 보기 선택 버튼을 검색 왼쪽으로 이동하고 커밋 `409bbc5` 푸시·배포 완료; 이후 자료실 파일 목록 파일명 가독성 개선, 파일 행 다운로드 액션 추가, 다운로드 액션 아이콘 전용 디자인 반영, 커밋 `450a86d` 푸시 및 Hosting 배포 완료
-- key_findings: 사용자 입력 제목을 우선 보존하고 빈 제목·기본 제목에만 그룹 자동 제목을 적용해야 하며, Hosting과 데이터 Firebase 프로젝트는 서로 다름. 자료실 파일 행 액션은 아이콘 전용 + `title`/`aria-label` 유지 기준으로 디자인한다
-- changed_files: latest `src\archiveStore\views\ArchiveWorkspaceScreen.jsx`, `src\archiveStore\styles.css`; recent calendar/editing `src\components\CalendarView.tsx`, `src\components\CalendarView.test.tsx`, `src\components\calendar\*`, `src\components\Sidebar.tsx`, `src\utils\autoTitle.ts`, 테스트·빌드 설정 파일; previous `src\App.tsx`, `src\types.ts`, `src\archiveStore\**`, `src\firebase\client.ts`, `src\services\archiveIntegration.ts`, `src\components\SettingsModal.tsx`, `src\components\NoteEditor.tsx`, `.env.example`, `package.json`, `package-lock.json`; archive_store rules: `firebase\firestore.rules`, `firebase\storage.rules`
-- verification: 캘린더/편집 개선 시 TypeScript 검사, Vitest 27건, Jest 8건, Playwright 2건, 프로덕션 빌드 통과; 자료실 행 액션 변경 시 `npm.cmd run build`, `npm.cmd run test:vitest` 통과; Firebase Hosting 배포 완료; 운영 URL HTTP 200, 새 JS/CSS 번들 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인. `npm.cmd run lint`는 기존 미설치 타입 의존성 `@playwright/test`, `@jest/globals`로 실패 상태
-- next_action: 로그인 계정으로 캘린더 전환·날짜 이동·폴더 생성·제목 저장·Firestore/Storage·자료실 파일 다운로드 동작을 브라우저에서 검수
-- risks_or_blockers: 로그인 계정 기반 전체 E2E는 미완료; 자료실 CSS가 전역 스타일로 포함되어 통합 화면 간 스타일 영향 점검 필요
+- current_goal: 코드 리뷰 버그 수정 완료 후 안정적 프로덕션 상태 유지; 로그인 계정 기반 브라우저 E2E 검수
+- done_latest: 전체 소스 코드 리뷰 → 버그 8건 수정 → 커밋 4건(`2eda666`, `8baff65`, `a2104c8`, `7633219`) → 테스트 전량 통과 → `origin/main` 푸시 → Firebase Hosting 배포 완료
+- key_findings: `cloudLoaded` 가드 없이 Firestore 읽기 실패 시 `notes:[]`로 덮어쓰는 버그가 기존 데이터 손실의 원인이었음. backup 스크립트는 firebase-admin IAM 문제로 REST API 방식으로 전환했으나 `.env.local`에 `FIREBASE_BACKUP_EMAIL`/`FIREBASE_BACKUP_PASSWORD` 미설정 시 건너뜀. Hosting과 데이터 Firebase 프로젝트는 서로 다름(불변조건)
+- changed_files: `src/App.tsx`, `src/components/SearchView.tsx`, `src/components/NoteDetail.tsx`, `src/archiveStore/features/archive/archiveService.js`, `src/archiveStore/features/archive/useArchiveAuth.js`, `src/services/notificationService.ts`, `src/utils/scheduleFilter.ts`, `src/utils/scheduleFilter.test.ts`, `scripts/backup-firestore.mjs`
+- verification: TypeScript `tsc --noEmit` 통과, Vitest 80건 통과, Jest 13건 통과, Playwright E2E 4건 통과, 프로덕션 빌드 통과, 운영 URL HTTP 200, 번들 `assets/index-5L1EKG2x.js` 반영, 데이터 프로젝트 `archive-store-v2-3d020` 유지 확인
+- next_action: 로그인 계정으로 메모 저장·일정 알림·자료실 파일 업로드·공유 버튼 동작을 브라우저에서 검수; backup 자격증명(`FIREBASE_BACKUP_EMAIL`, `FIREBASE_BACKUP_PASSWORD`) `.env.local`에 설정하여 배포 시 자동 백업 활성화
+- risks_or_blockers: backup 기능이 자격증명 미설정으로 매 배포 시 건너뜀 — 데이터 손실 발생 시 수동 복구 필요; 로그인 계정 기반 전체 E2E 미완료
+- do_not_do: Firestore 데이터 초기화·복사·마이그레이션 작업은 사전 백업 없이 수행 금지; Hosting 프로젝트 `archive-store-fae71`와 데이터 프로젝트 `archive-store-v2-3d020`를 절대 혼동하지 말 것
 - deployment_guard: Hosting=`archive-store-fae71`, Auth/Firestore/Storage=`archive-store-v2-3d020`; 배포 전후 번들 프로젝트 ID 검증 필수
