@@ -2,9 +2,9 @@
 
 ## 기본 정보
 - project_key: cinetube
-- last_updated: 2026-07-27 KST
+- last_updated: 2026-08-02 KST
 - owner_request: `D:\workspace\cinetube\docs\requirements\cinetube 기본요구사항.txt`, `D:\workspace\cinetube\docs\requirements\cinetube 기능추가요구사항.txt`, `docs\reference\stitch_cinetube_movie_hub` 디자인을 기준으로 PC 우선, 모바일 반응형 영화정보 관리 웹사이트 제작. bloom 프로젝트 계정과 연동되는 완전 폐쇄형(Closed-Access) 프라이빗 아카이브 구축 및 Supabase 데이터베이스 `CineHub` 활용.
-- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. `docs\requirements\cinetube 기능추가요구사항.txt` 기준 관심작품과 갤러리 게시판 기능 구현 완료.
+- current_status: 로컬 PC 전용 PostgreSQL/API/static 웹서비스 구동 구조로 운영 중. 로그인/세션 보안 기능은 로컬 전용 운영 기준으로 해제. 루트에는 `index.html`만 남기고 공개 서브화면은 `pages/`, 관리자 화면은 `admin/` 하위로 정리 완료. 2026-06-03 현재 관리자 영화정보의 가져오기 대상은 `common_codes` 공통코드(`code_group='import_site'`) 기반으로 렌더링되며, `공통코드` 관리 메뉴가 추가된 상태. 공통코드 화면의 `사용여부` select 표시는 `사용/미사용`으로 통일됨. `docs\requirements\cinetube 기능추가요구사항.txt` 기준 관심작품과 갤러리 게시판 기능 구현 완료. 2026-08-02 관리자 갤러리에 클립보드 캡쳐 이미지를 붙여넣는 즉시 자동 저장하는 퀵등록 화면(`admin/gallery-quick.html`)이 추가되어, 기존 단건 등록 폼(`admin/gallery-images.html`)과 병행 운영 중.
 
 ## 현재 목표
 - CineTube 영화정보 허브 웹사이트를 로컬 PC 전용 서비스로 안정 운영.
@@ -29,6 +29,8 @@
 - CineTube 원격은 `origin/main` 및 `origin/rename/persona_full` 모두 커밋 `eda99ef` 기준 최신 상태. 작업트리는 clean.
 
 ## 최근 완료 작업
+- 2026-08-02: 갤러리 퀵등록의 최근 등록 카드마다 확인창이 있는 `삭제` 버튼을 추가했다. 기존 관리자 삭제 계약과 동일하게 `Store.remove("galleryImages", id)` 후 연결된 `image_asset`을 `Store.deleteMedia()`로 정리하며, 성공 시 카드 목록과 카운트를 즉시 갱신하고 상태 메시지를 표시한다. `node --check assets/js/pages/admin-gallery-quick.js`, `git diff --check` 통과. 브라우저에서 카드 2개에 삭제 버튼 2개와 접근성 이름이 표시되고 콘솔 오류가 없음을 확인했으며, 실제 데이터 보존을 위해 확인 단계 이후 삭제 실행은 하지 않았다.
+- 2026-08-02: 관리자 갤러리에 클립보드 캡쳐 이미지 전용 퀵등록 화면 `admin/gallery-quick.html`, `assets/js/pages/admin-gallery-quick.js` 신규 추가. 여러 차례 UX 방향을 조정한 끝에 최종 형태는: 좌측 드롭존에 이미지를 붙여넣기(Ctrl+V)/드래그/파일선택하면 `Gallery ID`·제목·설명·출처·태그·전시여부 등 입력 화면 없이 파일명/시각 기준 자동값으로 즉시 업로드+저장되고(`Store.uploadMedia` → `Store.create("galleryImages", ...)` → `Store.updateMediaOwner`, 기존 `admin-page.js`의 갤러리 저장 로직과 동일 계약 재사용), "저장 중/완료/실패" 상태 메시지만 잠깐 표시된다. 여러 장을 한 번에 붙여넣으면 내부 큐로 순차 자동 저장된다. 우측 "등록 확인" 패널은 최근 등록 이미지 2개를 실시간으로 보여주며 검색(상단 검색창)과 "오늘 등록만" 필터를 제공한다. 사이드바 9개 관리 페이지 전체와 대시보드 퀵링크에 진입점을 추가했다. `assets/css/styles.css`에 `.quick-split`(좌우 2단, 1100px 이하 스택), `.quick-dropzone`, `.quick-status`, `.quick-review-*` 스타일 추가. 별개로 `admin/gallery-images.html`(기존 단건 등록 폼)의 저장 버튼만 `body[data-admin-kind="galleryImages"] .form-title-submit` 스코프로 확대(높이 54px, 아이콘 26px). 검증: `node --check assets/js/pages/admin-gallery-quick.js` 통과, 모든 신규/수정 파일이 구동 중인 로컬 서버(`localhost:8080`)에서 200 응답 확인, JS의 모든 `getElementById` 대상이 HTML의 실제 id와 1:1 대응함을 스크립트로 대조 확인. 실제 브라우저 검증에서 등록 카드 2개와 카운트 `(2/5945)` 표시를 확인함.
 - 2026-07-27: 관리자 갤러리 이미지 영역 아래에 `파일선택`과 `저장` 버튼을 동일 너비의 2열로 나란히 배치하고, 기존 하단 중복 저장 버튼을 제거했다. 이미지 제거 버튼 문구는 `갤러리 이미지 삭제`에서 `파일삭제`로 변경했다. 로컬 브라우저에서 저장 submit 1개, 파일 input 1개, 버튼 배치와 콘솔 오류 없음 확인.
 - 2026-07-26: 관리자 갤러리 이미지 입력에서 브라우저 기본 파일명과 클립보드 안내 문구는 숨기고 `파일선택` 버튼 텍스트는 전용 파일 선택 버튼으로 복원했다. 이미지 입력 그리드를 갤러리 화면에서만 1열로 확장하고 붙여넣기/미리보기 영역을 `1:1` 정사각형으로 변경했으며 붙여넣기 기능은 유지했다.
 - 2026-07-26: 관리자 갤러리 등록 목록에서 `Gallery ID` 열을 제거하고, 상세/수정/삭제 동작을 기존 Material Symbols 아이콘 폰트 버튼으로 변경했다. 아이콘 버튼에 `aria-label`과 `title`을 유지했으며 갤러리 전용 열 너비를 5열 구성에 맞게 조정했다. 로컬 브라우저에서 5열·아이콘 3종·접근성 이름·콘솔 오류 없음 확인 후 커밋 `123b980`을 `origin/rename/persona_full`과 `origin/main`에 푸시해 Vercel 배포했다. 운영 HTML/CSS/JS는 200 응답 및 신규 캐시 키 반영을 확인했으나, 운영 관리자 데이터 API는 기존 설정의 `127.0.0.1:54322` 연결 실패로 500 응답하므로 목록 데이터 렌더링 사후검증은 보류 상태다.

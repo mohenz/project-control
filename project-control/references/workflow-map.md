@@ -16,6 +16,7 @@
    - key docs
    - run or verify commands
    - port or runtime if relevant
+   - `project_docs/development_systems.csv` and current Listener before starting a local server
 5. Start work in the matched project context.
 
 ## Handoff flow

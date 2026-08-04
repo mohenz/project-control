@@ -105,6 +105,8 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Do not mix context between projects.
 - Prefer action over re-analysis.
 - After meaningful work, update the matched state file.
+- Before starting a local server, read `project_docs/development_systems.csv` and run `scripts/check-development-ports.ps1 -ProjectKey <project_key>` when available.
+- If another project owns the requested port, do not stop it. Reassign the target project's port and update the runtime config, registry, state file, and development systems registry together.
 
 ## Optional Helper
 

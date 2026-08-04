@@ -156,6 +156,13 @@
 - 책임이 섞여 있으면 기능 구현보다 분리를 먼저 수행한다.
 - 검증 보고에는 어떤 화면/기능을 어떤 파일로 분리했는지 포함한다.
 
+## 15. 개발 시스템 운영정보 및 포트 충돌 방지
+- 로컬 서버·API·DB의 포트와 실행 명령은 `project_docs/development_systems.csv`를 운영 원장으로 관리한다.
+- 로컬 시스템 실행 전 `scripts/check-development-ports.ps1 -ProjectKey <project_key>`로 예약 포트와 Listener를 확인한다.
+- 다른 프로젝트가 사용 중인 포트를 임의로 점유하거나 해당 프로세스를 종료하지 않는다.
+- 포트 변경 시 실제 실행 설정, `development_systems.csv`, `project_registry.md`, 해당 `states/*.md`를 같은 작업에서 동기화한다.
+- PID와 일시적 실행 상태는 영구 원장에 기록하지 않으며, 비밀값·토큰·DB 비밀번호는 저장하지 않는다.
+
 
 
 

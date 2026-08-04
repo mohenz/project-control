@@ -24,6 +24,8 @@
 - `project_registry.md`
 - `project_docs/PROJECT_ARCHITECTURE_MAP.md`
 - `project_docs/DEPLOYMENT_PREVENTION_STANDARD.md`
+- `project_docs/DEVELOPMENT_SYSTEM_OPERATIONS.md`
+- `project_docs/development_systems.csv`
 - `project_switch_workflow.md`
 - `project_selection_prompt_list.md`
 - `skill_install_manual.md`
@@ -36,6 +38,7 @@
 - `states/*.md`
 - `scripts/switch-project.ps1`
 - `scripts/send-work-summary.ps1`
+- `scripts/check-development-ports.ps1`
 - `scripts/install-project-control-skill.ps1`
 
 ## 주요 명령
@@ -57,6 +60,9 @@
 - `unit_test`
 - `project_control`
 - `archive_store`
+- `personal_memo`
+- `schedule_manager`
+- `epms`
 - `token_tracker`
 - `cinetube`
 - `jian_soul`

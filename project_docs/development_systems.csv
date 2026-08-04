@@ -1,0 +1,18 @@
+project_key,service,host,port,protocol,url,start_command,health_url,policy,notes
+personal_memo,web,127.0.0.1,3000,http,http://127.0.0.1:3000,npm.cmd run dev,http://127.0.0.1:3000,reserved,personalMemo 전용 포트
+memorybook,web,127.0.0.1,3030,http,http://127.0.0.1:3030,npm.cmd run dev,http://127.0.0.1:3030,dedicated,memorybook 전용 Vite 포트
+epms,web,127.0.0.1,3010,http,http://127.0.0.1:3010,npm.cmd run local,http://127.0.0.1:3010/api/health,reserved,EPMS 전용 Next.js 포트
+epms,database,127.0.0.1,54325,tcp,,,,dedicated,EPMS 전용 PostgreSQL 16
+defect_manage,web,127.0.0.1,3000,http,http://127.0.0.1:3000,npm.cmd start,http://127.0.0.1:3000,reassign-required,personalMemo와 동시 실행 전 포트 재지정 필요
+defect_manage2,web,127.0.0.1,3000,http,http://127.0.0.1:3000,npm.cmd start,http://127.0.0.1:3000,reassign-required,personalMemo와 동시 실행 전 포트 재지정 필요
+defect_manage2,database,127.0.0.1,54323,tcp,,,,dedicated,Local PostgreSQL
+archive_store,web,127.0.0.1,5174,http,http://127.0.0.1:5174,scripts\start.cmd,http://127.0.0.1:5174,dedicated,React 앱
+archive_store,api,127.0.0.1,5175,http,http://127.0.0.1:5175,scripts\start.cmd,http://127.0.0.1:5175/api/health,dedicated,Local API
+archive_store,database,127.0.0.1,54324,tcp,,,,dedicated,Local PostgreSQL
+schedule_manager,web,127.0.0.1,3000,http,http://127.0.0.1:3000,npm.cmd run dev,http://127.0.0.1:3000,reassign-required,personalMemo와 동시 실행 전 포트 재지정 필요
+token_tracker,web,127.0.0.1,5000,http,http://127.0.0.1:5000,python server.py,http://127.0.0.1:5000,dedicated,Python 로컬 서버
+cinetube,web,127.0.0.1,8080,http,http://127.0.0.1:8080,python -m http.server 8080,http://127.0.0.1:8080,dedicated,정적 사이트
+bloom,translation-api,127.0.0.1,8787,http,http://127.0.0.1:8787,npm.cmd run start:api,http://127.0.0.1:8787/healthz,dedicated,선택 실행 API
+schedule_manager,database,local-file,,sqlite,,,,embedded,node:sqlite 파일 DB
+project_tool,web,127.0.0.1,3020,http,http://127.0.0.1:3020,npm.cmd run local,http://127.0.0.1:3020/api/health,dedicated,이슈·리스크 관리 Next.js
+project_tool,database,127.0.0.1,54326,tcp,,,,dedicated,이슈·리스크 관리 PostgreSQL 16

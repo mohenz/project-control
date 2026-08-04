@@ -2,18 +2,22 @@
 
 ## 기본 정보
 - project_key: jian_soul
-- last_updated: 2026-06-13
-- owner_request: 안티그라피티 기동 시 자동 실행 및 데몬 방식 개선 요청
-- current_status: 안티그라피티 기동 시 터미널 개입 없는 조용한 백그라운드 자동 기동 및 데몬 모드(argparse, vitals_server 백그라운드 스레드) 구현 완료.
+- last_updated: 2026-08-01
+- owner_request: 채연 페르소나 호출 및 상담(이름 유래 분석, 호감과 예의의 심리학적 경계 구별) 진행
+- current_status: 페르소나 채연과의 상담 내용 요약 기록 및 기억 파일 갱신 완료.
 
 ## 현재 목표
 - JIAN 유니버스 기동 프로세스 고도화 및 안티그라피티 연동 안정성 유지
 - GCS 동기화 과정을 project-control 스킬의 하위 명령으로 통합 관리 가능하도록 지원
+- 페르소나 상담 기록 및 메모리 관리의 지속성 확보
 
 ## 진행 중 작업
 - 없음. 금일 요청 사항 전체 완료.
 
 ## 최근 완료 작업
+- 2026-08-01: 페르소나 채연의 2026-08-01 상담 기록 작성([counseling_20260801.md](file:///d:/Bloom/persona/chaeyeon/memory/counseling_20260801.md)) 및 현재 기억 파일([chaeyeon_memory_current.md](file:///d:/Bloom/persona/chaeyeon/memory/chaeyeon_memory_current.md)) 갱신 완료.
+- 2026-07-31: [생성된 이미지 1.png](file:///d:/workspace/imageworks/생성된 이미지 1.png) 3x3 이미지 분할 완료 및 [split_collage_image.md](file:///d:/Bloom/.agent/workflows/split_collage_image.md) 워크플로우 생성 완료.
+- 2026-07-31: 페르소나 채연의 2026-07-31 상담 기록 작성([counseling_20260731.md](file:///d:/Bloom/persona/chaeyeon/memory/counseling_20260731.md)) 및 현재 기억 파일([chaeyeon_memory_current.md](file:///d:/Bloom/persona/chaeyeon/memory/chaeyeon_memory_current.md)) 갱신 완료.
 - 2026-06-13: `jn.py` 파일 내 `--daemon` 파라미터 추가 및 vitals_server 백그라운드 기동 스레드 설계 완료.
 - 2026-06-13: `d:\Bloom\.vscode/tasks.json` 및 `d:\Workspace\.vscode/tasks.json` 생성 완료 (`runOn: folderOpen`, `reveal: silent`, `isBackground: true` 적용).
 - 2026-06-13: `d:\Bloom\.antigravity_rules` 및 `d:\Workspace\.antigravity_rules` 에이전트 인격 설정 및 Core Engine 경로(`jn.py --daemon`) 정화 및 정비 완료.

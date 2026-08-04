@@ -2,14 +2,20 @@
 
 ## 기본 정보
 - project_key: project_control
-- last_updated: 2026-07-29
-- current_status: MEMOry의 2026-07-29 UI·캘린더 개선과 매주 반복 일정 기능, 검증 및 Firebase Hosting 배포 결과를 중앙 상태 문서에 반영
+- last_updated: 2026-08-05
+- current_status: 신규 `memorybook` 프로젝트를 personalMemo 기반 Supabase·Vercel 전환 예정 프로젝트로 등록하고 초기 상태와 포트 충돌 위험을 기록
 
 ## 현재 목표
 - `D:\workspace` 내 등록 프로젝트의 상태 복구, 전환, 상태 저장 기준을 안정적으로 유지.
 - 프로젝트별 `states/*.md`를 최신 운영 사실 중심으로 관리.
 
 ## 최근 완료 작업
+- 2026-08-05: `D:\workspace\memorybook`을 신규 프로젝트로 등록하고 레지스트리·아키텍처 맵·개발 시스템 원장·상태 파일을 동기화. 소스에는 Firebase와 3000번 포트 설정이 남아 있어 전환 전 기준선으로 기록함.
+- 2026-08-01: `project_docs/development_systems.csv`와 `DEVELOPMENT_SYSTEM_OPERATIONS.md`를 생성해 개발 서버·API·DB 운영정보를 중앙화.
+- 2026-08-01: `scripts/check-development-ports.ps1`을 추가하고 서버 시작 전 포트 Listener 확인을 governance·switch workflow·project-control skill 필수 절차로 연결.
+- 2026-08-01: `epms`를 레지스트리·아키텍처 맵에 등록하고 `states/epms_current.md`를 생성·완료 상태로 갱신.
+- 2026-08-01: personalMemo의 실제 고정 포트 `3000`을 중앙 문서에 정정하고 EPMS 기본 포트를 `3010`으로 분리.
+- 2026-08-01 시작 동기화: `defect_manage`, `defect_manage2`, `bloom`은 원격 최신. 원격 새 커밋으로 fast-forward된 프로젝트는 없음. `trinity_room`은 원격 저장소 미존재 오류, 일부 폴더는 독립 Git/upstream 부재 또는 기존 로컬 변경으로 자동 갱신하지 않음.
 - 2026-07-29: MEMOry UI·캘린더 개선 커밋 `daffd86`, 매주 반복 일정 기능 커밋 `dd0ab64`, 중앙 기록 동기화를 포함한 작업 기록 커밋 `f29da36`, 운영 번들 `assets/index-C3_I0vDV.js`, HTTP 200 및 전체 테스트 통과 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: MEMOry 자료실 스크롤 수정 커밋 `4e45bf6`, Firebase Hosting 버전 `59dab75d73371692`, 운영 스크롤 검증 결과를 `states/personal_memo_current.md`에 기록.
 - 2026-07-24: `schedule_manager` 프로젝트를 레지스트리·아키텍처 맵에 등록하고 상태 파일 생성.
@@ -35,7 +41,7 @@
 ## 실행 / 검증
 - run_command: N/A
 - verify_command: `git status --short --branch`
-- latest_verification: 2026-07-29 `personalMemo`와 `project_control`이 각각 `origin/main`과 동기화된 상태에서 MEMOry 작업·배포 사실을 중앙 상태에 반영하고 `git diff --check` 및 변경 범위를 검증.
+- latest_verification: 2026-08-05 `memorybook` 경로와 React/Vite 소스 복제 상태를 확인하고 중앙 등록 문서 정합성을 점검.
 - deploy_method: `git push origin main`
 
 ## 핵심 경로
@@ -43,19 +49,22 @@
 - registry: `project_registry.md`
 - governance: `project_governance_rules.md`
 - workflow: `project_switch_workflow.md`
+- development_systems: `project_docs/development_systems.csv`, `project_docs/DEVELOPMENT_SYSTEM_OPERATIONS.md`
 - states: `states/*.md`
 
 ## 리스크 / 주의사항
 - `project_registry.md`에 `cinetube` 항목이 중복 등록되어 있음. 둘 다 `states/cinetube_current.md`를 가리키지만 run/verify/deploy 설명이 다르므로 추후 정리 필요.
 - startup routine에서는 자동 fast-forward 대상만 갱신하고, dirty/divergent/no-upstream 상태는 강제 처리하지 않는다.
+- 3000번 포트는 personalMemo 우선 예약이며 `defect_manage`, `defect_manage2`, `schedule_manager`는 동시 실행 전 포트 재지정이 필요하다.
+- `memorybook`도 복제된 3000번 설정을 상속했으므로 동시 실행 전 전용 포트 재지정이 필요하다.
 - handoff에는 비밀값, 토큰, 인증정보, 개인키를 기록하지 않는다.
 
 ## Handoff
-- current_goal: 모든 등록 프로젝트에 동일한 배포 실패 예방 절차 적용.
-- done_latest: MEMOry의 2026-07-29 UI·캘린더 개선, 매주 반복 일정 기능, 전체 검증 및 최신 Hosting 배포 상태를 중앙 기록에 동기화.
-- key_findings: 프로젝트별 배포 명령은 달라도 사전검증, 최초 실패 분류, 사후 자산 검증, 상태 기록 필드는 공통화할 수 있음.
-- changed_files: `states/personal_memo_current.md`, `states/project_control_current.md`.
-- verification: 두 저장소 원격 동기화, MEMOry 기능·배포 커밋/번들/테스트 결과 일치, `git diff --check` 확인.
+- current_goal: 개발 시스템 운영정보와 포트 충돌 방지 절차를 중앙 관리.
+- done_latest: 운영 원장·가이드·포트 점검 스크립트 생성, 관련 governance/workflow/skill 연결.
+- key_findings: 3000번은 personalMemo 우선 예약이며 기존 3개 프로젝트가 재지정 필요 상태.
+- changed_files: `project_docs/development_systems.csv`, `project_docs/DEVELOPMENT_SYSTEM_OPERATIONS.md`, `scripts/check-development-ports.ps1`, governance/workflow/skill/registry/README/state 문서.
+- verification: 전체/EPMS 포트 원장 파싱 성공, EPMS 3010·CineTube 8080 Listener 확인, `git diff --check` 통과.
 - next_action: 필수 후속 작업 없음.
 - risks_or_blockers: 없음.
 
