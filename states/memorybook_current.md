@@ -5,7 +5,7 @@
 - last_updated: 2026-08-10
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: 캘린더 선택 날짜 패널의 TO-DO·지연 상태 개선과 메인 화면 전체 일정 고정을 커밋 `8bed2c9`로 `origin/main`에 게시하고 Vercel 프로덕션 배포 완료.
+- current_status: 캘린더 선택 날짜 패널의 TO-DO·지연 상태 개선과 메인 화면 전체 일정 고정을 커밋 `8bed2c9`로 게시하고 Vercel 프로덕션 배포 완료. 배포 결과 기록 커밋 `3b549c1`까지 `origin/main` 동기화.
 
 ## 현재 목표
 - GitHub의 `mohenz/memorybook`을 Vercel에 연결하고 Supabase 공개 환경변수를 등록하여 프로덕션 배포 완료.
@@ -65,7 +65,7 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `8bed2c9 캘린더 일정 화면과 TO-DO 표시 개선`
+- latest_commit: `3b549c1 배포 결과 기록` (기능 커밋 `8bed2c9`)
 - status_before_state_record: clean, `main...origin/main`
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
