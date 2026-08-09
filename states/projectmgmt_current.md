@@ -2,10 +2,10 @@
 
 ## 기본 정보
 - project_key: `projectmgmt`
-- last_updated: `2026-08-02`
-- owner_request: `로컬 실행 확인 및 D:\workspace\design\bloom_ui_design_standard.md 표준에 맞춘 UI 리뉴얼 — 문서 그대로 완전 준수`
-- current_status: `로컬 정상 구동, Bloom UI 디자인 표준 전면 적용 완료(토큰/타이포/아이콘/Radix 기반/접근성 체크리스트) — 13개 주요 라우트 전수 확인, 콘솔·서버 에러 없음`
-- design_standard: `project_control\design\bloom_ui_design_standard.md` — 이 프로젝트의 UI는 이 문서를 필수 표준으로 따른다 (임의 해석 금지, 문서 내용 그대로 적용)
+- last_updated: `2026-08-06`
+- owner_request: `docs/UI_RENEWAL.MD 기준 Ant Design Pro UI 리뉴얼`
+- current_status: `docs/UI_RENEWAL.MD 기준 Ant Design Pro UI 리뉴얼 전면 완성 (ProLayout, ProCard/Statistic, ProTable, ProForm, ProDescriptions, Timeline, Popconfirm, Modal 전환 및 tsc/vitest/next build 100% 검증 통과)`
+- design_standard: `docs/UI_RENEWAL.MD` 및 `project_control\design\bloom_ui_design_standard.md`
 
 ## 최근 완료 작업
 - ADC(Application Default Credentials) 로그인으로 로컬 Firebase Admin SDK 인증 문제 해결, `.env.local`에 `GOOGLE_CLOUD_PROJECT=projectmgmt-e7dfd`/`FIRESTORE_DATABASE_ID=projectmgmtdb` 추가.

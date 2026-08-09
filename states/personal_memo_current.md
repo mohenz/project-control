@@ -2,17 +2,31 @@
 
 ## 기본 정보
 - project_key: personal_memo
-- last_updated: 2026-08-04
+- last_updated: 2026-08-09
 - owner_request: 전체 소스 코드 리뷰 후 심각한 버그·논리 오류·숨겨진 버그를 모두 수정하고 Firebase Hosting 배포
-- current_status: 코드 리뷰로 발견한 버그 8건 수정(데이터 손실 방지 포함), 테스트 픽스처 보정, backup 스크립트 REST API 전환을 커밋하고 Firebase Hosting 배포 완료
+- current_status: 로컬 `main`을 `origin/main`(`7633219`)까지 동기화하고 폴더 출력 우선순위·설정 탭 잘림 수정을 로컬 커밋(`cecad8b`)까지 완료. 미푸시·미배포 상태
 
 ## 현재 목표
 - 코드 리뷰에서 발견된 버그를 모두 수정하고 안정적인 프로덕션 상태 유지
 
 ## 진행 중 작업
 - 로그인 계정 기반 브라우저 E2E 검수 미완료
+- 로컬 2커밋(`2593f74`, `cecad8b`) 미푸시 — 푸시 전에는 `check-deployment.mjs`의 `HEAD == origin/main` 게이트에 걸려 배포 불가
+
+## 사건 기록 — 2026-08-09 프로젝트 오식별로 인한 작업 오적용
+- **문제**: `memorybook-theta.vercel.app` 화면을 근거로 들어온 UI 수정 요청 2건을 `personalMemo`에 적용함. 두 프로젝트가 별개로 운영 중이라는 사실을 인지하지 못한 채, 코드가 유사하다는 이유로 동일 프로젝트로 단정함.
+- **파급**: ① 설정 탭 이름 잘림 수정이 memorybook 대신 personalMemo에 반영됨. ② 그룹 선택 UI 요청에 대해 "이미 `<select>`라 변경 불필요"라고 잘못 회신함(personalMemo 기준 판단이며 memorybook은 칩 UI). ③ 번들 대조 결과 차이를 "저장소 이력에 없는 유령 배포"로 오판하고 Vercel 연결 해제를 권고함.
+- **오판 근거가 된 관찰**: Vercel 번들에 upstream 8커밋 기능 부재, 저장소에 없는 칩 마크업 존재, 데이터 프로젝트 마커 `archive-store-v2-3d020` 미포함. 실제로는 전부 "Supabase 기반 독립 프로젝트"로 정합하게 설명되는 현상이었음.
+- **원인**: URL → project_key 매핑을 `project_registry.md`에서 확인하지 않고 작업 디렉토리를 대상 프로젝트로 가정함. 거버넌스 규칙의 "별칭이 나오면 먼저 레지스트리에서 project_key를 찾는다"를 건너뜀.
+- **재발 방지**: UI 수정 요청 수신 시 URL로 프로젝트를 먼저 판별한다. `archive-store-fae71.web.app` → personal_memo, `memorybook-theta.vercel.app` → memorybook. 로컬은 포트로 구분(personalMemo 3000, memorybook 3030). 두 저장소는 기능이 서로 다르게 진화 중이므로 한쪽 코드로 다른 쪽 상태를 추론하지 않는다.
+- **처리**: personalMemo 로컬 커밋은 원격이 origin이므로 그대로 유지(사용자 판단). memorybook 쪽에서 해당 UI 작업을 별도 수행.
 
 ## 최근 완료 작업
+- 2026-08-09 로컬 `main`을 `origin/main` 8커밋(`28e9d74` → `7633219`) fast-forward 동기화, 충돌 없음
+- 2026-08-09 커밋 `2593f74` — 폴더 출력 우선순위 기능 추가(`src/utils/groupOrder.ts` 순수 함수 + 설정 모달 ▲▼ UI) 및 설정 탭 라벨 잘림 수정(고정 520px 모달에 뷰포트 `md` 기준 라벨 표시가 걸려 오버플로우하던 문제)
+- 2026-08-09 `agent/*` 브랜치 3개가 squash 머지로 main에 완전 반영됐음을 브랜치 tip과 squash 커밋 트리 대조로 확인 (병합 잔여 없음)
+- 2026-08-09 3단계 검증 통과: TypeScript, Vitest 86건, Jest 13건, Playwright 4건, 프로덕션 빌드, `check-deployment.mjs --allow-dirty`
+- 2026-08-04 전체 소스 코드 리뷰 수행 (17개 파일 검토)
 - 2026-08-04 전체 소스 코드 리뷰 수행 (17개 파일 검토)
 - 2026-08-04 커밋 `2eda666` — `cloudLoaded` 가드 추가로 Firestore 읽기 실패 시 빈 배열(`notes:[]`)로 Firestore를 덮어쓰는 데이터 손실 버그 수정
 - 2026-08-04 커밋 `8baff65` — 코드 리뷰에서 발견된 버그 6건 수정:

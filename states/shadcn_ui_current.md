@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: shadcn_ui
-- last_updated: 2026-08-02
+- last_updated: 2026-08-06
 - owner_request: 전체 컴포넌트를 로컬에 가져와 웹사이트 디자인 표준으로 활용 가능한지 검토
 - current_status: upstream 전체 복제 및 구조 점검 완료
 
@@ -22,6 +22,7 @@
 - 한국어 UI 디자인 표준 권장 조합 도출: Radix UI + Vega + Lucide + Pretendard Variable/Noto Sans KR
 - 기본 제공 폰트 정의가 모두 `latin` subset 중심임을 확인하여 한글 폰트 별도 적용 필요 기록
 - Bloom 한국어 UI 표준을 `D:\Workspace\design\bloom_ui_design_standard.md`로 문서화
+- 시작 점검에서 원격 `main`의 신규 6개 커밋을 clean fast-forward하여 HEAD `b1c580c6`으로 동기화
 
 ## 다음 작업
 - 문서 기준의 공통 디자인 토큰과 Registry 또는 starter template 구현 여부 결정
@@ -50,6 +51,6 @@
 - done_latest: 프로젝트 등록
 - key_findings: 공식 저장소는 컴포넌트 코드 소유형 Registry 구조; 한국어 운영 UI 권장 조합은 Radix/Vega/Lucide이며 한글 폰트와 터치 크기 보정 필요
 - changed_files: `D:\Workspace\design\bloom_ui_design_standard.md`, workspace/project-control 상태 파일
-- verification: `git status --short --branch` = `main...origin/main`, HEAD `cb2bcd88d`; 파일 및 Registry 구조 집계 완료
+- verification: `git status --short --branch` = `main...origin/main`, HEAD `b1c580c6`; 파일 및 Registry 구조 집계 완료
 - next_action: 실제 제품에 사용할 기반(Radix/Base UI/Aria), 스타일, 아이콘 계열을 고르고 공통 Registry/토큰 정책 설계
 - risks_or_blockers: 없음
