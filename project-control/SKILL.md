@@ -1,15 +1,19 @@
-﻿---
+---
 name: project-control
-description: Use when working in a multi-project workspace that keeps a top-level project_control folder for alias-based project switching, state-file context recovery, handoff summaries, minimal startup checks, and /project command handling such as /project use, /project status, /project handoff, /project update, /project close, /project improve, /project fix, /project start, /project deploy, or /project register.
+description: Use when working in this multi-project workspace (D:\Workspace) that keeps a top-level project_control folder for alias-based project switching, state-file context recovery, handoff summaries, minimal startup checks, and /project command handling such as /project use, /project status, /project handoff, /project update, /project close, /project improve, /project fix, /project start, /project deploy, /project sync, /project mail, or /project register. This is the same operating structure used by the Codex agent in this workspace, so state files and handoffs are shared between Codex and Claude Code sessions.
 ---
 
 # Project Control
 
 Use this skill when the workspace has a top-level `project_control` folder and the user wants to switch projects, restore context from state files, or manage work through `/project ...` commands.
 
+This workspace also runs a Codex agent against the exact same `D:\Workspace\project_control` files (registry, governance rules, state files). Treat the `states/*.md` files as shared, cross-agent memory: a handoff written by Codex should be readable and continuable here, and vice versa. Do not fork or duplicate the state files for Claude-only use.
+
+Sessions often start inside a subproject (for example `D:\Workspace\memorybook`) rather than at the workspace root, so resolve `project_control` from `D:\Workspace` rather than from the current working directory.
+
 ## Find Control Files
 
-- Find `project_control` at the workspace top level.
+- Find `project_control` at the workspace top level (`D:\Workspace\project_control`).
 - Use these files in this order:
   1. `project_governance_rules.md`
   2. `project_registry.md`
@@ -53,7 +57,7 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 ### `/project handoff <alias>`
 - Resolve the alias in `project_registry.md`.
 - Read the matched state file before reading the project codebase.
-- Produce a concise handoff summary for the next session or agent:
+- Produce a concise handoff summary for the next session or agent (Codex or Claude):
   - current goal
   - done in the latest session
   - key findings
@@ -104,7 +108,8 @@ Use this skill when the workspace has a top-level `project_control` folder and t
 - Do not restart full analysis if the state file is recent and sufficient.
 - Do not mix context between projects.
 - Prefer action over re-analysis.
-- After meaningful work, update the matched state file.
+- After meaningful work, update the matched state file so a following Codex session can pick it up without re-deriving context.
+- Never write secrets, tokens, or credentials into state files or handoffs (matches `project_governance_rules.md` section 8-2).
 - Before starting a local server, read `project_docs/development_systems.csv` and run `scripts/check-development-ports.ps1 -ProjectKey <project_key>` when available.
 - If another project owns the requested port, do not stop it. Reassign the target project's port and update the runtime config, registry, state file, and development systems registry together.
 

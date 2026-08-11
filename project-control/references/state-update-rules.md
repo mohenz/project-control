@@ -1,4 +1,4 @@
-﻿# State Update Rules
+# State Update Rules
 
 ## Update after meaningful work
 - completed work

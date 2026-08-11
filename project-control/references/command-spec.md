@@ -1,4 +1,4 @@
-﻿# Command Spec
+# Command Spec
 
 ## Grammar
 

@@ -1,4 +1,4 @@
-﻿# Workflow Map
+# Workflow Map
 
 ## Control file order
 1. `project_governance_rules.md`
