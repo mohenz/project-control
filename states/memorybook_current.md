@@ -2,13 +2,13 @@
 
 ## 기본 정보
 - project_key: memorybook
-- last_updated: 2026-08-05
+- last_updated: 2026-08-11
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: Supabase Auth/Postgres/비공개 Storage 전환, 원격 DB 스키마 적용, 초기 계정 생성, 자료실 흰 화면 수정, 전체 테스트·빌드, GitHub `main` 게시 완료. Vercel 프로덕션 배포만 남음.
+- current_status: 모바일 하단 탭바 이동 불가 버그와 일정 목록 오늘 날짜 포커싱을 수정하고, 배포 검증을 커밋 리비전 기준으로 교체해 프로덕션 배포까지 완료. 로컬·GitHub·프로덕션이 모두 `efcfb53`으로 일치.
 
 ## 현재 목표
-- GitHub의 `mohenz/memorybook`을 Vercel에 연결하고 Supabase 공개 환경변수를 등록하여 프로덕션 배포 완료.
+- 운영 중인 캘린더·메모·독립 TO-DO 기능의 데이터 동기화 안정성을 점검하고 모바일 카메라 촬영 기능을 후속 구현.
 
 ## 완료 상태
 - Firebase SDK·Auth·Firestore·Storage 호출 제거.
@@ -21,12 +21,32 @@
 - TypeScript, Vitest 91건, Jest 13건, Playwright 4건, 실제 자료실 진입, Vite build 통과.
 - GitHub `main` 최초 커밋 `8ac7ef8` 푸시 및 upstream 연결.
 - Vercel 사전검증 통과, Secret/Pooler 번들 미포함 확인.
+- Vercel 프로덕션 `https://memorybook-theta.vercel.app` 배포 완료.
+- 2026-08-11 원격 `main` 11커밋 fast-forward 동기화 완료. 기존 로컬 Sidebar 스크롤 변경 의도는 원격 최신 구현에 포함되어 작업 트리 clean 유지.
+
+### 2026-08-11 추가 작업 (Claude Code)
+- `8b7544a` 모바일 하단 탭바 이동 불가 버그 수정. 첫 화면이 `CALENDAR`인데 모바일 레이아웃은
+  `screen === 'DASHBOARD'`일 때만 `MobileAppShell`을 렌더링해, 사이드바(`hidden md:flex`)도
+  하단 탭바도 없는 상태로 사용자가 갇혔다. `SCREEN_TO_MOBILE_TAB` 매핑을 도입해 탭이 있는 모든
+  화면에서 셸을 렌더링하고 오버레이 분기를 `SEARCH`로 좁혔다. 도달 불가였던 `MobileCalendarScreen`이
+  이제 실제로 사용된다.
+- `fa049fb` 일정 목록(agenda) 오늘 날짜 자동 포커싱. 날짜 섹션에 `data-agenda-date` 앵커를 부여하고
+  진입 시 오늘 위치로 스크롤. 오늘 일정이 없으면 이후 가장 가까운 일정으로 이동하고, 과거 달은 맨 위 유지.
+  오늘 섹션에 테두리·배경 강조와 `오늘` 배지, `aria-current="date"` 적용.
+- `1f0de88` 배포 사후검증을 번들 해시 비교에서 커밋 리비전 비교로 교체. Vercel은 의존성을 새로 설치해
+  빌드하므로 산출 번들이 로컬과 바이트 단위로 달라져(로컬 659,599 / 원격 661,893 bytes) 정상 배포에도
+  검증이 실패했다. `vite.config.ts`의 `build-commit-meta` 플러그인이 `<meta name="build-commit">`를
+  주입하고, 배포 전후로 HEAD와 대조한다.
+- `efcfb53` Windows에서 배포 스크립트가 Vercel CLI를 실행하지 못하던 문제 수정. Node가 보안상 `.cmd`
+  셸 심을 직접 spawn하지 않아 `npx.cmd`가 EINVAL로 실패하고 출력 없이 종료 코드 1만 반환했다.
+- Vercel 프로덕션 2회 배포 완료(`dpl_5brauR8...` → `8b7544a`, `dpl_5mNkcZ9...` → `efcfb53`).
+- 사후검증 통과: `Vercel 운영 배포 검증 통과: HTTP 200, commit=efcfb53...`.
 
 ## 현재 런타임
 - run_command: `npm.cmd run dev`
 - local_url: `http://127.0.0.1:3030`
-- observed_status: STOPPED (`scripts/check-development-ports.ps1` 기준)
-- observed_process: 없음
+- observed_status: RUNNING (2026-08-11 세션에서 기동, Vite v6.4.3)
+- observed_process: `vite --port=3030 --host=0.0.0.0`
 - backend: `supabase`
 
 ## Supabase
@@ -49,18 +69,23 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `8ac7ef8 Supabase와 Vercel 기반 memorybook 전환`
-- status_before_state_record: clean
+- latest_commit: `efcfb53 Windows에서 배포 스크립트가 Vercel CLI를 실행하지 못하던 문제 수정`
+- status_before_state_record: clean (로컬 `main` = `origin/main` = 프로덕션 리비전)
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
 ## Vercel
 - config: `vercel.json` 준비 완료
 - output: `dist`
 - SPA rewrite: 설정 완료
-- `.vercel/`: 없음
-- global_vercel_cli: 미설치
-- production_url: 없음
+- `.vercel/`: 있음 (`vercel link --project memorybook --scope mohenzs-projects`로 생성, gitignore 대상)
+- global_vercel_cli: 미설치 (`npx vercel` 58.9.1 사용), 인증 계정 `smallville71-3378` / `mohenzs-projects`
+- production_url: `https://memorybook-theta.vercel.app`
+- deployed_revision: `efcfb53` (운영 HTML `build-commit` 마커로 확인)
+- git_integration: **활성**. `git push origin main`만으로 프로덕션 자동 배포가 생성된다.
+  런북 4단계 CLI 배포는 실질적으로 중복이므로 정리 여부 검토 필요.
 - required_env: `VITE_DATA_BACKEND`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+- build_env: `VITE_BUILD_COMMIT` (CLI 배포 시 `scripts/deploy-vercel.mjs`가 전달).
+  Git 연동 자동 배포에서는 `VERCEL_GIT_COMMIT_SHA` 폴백이 동작하며 양쪽 모두 검증 완료.
 - deploy_command: `npm.cmd run deploy:vercel`
 - precheck_command: `npm.cmd run deploy:check`
 - postcheck_command: `VERCEL_PRODUCTION_URL=https://...` 설정 후 `node scripts/verify-deployment.mjs`
@@ -70,23 +95,32 @@
 - app: `src/App.tsx`, `src/supabase/client.ts`, `src/services/archiveIntegration.ts`
 - archive: `src/archiveStore/features/archive/archiveService.js`, `src/archiveStore/views/ArchiveView.jsx`
 - database: `supabase/migrations/202608050001_initial_memorybook.sql`, `scripts/supabase-db.mjs`
-- deployment: `vercel.json`, `scripts/check-deployment.mjs`, `scripts/verify-deployment.mjs`
+- mobile: `src/mobile/MobileAppShell.tsx`, `src/mobile/MobileBottomNav.tsx`, `src/mobile/screens/MobileCalendarScreen.tsx`
+- calendar: `src/components/CalendarView.tsx`, `src/components/calendar/AgendaCalendarScreen.tsx`
+- deployment: `vercel.json`, `vite.config.ts`, `scripts/check-deployment.mjs`, `scripts/deploy-vercel.mjs`, `scripts/verify-deployment.mjs`
 
 ## 남은 작업
-1. Vercel 프로젝트와 GitHub 저장소 연결.
-2. Supabase 공개 환경변수 3개를 Production/Preview/Development에 등록.
-3. Vercel 프로덕션 배포와 운영 URL 검증.
-4. 선택 작업: Transaction Pooler 비밀번호 교정, Supabase MCP 독립 저장소 범위 재등록.
+1. 다중 클라이언트 상태 저장 순서와 독립 TO-DO 동기화 경합 가능성 점검.
+2. 모바일 카메라 촬영 기능 후속 구현.
+3. Vercel Git 연동 자동 배포와 런북의 CLI 배포 단계 중복 정리 여부 결정.
+4. agenda 자동 스크롤은 SSR 단위 테스트로 검증 불가하므로, 필요 시 브라우저 기반 회귀 테스트 추가 검토.
+5. 선택 작업: Transaction Pooler 비밀번호 교정, Supabase MCP 독립 저장소 범위 재등록.
 
 ## 리스크 / 중단 조건
-- Vercel 프로젝트와 운영 URL이 아직 없음.
 - CLI DB 작업은 Pooler 인증 복구 전 실행 불가.
 - 비밀값은 `.env.local`과 `config/memorybook.cfg` 밖에 기록 금지.
 - DB 스키마·데이터 변경은 사용자 명시 승인 전 실행 금지.
 - 테스트 실패, 환경변수 누락, Git dirty/divergent/no-upstream이면 배포 중단.
 
 ## Handoff
-- current_goal: Vercel 프로덕션 배포 완료
-- done_latest: 전체 프로젝트 상태 재검증 및 중앙/저장소 인수인계 문서 갱신
-- next_action: Vercel 프로젝트 연결과 공개 환경변수 등록
-- blockers: Vercel 미연결; 선택적 DB CLI/MCP 연결 미복구
+- current_goal: 운영 데이터 동기화 안정성 점검 및 모바일 카메라 촬영 기능 후속 구현
+- done_latest: 모바일 하단 탭바 이동 불가 버그(`8b7544a`)와 일정 목록 오늘 날짜 포커싱(`fa049fb`) 수정,
+  배포 검증을 커밋 리비전 기준으로 교체(`1f0de88`), Windows 배포 스크립트 수정(`efcfb53`) 후 프로덕션 배포 완료
+- verification: TypeScript, Vitest 123건(신규 2건 포함), Jest 13건, Playwright 4건, Vite build,
+  배포 사전검증, 배포 사후검증(HTTP 200 + 리비전 일치) 모두 통과; 로컬 main = origin/main = 프로덕션 = `efcfb53`
+- key_finding: Vercel Git 연동 자동 배포가 활성이라 `git push`만으로 프로덕션이 갱신된다.
+  번들 해시 기반 배포 검증은 원리적으로 실패하므로 리비전 마커 방식으로 대체했다.
+- next_action: 독립 TO-DO 다중 클라이언트 동기화 경합 점검
+- blockers: 선택적 DB CLI/MCP 연결 미복구
+- do_not_do: `states/*.md`의 다른 프로젝트 항목(flowerocr, jina_tts, project_registry 등)에는
+  2026-08-11 기준 다른 에이전트의 미커밋 변경이 있으므로 임의 커밋 금지
