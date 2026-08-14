@@ -2,15 +2,36 @@
 
 ## 기본 정보
 - project_key: `projectmgmt`
-- last_updated: `2026-08-09`
-- owner_request: `docs/calendar 설계문서 확인 → Firestore 잔재 점검 및 정리(쿼리/스키마) → 마이그레이션 적용 → 문서·테스트 정비 → 원격 배포`
-- current_status: `Firestore 시절 쿼리·스키마 잔재 정리 완료. GitHub main 머지(30949f6) 후 GitHub 트리거 프로덕션 배포 성공 및 검증(https://projectmgmt-tau.vercel.app). 배포 파이프라인(자동배포) 복구 완료.`
+- last_updated: `2026-08-14`
+- owner_request: `회의실 예약 모달의 참석자 선택을 제거하고 비고란(최대 500자)으로 대체`
+- current_status: `⚠️ 작업 미완결. 참석자→비고 전환 코드는 전부 완료(타입 체크·테스트 통과, 미커밋)이나 DB 마이그레이션 미적용. 로컬 PostgreSQL 미설치로 막힘. 이로 인해 로컬 dev(3020)의 /meetrooms가 스키마 불일치로 깨진 상태. 프로덕션 DB·배포본은 변경 없음.`
 - design_standard: `project_control\design\bloom_ui_design_standard.md` — 이 프로젝트의 UI는 이 문서를 필수 표준으로 따른다 (임의 해석 금지, 문서 내용 그대로 적용)
 
 ## 현재 목표
-- (완료) Firestore 잔재 정리 + 자동배포 복구. 다음은 미검증 항목 확인과 P0 보안 조치.
+- **참석자→비고 전환 마무리**: 로컬 PostgreSQL 18 설치 → 클러스터 구성 → 마이그레이션 적용 → `/meetrooms` 실동작 검증 → 커밋·배포.
 
-## 최근 완료 작업 (2026-08-09 세션)
+## 최근 작업 (2026-08-14 세션, Claude Code) — 미완결
+
+### 신규 PC 환경 구성
+- `workspace_installer`로 워크스페이스 이관 후 저장소 클론(`a644954`), `npm ci` 365개 + `prisma generate` 완료.
+- `vercel env pull .env.local --environment=development`로 필수 6개 변수 실제 값 수신(이 프로젝트는 Sensitive 타입이 아니라 정상 수신됨). 타입 체크·테스트 26건 통과, dev 서버 3020 기동 및 `/api/health` → `{"status":"ok","database":"connected"}` 확인.
+- **주의**: 이 `.env.local`은 **프로덕션 Supabase**를 가리킨다. 로컬 dev의 데이터 변경이 곧 운영 데이터 변경이다.
+
+### 참석자 → 비고 전환 (코드 완료 / DB 미적용)
+- 사용자 결정: ① 참석자 기능 **완전 제거** ② 마이그레이션은 **로컬 DB에 먼저** 적용.
+- `prisma/schema.prisma`: `MeetingReservationAttendee` 모델과 `User`·`MeetingReservation` 양쪽 관계 삭제, `MeetingReservation.remark String? @db.VarChar(500)` 추가.
+- `prisma/migrations/20260814043000_replace_attendees_with_remark/migration.sql` **신규 작성**(수동). `remark` 컬럼 추가 + `meeting_reservation_attendees` DROP. DB 미연결 상태라 `prisma migrate dev` 대신 손으로 작성했고 **아직 어떤 DB에도 적용되지 않았다.**
+- `lib/server/meeting-rooms.ts`: zod 스키마 `attendeeIds` → `remark`(trim, max 500, nullable), 목록 조회의 attendees include 제거 후 `remark` 반환, 생성 트랜잭션에서 참석자 유효성 검증·연결 생성 제거(빈 문자열은 `null`로 저장).
+- `features/meetrooms/MeetingRoomScreen.tsx`: 예약 모달의 `fieldset.attendee-picker` → 비고 `textarea`(rows 4, `maxLength=500`, 실시간 `n / 500` 카운터, `aria-live="polite"`). 일간 보드의 `N명` 표기 제거, 예약 목록은 비고 요약 표시, 상세 모달의 참석자 항목 → 비고(`white-space:pre-wrap`). `Member`/`Attendee` 타입과 `members` prop 제거.
+- `app/meetrooms/page.tsx`: 참석자 전용이던 `listProjectMembers` 조회 제거(페이지 로드 쿼리 1개 감소).
+- `app/globals.css`: `.attendee-picker` → `.remark-field`/`.remark-counter`/`.reservation-remark`.
+- 검증: `tsc --noEmit` 통과, `vitest run` 26건 통과. **런타임 검증은 미실시**(DB 미적용).
+
+### 막힌 지점
+- 로컬 우선 경로를 쓰려면 `scripts/start-local-postgres.ps1`이 기대하는 `C:\Program Files\PostgreSQL\18`이 필요한데 이 PC에 PostgreSQL도 Docker도 없다.
+- `winget install --id PostgreSQL.PostgreSQL.18`을 비대화형으로 실행했더니 **UAC 승격 대기로 15분간 멈춤**(다운로드 0바이트). 프로세스 종료했고 설치 잔여물은 없다. → **관리자 권한 PowerShell에서 사용자가 직접 실행해야 한다.**
+
+## 이전 완료 작업 (2026-08-09 세션)
 - **Firestore 잔재 점검**: 코드·설정 레벨은 이미 정리 완료 상태였음(`firebase-admin`/`apphosting.yaml`/env/`firestore-model.ts` 전부 없음). 남은 것은 **문서DB 시절 쿼리 패턴과 스키마 설계**였음.
 - **쿼리 DB 이관**: 전체 로드 후 JS 필터링을 Prisma WHERE/orderBy/집계로 전환. `work-management`(weekId를 WHERE로, 라벨 include, 대시보드 count/aggregate/groupBy), `items`(`filterItems`→`itemWhere()`, 메모리 slice→skip/take DB 페이지네이션, 수동 Map 조인→관계 include, 대시보드 집계쿼리), `admin`(사용자 검색 ILIKE), `calendar`(프로젝트 전체 로드→기간·검색 조건 DB 이관).
 - **의도적 예외**: 반복 일정은 회차별 예외(override)로 값이 달라져 DB에서 좁히면 오답 — 전개 후 필터링 유지(주석으로 사유 명시).
@@ -34,7 +55,8 @@
 - **배포 정리**: Firebase App Hosting 백엔드는 Firebase CLI로 트리거만 분리할 방법이 없어(list/create/get/delete만 존재), 사용자가 Firebase 콘솔에서 `projectmgmt-e7dfd` 프로젝트 자체를 삭제함. 기존 라이브 URL `https://projectmgmt--projectmgmt-e7dfd.asia-east1.hosted.app`는 404 확인(서비스 종료).
 
 ## 다음 작업
-- **[P0 보안]** 저장소가 public인데 `prisma/seed.ts`에 프로덕션 ADMIN 비밀번호가 평문 커밋되어 있고 프로덕션 URL에 접근 보호가 없음 → ① 해당 계정 비밀번호 변경 ② seed 비밀번호를 환경변수로 분리 ③ 저장소 private 전환 검토 ④ Vercel Deployment Protection 정책 결정.
+- **[P0 진행중]** 참석자→비고 전환 마무리: ① 관리자 PowerShell에서 `winget install --id PostgreSQL.PostgreSQL.18 -e --accept-package-agreements` ② `initdb`로 `.local-postgres\data` 클러스터 생성(포트 `55432`) ③ `npm.cmd run db:local:start` ④ `mydb` 생성 ⑤ `DATABASE_URL`을 로컬로 지정해 `prisma migrate deploy`(마이그레이션 7개) ⑥ `prisma db seed` ⑦ `/meetrooms`에서 비고 입력·저장·상세 표시 검증 ⑧ 커밋·push(자동 배포). **프로덕션 배포 전에 운영 DB에도 마이그레이션 적용이 선행돼야 한다** — 코드가 먼저 올라가면 `remark` 컬럼이 없어 회의실 화면이 깨진다.
+- **[P0 보안]** 저장소가 public인데 `prisma/seed.ts`에 프로덕션 ADMIN 비밀번호가 평문 커밋되어 있고 프로덕션 URL에 접근 보호가 없음 → ① 해당 계정 비밀번호 변경 ② seed 비밀번호를 환경변수로 분리 ③ 저장소 private 전환 검토 ④ Vercel Deployment Protection 정책 결정. **2026-08-14 확인: 운영 DB의 `pmo.admin` 계정에 시드 초기 비밀번호가 여전히 유효하다(bcrypt 해시 대조로 검증). 나머지 사용자 2명(`test.member`, `final.member`)은 변경됨.** 미조치 상태.
 - **[P1]** 미검증 2건 확인 — ① 다중 페이지 이동(`skip`/`take` 경계, 데이터 10건 초과 환경 필요) ② 쓰기 경로(이슈 등록 시 활동 이력에 로그인 사용자명이 기록되는지).
 - **[P1]** `updateProgress()`가 `writeAuditLog`에 actor를 `null`로 넘겨 주간실적 수정자가 기록되지 않음(`lib/server/work-management.ts`) — 함수에 `userId` 전달로 해결.
 - **[P2]** `Item.ownerUserId`가 어디서도 채워지지 않아 항상 null(권한 체크에서만 읽힘) — 담당자를 사용자 FK로 갈지 자유 텍스트로 둘지 제품 결정 필요.
@@ -59,7 +81,9 @@
 - key_files: `prisma/schema.prisma`, `lib/server/db-pg.ts`, `lib/server/auth.ts`, `lib/server/calendar.ts`, `lib/domain/recurrence.ts`, `lib/domain/crypto.ts`, `middleware.ts`
 
 ## 리스크 / 주의사항
-- **🔴 [열림] 저장소가 public이고 `prisma/seed.ts`에 프로덕션 ADMIN 계정 비밀번호가 평문 커밋되어 있다. 프로덕션 URL에 Vercel Deployment Protection도 없어 누구나 관리자로 로그인 가능한 상태다** — "다음 작업" P0 참조.
+- **🔴 [열림] 저장소가 public이고 `prisma/seed.ts`에 프로덕션 ADMIN 계정 비밀번호가 평문 커밋되어 있다. 프로덕션 URL에 Vercel Deployment Protection도 없어 누구나 관리자로 로그인 가능한 상태다** — "다음 작업" P0 참조. 2026-08-14 운영 DB 대조 결과 해당 계정은 **여전히 시드 초기 비밀번호로 로그인 가능**하다.
+- **🔴 [열림] 로컬 `.env.local`이 프로덕션 Supabase를 가리킨다.** `vercel env pull` 결과를 그대로 쓰면 로컬 개발이 운영 DB에 직접 붙는다. 테스트 데이터 입력·삭제 시 운영 데이터가 바뀐다. 로컬 PostgreSQL(55432) 구성 후 `DATABASE_URL`로 덮어쓸 것.
+- **🟠 [열림] 작업 트리에 미커밋 변경 6개가 있고 로컬 스키마와 운영 DB 스키마가 어긋나 있다.** `/meetrooms`는 마이그레이션 적용 전까지 동작하지 않는다.
 - `lib/generated/prisma`는 `.gitignore` 대상 — 빌드 환경에서는 반드시 `prisma generate`가 선행돼야 한다(`postinstall`로 보장 중). **이 스크립트를 지우면 자동배포가 다시 깨진다.**
 - 이슈·리스크 키워드 검색이 필드별 검색으로 바뀌었다(기존: 제목+설명+담당자를 이어붙인 문자열 검색). 필드 경계를 걸치는 검색어는 매치되지 않는다.
 - 주간보고/실적/인력변동의 `areaLabel`이 비활성 업무모듈일 때 `"-"` 대신 실제 라벨로 표시된다.
@@ -72,11 +96,11 @@
 - 배포는 이제 **main push만으로** 된다. CLI 배포 절차를 다시 만들지 말 것.
 
 ## Handoff
-- current_goal: Firestore 잔재 정리 + GitHub 자동배포 복구 (완료). 다음은 P0 보안 조치와 미검증 2건 확인.
-- done_latest: 메모리 필터링→DB 쿼리 이관(4개 서버 모듈), 사용자 FK 5개+인덱스 추가 및 Supabase 마이그레이션 적용, actorName 하드코딩 제거, 테스트 6→23개, `postinstall: prisma generate`로 GitHub 자동배포 복구, main 머지(30949f6) 후 프로덕션 배포·검증 완료
-- key_findings: **GitHub 연동 자동배포가 계속 실패 중이었음**(`lib/generated/prisma`가 gitignore 대상인데 빌드에 `prisma generate` 없음). 8/7 프로덕션은 CLI 수동 배포로 올라가 있어 서비스는 정상이었으나 push 기반 배포 경로는 끊겨 있었다. / **저장소가 public인데 프로덕션 ADMIN 비밀번호가 seed에 평문 커밋**되어 있음
-- changed_files: 13개 (`lib/server/{items,calendar,work-management,admin,db-pg}.ts`, `lib/domain/business-days.ts`+테스트, `lib/server/items.test.ts`, `prisma/schema.prisma`+마이그레이션, `vitest.config.ts`, `test/stubs/server-only.ts`, `package.json`, docs 3건)
-- verification: `tsc --noEmit`/`vitest run`(23개) 통과. 로컬·프로덕션 읽기 경로 스모크 테스트 결과 완전 일치
-- next_action: ① `pmo.admin` 비밀번호 변경 + seed 비밀번호 환경변수화 ② 다중 페이지 이동·쓰기 경로(actorName) 검증 ③ `updateProgress()` 감사로그 actor 누락 수정
-- risks_or_blockers: `required_decision` — 저장소 public 유지 여부 / 프로덕션 접근 보호(Deployment Protection) 적용 여부 / `Item.ownerUserId` 담당자 모델
+- current_goal: 회의실 예약의 참석자 선택을 비고란(최대 500자)으로 전환 — **코드 완료, DB 미적용 상태로 중단**
+- done_latest: 신규 PC 환경 구성(클론·`npm ci`·`vercel env pull`·dev 3020 기동 확인). 참석자 기능 완전 제거 후 `remark` 필드로 대체하는 스키마·서버·UI·CSS 변경 전부 완료. 마이그레이션 SQL 수동 작성.
+- key_findings: **로컬 `.env.local`이 프로덕션 Supabase를 가리킨다** — 로컬 dev의 데이터 조작이 곧 운영 데이터 조작이다. / **`pmo.admin`에 시드 초기 비밀번호가 운영 DB에서 아직 유효**하다(P0 미조치). / 이 PC엔 PostgreSQL·Docker가 없고 winget 설치는 UAC 승격 때문에 비대화형으로 불가하다.
+- changed_files: 6개 — `prisma/schema.prisma`, `prisma/migrations/20260814043000_replace_attendees_with_remark/migration.sql`(신규), `lib/server/meeting-rooms.ts`, `features/meetrooms/MeetingRoomScreen.tsx`, `app/meetrooms/page.tsx`, `app/globals.css` (**전부 미커밋**)
+- verification: `tsc --noEmit` 통과, `vitest run` 26건 통과. **런타임 검증 미실시** — DB에 `remark` 컬럼이 없어 `/meetrooms` 실행 불가.
+- next_action: 관리자 PowerShell로 PostgreSQL 18 설치 → 로컬 클러스터(55432) 구성 → `prisma migrate deploy` → `/meetrooms` 검증 → 커밋·배포. "다음 작업" P0 항목의 8단계 참조.
+- risks_or_blockers: `blocked_by` — PostgreSQL 18 미설치(관리자 권한 필요, 사용자 실행 대기). / `do_not_do` — **프로덕션 DB에 마이그레이션을 임의 적용하지 말 것**(사용자가 로컬 우선을 선택했고, 적용 시 참석자 데이터가 영구 삭제된다). / `do_not_do` — **코드만 먼저 push하지 말 것**(운영 DB에 `remark` 컬럼이 없어 회의실 화면이 깨진다). / `required_decision` — 저장소 public 유지 여부, 프로덕션 접근 보호 적용 여부, `Item.ownerUserId` 담당자 모델
 - do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨)
