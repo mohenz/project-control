@@ -2,13 +2,13 @@
 
 ## 기본 정보
 - project_key: memorybook
-- last_updated: 2026-08-10
+- last_updated: 2026-08-15
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: 캘린더 선택 날짜 패널의 TO-DO·지연 상태 개선과 메인 화면 전체 일정 고정을 커밋 `8bed2c9`로 게시하고 Vercel 프로덕션 배포 완료. 배포 결과 기록 커밋 `3b549c1`까지 `origin/main` 동기화.
+- current_status: 인증 상태 중복 갱신 방지, 설정·사이드바 UX 개선, 로그아웃 중앙 확인 모달, 아젠다 중요 일정 색상 강조를 커밋 `6d2462c`~`1977d7c`로 순차 배포하고 운영 커밋 검증 완료.
 
 ## 현재 목표
-- GitHub의 `mohenz/memorybook`을 Vercel에 연결하고 Supabase 공개 환경변수를 등록하여 프로덕션 배포 완료.
+- 배포된 인증·설정·사이드바·아젠다 UX를 안정 운영하고 다중 클라이언트 상태 저장 경합의 데이터 보호 방안을 검토.
 
 ## 사건 기록 — 2026-08-09 personal_memo에 작업이 잘못 적용됨
 - **문제**: `memorybook-theta.vercel.app` 화면 기준으로 들어온 UI 수정 요청 2건(설정 탭 이름 잘림, 그룹 선택형 변경)이 `memorybook`이 아니라 `personalMemo` 저장소에 적용되거나 잘못 회신됨.
@@ -19,6 +19,16 @@
 - **남은 작업**: memorybook에서 설정 탭 잘림 수정과 그룹 칩 → 선택형 변경을 수행.
 
 ## 완료 상태
+- 2026-08-15 아젠다에서 중요도 `높음` 일정을 오류색 계열 배경·왼쪽 테두리·텍스트로 구분하고 커밋 `1977d7c`로 Vercel 프로덕션 배포. TypeScript, Vitest 135건, Jest 13건, Playwright 4건, Vite 빌드 및 운영 커밋 마커 검증 통과.
+- 2026-08-15 사이드바 하단의 넓은 새 폴더 버튼을 제거하고 도움말·설정·로그아웃을 아이콘 전용 버튼으로 정리. 로그아웃은 화면 중앙 확인 모달에서 확인 시에만 처리하도록 개선해 커밋 `b788f79`로 배포.
+- 2026-08-15 설정의 `확인 및 저장` 버튼이 모달을 닫지 않도록 변경하고 커밋 `d648103`으로 배포.
+- 2026-08-15 Supabase 토큰 갱신·동일 사용자 인증 이벤트가 클라우드 상태를 중복 로드하지 않도록 필터링하고 테스트를 추가해 커밋 `6d2462c`로 배포.
+- 2026-08-15 Supabase Auth를 읽기 전용 확인한 결과 이메일 인증 완료·비차단 상태의 사용자 계정 1개를 확인했으며 비밀번호·토큰은 조회하지 않음.
+- 2026-08-12 커밋 `b2a492e`를 `origin/main`에 푸시하고 Vercel Git 연동으로 프로덕션 배포. HTTP 200·운영 커밋 마커·모바일 검색 화면을 검증했으며 운영 자산은 `assets/index-Cjf-ZKvB.js`, `assets/index-C8bm6qRT.css`.
+- 2026-08-12 모바일 검색 화면 컨테이너를 축소 가능한 flex 구조로 수정해 하단바가 뷰포트 안에 항상 노출되도록 개선. Vitest 123건, Vite 빌드, 390×844 로컬 렌더링 검증 통과.
+- 2026-08-12 검색 화면의 그룹·이미지·즐겨찾기·정렬 필터 버튼 영역을 제거하고 검색어 기반 최신순 결과만 유지. Vitest 123건, Vite 빌드, 로컬 렌더링 검증 통과.
+- 2026-08-12 데스크톱 `태그 및 검색` 메뉴를 `검색`과 돋보기 아이콘으로 변경하고, 모바일 하단바의 `휴지통`을 `검색` 탭으로 교체해 기존 검색 화면을 연결. Vitest 123건 및 Vite 프로덕션 빌드 통과.
+- 2026-08-11 원격 변경 4개 커밋(`8b7544a`~`efcfb53`)을 clean 상태의 `main`에 fast-forward 반영하고 `origin/main` 동기화를 확인.
 - 2026-08-10 독립 `TodoItem` 데이터, 목표일·잔여일, 수정·삭제·상태 변경, 기존 체크리스트 자동 이전과 Supabase JSON 상태 저장을 구현.
 - 2026-08-10 캘린더 `일정` 보기, 날짜별 일정·TO-DO 게시, 리마인드 발생 날짜 표시, 선택 날짜의 일정·메모 추가 버튼을 구현.
 - 2026-08-10 커밋 `cd509af`, `0943797`을 `origin/main`에 푸시하고 `https://memorybook-theta.vercel.app` 프로덕션 배포 및 신규 기능 번들 포함을 검증.
@@ -65,8 +75,8 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `3b549c1 배포 결과 기록` (기능 커밋 `8bed2c9`)
-- status_before_state_record: clean, `main...origin/main`
+- latest_commit: `1977d7c 중요 일정 아젠다 색상 강조`
+- status_before_state_record: `main...origin/main`, 기능 변경은 동기화 완료. 별도 미추적 문서 1개는 배포에서 제외.
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
 ## Vercel
@@ -75,7 +85,7 @@
 - SPA rewrite: 설정 완료
 - `.vercel/`: 로컬 연결 완료, `.gitignore` 제외
 - global_vercel_cli: `npx.cmd --yes vercel` 사용
-- production_url: `https://memorybook-theta.vercel.app` (2026-08-10 HTTP 200, 번들 `assets/index-mqHRxSNv.js`, 전체 일정 메인 화면·캘린더 TO-DO 개선·Supabase 프로젝트 식별자 포함 확인)
+- production_url: `https://memorybook-theta.vercel.app` (2026-08-15 HTTP 200, commit `1977d7c9e5adae5dd0978356e286ac899cb96147`, 중요 일정 색상 강조 포함 확인)
 - required_env: `VITE_DATA_BACKEND`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 - deploy_command: `npm.cmd run deploy:vercel`
 - precheck_command: `npm.cmd run deploy:check`
@@ -86,7 +96,7 @@
 - app: `src/App.tsx`, `src/supabase/client.ts`, `src/services/archiveIntegration.ts`
 - archive: `src/archiveStore/features/archive/archiveService.js`, `src/archiveStore/views/ArchiveView.jsx`
 - database: `supabase/migrations/202608050001_initial_memorybook.sql`, `scripts/supabase-db.mjs`
-- deployment: `vercel.json`, `scripts/check-deployment.mjs`, `scripts/verify-deployment.mjs`
+- deployment: `vercel.json`, `scripts/check-deployment.mjs`, `scripts/deploy-vercel.mjs`, `scripts/verify-deployment.mjs`
 
 ## 남은 작업
 1. TO-DO가 일시적으로 0건 저장된 동기화 경합 가능성을 재현하고 비파괴 저장 보호 로직 검토.
@@ -95,15 +105,13 @@
 
 ## 리스크 / 중단 조건
 - 2026-08-10 진단 중 Supabase 상태가 `notes=30`, `todos=0`, 기존 체크리스트 `0`으로 관찰됐으나 이후 새 브라우저 세션에서 TO-DO 7개가 다시 로딩됨. 다중 클라이언트의 마지막 쓰기 우선 저장 또는 초기 로딩 경합 가능성이 있어 데이터 보호 로직 확인 전 대규모 상태 변경을 주의한다.
-- 2026-08-08 `npm.cmd run deploy:check`는 로컬 의존성 미설치로 `tsc`를 찾지 못해 lint 단계에서 중단됨. 검증 재개 전 `npm ci`가 필요함.
-- Vercel 프로젝트와 운영 URL이 아직 없음.
 - CLI DB 작업은 Pooler 인증 복구 전 실행 불가.
 - 비밀값은 `.env.local`과 `config/memorybook.cfg` 밖에 기록 금지.
 - DB 스키마·데이터 변경은 사용자 명시 승인 전 실행 금지.
 - 테스트 실패, 환경변수 누락, Git dirty/divergent/no-upstream이면 배포 중단.
 
 ## Handoff
-- current_goal: 배포된 전체 일정 메인 화면과 캘린더 TO-DO 표시를 안정 운영하고 동기화 데이터 보호 확인
-- done_latest: 커밋 `8bed2c9` 원격 게시 및 Vercel 프로덕션 배포, 운영 번들 직접 검증
+- current_goal: 배포된 인증·설정·사이드바·아젠다 UX를 안정 운영하고 동기화 데이터 보호 확인
+- done_latest: 중요 일정 색상 강조 커밋 `1977d7c`까지 `origin/main`과 Vercel 프로덕션에 배포하고 HTTP 200·운영 커밋 일치 검증 완료
 - next_action: 다중 클라이언트 TO-DO 상태 저장 경합 재현 및 비파괴 저장 보호 로직 검토
 - blockers: 기능 배포 블로커 없음. DB CLI/MCP 연결은 선택적으로 미복구
