@@ -2,13 +2,24 @@
 
 ## 기본 정보
 - project_key: `projectmgmt`
-- last_updated: `2026-08-09`
-- owner_request: `docs/calendar 설계문서 확인 → Firestore 잔재 점검 및 정리(쿼리/스키마) → 마이그레이션 적용 → 문서·테스트 정비 → 원격 배포`
-- current_status: `Firestore 시절 쿼리·스키마 잔재 정리 완료. GitHub main 머지(30949f6) 후 GitHub 트리거 프로덕션 배포 성공 및 검증(https://projectmgmt-tau.vercel.app). 배포 파이프라인(자동배포) 복구 완료.`
+- last_updated: `2026-08-18`
+- owner_request: `요구사항 관리 고도화·엑셀 데이터 이관·공지사항 게시판 구현 후 GitHub/Supabase/Vercel 원격 배포`
+- current_status: `요구사항 관리·통계·페이징, 사용자 삭제, 공지사항 게시판 구현 완료. GitHub main(cfe0962), Supabase 19개 마이그레이션, Vercel production(https://pmotools.vercel.app) 배포 및 DB 헬스 체크 완료.`
 - design_standard: `project_control\design\bloom_ui_design_standard.md` — 이 프로젝트의 UI는 이 문서를 필수 표준으로 따른다 (임의 해석 금지, 문서 내용 그대로 적용)
 
 ## 현재 목표
-- (완료) Firestore 잔재 정리 + 자동배포 복구. 다음은 미검증 항목 확인과 P0 보안 조치.
+- (완료) 요구사항 관리 고도화, 요구사항 171건 production 이관, 공지사항 게시판 구축·배포.
+- 다음 우선순위는 공지사항 운영 데이터 등록·사용자 인수 테스트와 기존 P0 보안 조치.
+
+## 최근 완료 작업 (2026-08-18 세션)
+- **요구사항 관리 고도화**: 업무 대·중·소분류, 확정후추가, 비고, 수기 요구사항 ID 추가. 기존 ID는 시스템발행 ID로 역할을 정리하고 화면에서는 숨김 처리, 수기 요구사항 ID를 강조 표시.
+- **명칭·상태·공통코드**: 요구사항근거→요구사항출처, 요구사항선결사항→사전확인사항 변경. `부분수용` 상태와 요구사항 구분(기능/비기능), 분류(신규/기능개선) 공통코드 추가.
+- **목록·통계 UI**: 검색 패널 아웃라인, 20/40/80/100/전체 페이지 크기, 번호 페이지네이션, Sheet2 피벗 기준 요구사항 통계 화면 추가.
+- **엑셀 이관**: `요구사항리스트_등록용.xlsx` Sheet1을 검증 후 production Supabase에 171건 등록. 수용 161, 부분수용 4, 미수용 6, 기능 131/비기능 40, 신규 118/기능개선 53, 확정후추가 전체 NULL. production DB에서 171건을 재검증.
+- **사용자 관리**: 사용자 계정 소프트 삭제 기능과 관리자 API 추가.
+- **공지사항 게시판**: 목록·검색·페이징, 중요 공지 상단 고정, 상세·조회수, 관리자/운영자 등록·수정·삭제, 전체/관리자·운영자 대상, 게시 기간, 메인 노출 기간과 배너 구현.
+- **DB/배포**: 신규 마이그레이션 5개 적용, production 기준 총 19개 마이그레이션 정상. GitHub `mohenz/pmotools` main 최신 `cfe0962`, Vercel `pmotools` production READY, `/api/health` 200 및 PostgreSQL 연결 확인.
+- **검증**: `tsc --noEmit`, Vitest 26건, Next.js production build 통과. 로컬 서버 `3020` 재시작 후 `/api/health` 200 확인.
 
 ## 최근 완료 작업 (2026-08-09 세션)
 - **Firestore 잔재 점검**: 코드·설정 레벨은 이미 정리 완료 상태였음(`firebase-admin`/`apphosting.yaml`/env/`firestore-model.ts` 전부 없음). 남은 것은 **문서DB 시절 쿼리 패턴과 스키마 설계**였음.
@@ -34,6 +45,8 @@
 - **배포 정리**: Firebase App Hosting 백엔드는 Firebase CLI로 트리거만 분리할 방법이 없어(list/create/get/delete만 존재), 사용자가 Firebase 콘솔에서 `projectmgmt-e7dfd` 프로젝트 자체를 삭제함. 기존 라이브 URL `https://projectmgmt--projectmgmt-e7dfd.asia-east1.hosted.app`는 404 확인(서비스 종료).
 
 ## 다음 작업
+- **[P1] 공지사항 UAT**: 운영 계정으로 공지 등록→중요 상단 고정→메인 배너→수정·삭제 흐름 확인. production 공지 테이블은 신규 생성 상태이며 운영 공지는 별도 등록 필요.
+- **[P1] 요구사항 UAT**: 운영 화면에서 171건 목록·필터·통계·페이지 크기와 상세 화면을 사용자 기준으로 최종 확인.
 - **[P0 보안]** 저장소가 public인데 `prisma/seed.ts`에 프로덕션 ADMIN 비밀번호가 평문 커밋되어 있고 프로덕션 URL에 접근 보호가 없음 → ① 해당 계정 비밀번호 변경 ② seed 비밀번호를 환경변수로 분리 ③ 저장소 private 전환 검토 ④ Vercel Deployment Protection 정책 결정.
 - **[P1]** 미검증 2건 확인 — ① 다중 페이지 이동(`skip`/`take` 경계, 데이터 10건 초과 환경 필요) ② 쓰기 경로(이슈 등록 시 활동 이력에 로그인 사용자명이 기록되는지).
 - **[P1]** `updateProgress()`가 `writeAuditLog`에 actor를 `null`로 넘겨 주간실적 수정자가 기록되지 않음(`lib/server/work-management.ts`) — 함수에 `userId` 전달로 해결.
@@ -44,12 +57,12 @@
 - run_command: `npm.cmd run local` (foreground, port `3020`)
 - verify_command: `npm.cmd run lint`(tsc --noEmit), `npm.cmd run test`(vitest run), `npm.cmd run build`
 - port_or_runtime: web `3020`
-- deploy_method: **GitHub `mohenz/projectmgmt` main push → Vercel 자동 프로덕션 배포** (별도 CLI 배포 불필요). Vercel 프로젝트 `mohenzs-projects/projectmgmt`, 브랜치 push 시 Preview 자동배포. 전제조건: `package.json`의 `postinstall: prisma generate` — 이게 없으면 빌드가 모듈 해석 단계에서 실패한다(2026-08-09 복구).
+- deploy_method: **GitHub `mohenz/pmotools` main push + 필요 시 `vercel deploy --prod --yes` → Vercel production 배포**. Vercel 프로젝트 `mohenzs-projects/pmotools`. 전제조건: `package.json`의 `postinstall: prisma generate` 및 Vercel에서 `POSTGRES_URL_NON_POOLING` 우선 사용.
 - deploy_check_command: `curl https://<vercel-domain>/api/health`
 - deploy_post_check: 로그인(`pmo.admin`) → `/portfolio`, `/calendar`, `/settings/users` 등 핵심 라우트 200 확인
 - deploy_invariants: Supabase 연결 정상, Auth.js 로그인 가능, RLS로 anon 키 접근 차단 유지
 - deploy_abort_condition: Prisma/Postgres 연결 실패, 로그인 불가
-- latest_deployment: `https://projectmgmt-tau.vercel.app` (2026-08-09, main `30949f6` GitHub 트리거 자동배포) — `/api/health` postgres 연결 ok, 인증 리다이렉트 정상, 시드 관리자 로그인 후 items/calendar/weekly-progress/admin-users 조회 결과가 로컬과 완전 일치.
+- latest_deployment: `https://pmotools.vercel.app` (2026-08-18, main `cfe0962`, Vercel deployment `dpl_EkJhktWg5fZ9dvTrT6x29346qHfL`) — `/api/health` 200, PostgreSQL 연결 정상, `/announcements` 인증 리다이렉트 정상. 이전 `projectmgmt-tau.vercel.app`은 운영 기준 주소가 아님.
 - 이전 배포: 2026-08-07 `vercel deploy --prod` CLI 수동 배포(당시 GitHub 트리거 배포는 실패 상태였음). 배포 직후 `AUTH_SECRET` 미등록으로 로그인 500 → `vercel env add AUTH_SECRET`(production/preview/development) 등록 후 해결.
 - 사전 조건: 로컬 Supabase 연결값은 `vercel env pull .env.local`로 받거나 `.env.example` 참고해 `.env.local` 구성. 최초 로그인 계정은 `prisma/seed.ts` 참고(**비밀번호를 이 파일에 기록하지 않는다 — 상태 파일 규칙**).
 
@@ -68,15 +81,15 @@
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `docs\작업기록_20260809_Firestore잔재정리.md`(이번 작업 전체 기록 + 후속 조치 우선순위).
-- 배포는 이제 **main push만으로** 된다. CLI 배포 절차를 다시 만들지 말 것.
+- 다음 시작 시 먼저 볼 것: 요구사항은 `app/requirements`, `lib/server/requirements.ts`, 공지사항은 `app/announcements`, `lib/server/announcements.ts`, 최신 migration은 `20260818173000_add_announcements`.
+- 운영 기준 저장소/서비스는 GitHub `mohenz/pmotools`, Vercel `mohenzs-projects/pmotools`, URL `https://pmotools.vercel.app`이다.
 
 ## Handoff
-- current_goal: Firestore 잔재 정리 + GitHub 자동배포 복구 (완료). 다음은 P0 보안 조치와 미검증 2건 확인.
-- done_latest: 메모리 필터링→DB 쿼리 이관(4개 서버 모듈), 사용자 FK 5개+인덱스 추가 및 Supabase 마이그레이션 적용, actorName 하드코딩 제거, 테스트 6→23개, `postinstall: prisma generate`로 GitHub 자동배포 복구, main 머지(30949f6) 후 프로덕션 배포·검증 완료
-- key_findings: **GitHub 연동 자동배포가 계속 실패 중이었음**(`lib/generated/prisma`가 gitignore 대상인데 빌드에 `prisma generate` 없음). 8/7 프로덕션은 CLI 수동 배포로 올라가 있어 서비스는 정상이었으나 push 기반 배포 경로는 끊겨 있었다. / **저장소가 public인데 프로덕션 ADMIN 비밀번호가 seed에 평문 커밋**되어 있음
-- changed_files: 13개 (`lib/server/{items,calendar,work-management,admin,db-pg}.ts`, `lib/domain/business-days.ts`+테스트, `lib/server/items.test.ts`, `prisma/schema.prisma`+마이그레이션, `vitest.config.ts`, `test/stubs/server-only.ts`, `package.json`, docs 3건)
-- verification: `tsc --noEmit`/`vitest run`(23개) 통과. 로컬·프로덕션 읽기 경로 스모크 테스트 결과 완전 일치
-- next_action: ① `pmo.admin` 비밀번호 변경 + seed 비밀번호 환경변수화 ② 다중 페이지 이동·쓰기 경로(actorName) 검증 ③ `updateProgress()` 감사로그 actor 누락 수정
-- risks_or_blockers: `required_decision` — 저장소 public 유지 여부 / 프로덕션 접근 보호(Deployment Protection) 적용 여부 / `Item.ownerUserId` 담당자 모델
+- current_goal: 요구사항 관리·데이터 171건 이관·공지사항 게시판 production 배포 완료. 다음은 운영 UAT와 P0 보안 조치.
+- done_latest: 요구사항 필드/상태/공통코드/통계/페이지네이션, 사용자 소프트 삭제, 공지사항 CRUD·중요 고정·대상·게시기간·메인 배너 구현. main `cfe0962`, Supabase 19개 migration, Vercel production 배포 완료.
+- key_findings: 원격 이관 검증 시 셸의 로컬 `DATABASE_URL`이 production 환경보다 우선되는 문제가 있었고, `--use-process-env`에서 `POSTGRES_PRISMA_URL`을 우선하도록 수정(`a4f82db`). Vercel 빌드·런타임도 production DB 우선순위로 보정(`0bc88f0`, `0b4b248`).
+- changed_files: 요구사항/사용자/공지사항 관련 App Router 페이지·API·screens·server 모듈, `prisma/schema.prisma`, migration 5개, 메뉴·전역 스타일.
+- verification: `tsc --noEmit`, Vitest 26/26, Next production build 통과. production `/api/health` 200, PostgreSQL connected. 요구사항 production 171건 확인.
+- next_action: ① 공지사항 등록·메인 노출 UAT ② 요구사항 목록·통계 UAT ③ `pmo.admin` 비밀번호/seed 평문 문제 등 P0 보안 조치 ④ 기존 감사로그 actor 누락 점검.
+- risks_or_blockers: `required_decision` — 저장소 public 유지 여부 / production 접근 보호 정책 / `Item.ownerUserId` 담당자 모델. 공지사항은 스키마·기능만 배포되어 실제 운영 공지는 관리자가 등록해야 함.
 - do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨)
