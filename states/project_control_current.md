@@ -2,14 +2,15 @@
 
 ## 기본 정보
 - project_key: project_control
-- last_updated: 2026-08-05
-- current_status: 신규 `memorybook` 프로젝트를 personalMemo 기반 Supabase·Vercel 전환 예정 프로젝트로 등록하고 초기 상태와 포트 충돌 위험을 기록
+- last_updated: 2026-08-14
+- current_status: 신규 PC로 워크스페이스를 이관하고 `memorybook`·`projectmgmt` 상태 파일을 갱신. projectmgmt는 참석자→비고 전환이 DB 미적용 상태로 중단되어 blocker를 기록함
 
 ## 현재 목표
 - `D:\workspace` 내 등록 프로젝트의 상태 복구, 전환, 상태 저장 기준을 안정적으로 유지.
 - 프로젝트별 `states/*.md`를 최신 운영 사실 중심으로 관리.
 
 ## 최근 완료 작업
+- 2026-08-14: **신규 PC 워크스페이스 이관**. `workspace_installer`로 페르소나·에이전트 자산을 설치하고 `project_control`·`skills`·`memorybook`·`projectmgmt`를 클론. 두 프로젝트 상태 파일을 이번 세션 결과로 갱신(`memorybook`은 캘린더 보기 UI 교체 후 프로덕션 배포 완료, `projectmgmt`는 참석자→비고 전환이 DB 미적용으로 중단). 신규 PC 환경 제약을 상태 파일에 기록: PostgreSQL·Docker 미설치, GitHub 인증은 `gh`(2.97.0)로 신규 구성, git 전역 신원 미설정(저장소별로 설정함).
 - 2026-08-05: `D:\workspace\memorybook`을 신규 프로젝트로 등록하고 레지스트리·아키텍처 맵·개발 시스템 원장·상태 파일을 동기화. 소스에는 Firebase와 3000번 포트 설정이 남아 있어 전환 전 기준선으로 기록함.
 - 2026-08-01: `project_docs/development_systems.csv`와 `DEVELOPMENT_SYSTEM_OPERATIONS.md`를 생성해 개발 서버·API·DB 운영정보를 중앙화.
 - 2026-08-01: `scripts/check-development-ports.ps1`을 추가하고 서버 시작 전 포트 Listener 확인을 governance·switch workflow·project-control skill 필수 절차로 연결.

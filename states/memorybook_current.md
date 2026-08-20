@@ -2,10 +2,10 @@
 
 ## 기본 정보
 - project_key: memorybook
-- last_updated: 2026-08-11
+- last_updated: 2026-08-14
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: 모바일 하단 탭바 이동 불가 버그와 일정 목록 오늘 날짜 포커싱을 수정하고, 배포 검증을 커밋 리비전 기준으로 교체해 프로덕션 배포까지 완료. 로컬·GitHub·프로덕션이 모두 `efcfb53`으로 일치.
+- current_status: 신규 PC에 워크스페이스를 재구성하고 저장소를 클론·기동. 캘린더 보기 전환 UI를 드롭다운에서 버튼 그룹으로 교체해 프로덕션 배포까지 완료. 로컬·GitHub·프로덕션이 모두 `e4b27df`로 일치.
 
 ## 현재 목표
 - 운영 중인 캘린더·메모·독립 TO-DO 기능의 데이터 동기화 안정성을 점검하고 모바일 카메라 촬영 기능을 후속 구현.
@@ -42,6 +42,23 @@
 - Vercel 프로덕션 2회 배포 완료(`dpl_5brauR8...` → `8b7544a`, `dpl_5mNkcZ9...` → `efcfb53`).
 - 사후검증 통과: `Vercel 운영 배포 검증 통과: HTTP 200, commit=efcfb53...`.
 
+### 2026-08-14 추가 작업 (Claude Code)
+- **신규 PC 환경 구성**: `workspace_installer`로 워크스페이스 이관 후 이 저장소를 클론(`204d2a3` 기준),
+  `npm ci` 509개 설치, 타입 체크·Vitest 123건·Jest 13건 통과 확인. 취약점 0건.
+- **환경변수 복구 이슈**: `vercel env pull`로는 필수 3개 변수를 받을 수 없다. Vercel에 **Sensitive 타입**으로
+  등록돼 있어 값 대신 `"[SENSITIVE]"` 문자열이 내려온다. 또한 세 변수가 Preview/Production 환경에만 있고
+  Development에는 없어 `--environment=development` 풀은 빈 결과가 된다.
+  `VITE_SUPABASE_URL`·`VITE_SUPABASE_PUBLISHABLE_KEY`는 사용자가 직접 입력, `VITE_DATA_BACKEND=supabase`는
+  `.env.example` 값으로 복구했다.
+- `c07c87f` `.gitignore`에 `.env*` 추가(`vercel link`가 넣은 `.env.local` 범위를 확장).
+- `e4b27df` 캘린더 보기 전환을 드롭다운(`<select>`)에서 버튼 그룹으로 교체. `일`·`주`·`월`·`년` 텍스트 버튼
+  4개와 일정 목록(agenda) 아이콘 버튼(lucide `List`)으로 분리했다. 헤더의 검색창·새 일정 버튼과 동일하게
+  `h-8 rounded-xl` 규격을 맞추고 선택 상태는 primary 채움으로 표시한다. `select` 제거에 따른 접근성 보완으로
+  컨테이너에 `role="group"`+`aria-label`, 각 버튼에 `aria-pressed`, 아이콘 버튼에 `aria-label`을 부여했다.
+  툴바 레이아웃 테스트가 `select`/`option` 마크업을 문자열 검증하고 있어 버튼 구조에 맞춰 갱신했다.
+- Vercel 프로덕션 자동 배포 완료(`dpl_5Z2DeGkd8a56torMGeQhDTVgcHiw` → `e4b27df`, Ready, 빌드 9초).
+  GitHub 배포 기록(`2026-08-14T04:10:58Z`, Production)과 Vercel 배포 생성 시각이 일치함을 확인.
+
 ## 현재 런타임
 - run_command: `npm.cmd run dev`
 - local_url: `http://127.0.0.1:3030`
@@ -69,8 +86,9 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `efcfb53 Windows에서 배포 스크립트가 Vercel CLI를 실행하지 못하던 문제 수정`
+- latest_commit: `e4b27df 캘린더 보기 전환을 드롭다운에서 버튼 그룹으로 변경`
 - status_before_state_record: clean (로컬 `main` = `origin/main` = 프로덕션 리비전)
+- local_git_identity: 이 저장소에만 `mohenz <smallville71@gmail.com>` 설정(전역 미설정 PC라 커밋 실패를 막기 위함)
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
 ## Vercel
@@ -78,9 +96,10 @@
 - output: `dist`
 - SPA rewrite: 설정 완료
 - `.vercel/`: 있음 (`vercel link --project memorybook --scope mohenzs-projects`로 생성, gitignore 대상)
-- global_vercel_cli: 미설치 (`npx vercel` 58.9.1 사용), 인증 계정 `smallville71-3378` / `mohenzs-projects`
+- global_vercel_cli: 미설치 (`npx vercel` 사용, 2026-08-14 기준 59.0.0), 인증 계정 `smallville71-3378` / `mohenzs-projects`
 - production_url: `https://memorybook-theta.vercel.app`
-- deployed_revision: `efcfb53` (운영 HTML `build-commit` 마커로 확인)
+- deployed_revision: `e4b27df` (Vercel 배포 `dpl_5Z2DeGkd8a56torMGeQhDTVgcHiw` Ready + GitHub 배포 기록 대조로 확인.
+  운영 HTML `build-commit` 마커 대조는 2026-08-14 세션에서 미실행)
 - git_integration: **활성**. `git push origin main`만으로 프로덕션 자동 배포가 생성된다.
   런북 4단계 CLI 배포는 실질적으로 중복이므로 정리 여부 검토 필요.
 - required_env: `VITE_DATA_BACKEND`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
@@ -114,13 +133,15 @@
 
 ## Handoff
 - current_goal: 운영 데이터 동기화 안정성 점검 및 모바일 카메라 촬영 기능 후속 구현
-- done_latest: 모바일 하단 탭바 이동 불가 버그(`8b7544a`)와 일정 목록 오늘 날짜 포커싱(`fa049fb`) 수정,
-  배포 검증을 커밋 리비전 기준으로 교체(`1f0de88`), Windows 배포 스크립트 수정(`efcfb53`) 후 프로덕션 배포 완료
-- verification: TypeScript, Vitest 123건(신규 2건 포함), Jest 13건, Playwright 4건, Vite build,
-  배포 사전검증, 배포 사후검증(HTTP 200 + 리비전 일치) 모두 통과; 로컬 main = origin/main = 프로덕션 = `efcfb53`
-- key_finding: Vercel Git 연동 자동 배포가 활성이라 `git push`만으로 프로덕션이 갱신된다.
-  번들 해시 기반 배포 검증은 원리적으로 실패하므로 리비전 마커 방식으로 대체했다.
-- next_action: 독립 TO-DO 다중 클라이언트 동기화 경합 점검
+- done_latest: 신규 PC 환경 구성(클론·`npm ci`·환경변수 복구), 캘린더 보기 전환 UI를 버튼 그룹으로 교체(`e4b27df`),
+  `.gitignore` 확장(`c07c87f`) 후 GitHub 자동 배포로 프로덕션 반영 완료
+- verification: TypeScript, Vitest 123건, Jest 13건 통과. dev 서버 HMR 반영 확인, 사용자가 브라우저에서 데이터
+  정상 표시 확인. 로컬 main = origin/main = 프로덕션 = `e4b27df`
+- key_finding: **Vercel의 Sensitive 타입 환경변수는 `env pull`로 값을 되받을 수 없다**(`"[SENSITIVE]"` 반환).
+  이 프로젝트의 필수 3개 변수가 여기에 해당하며 Development 환경에도 등록돼 있지 않다. 신규 PC 세팅 시
+  Supabase 대시보드에서 키를 직접 가져와야 한다.
+- next_action: 독립 TO-DO 다중 클라이언트 동기화 경합 점검. 모바일 화면(`MobileCalendarScreen`)은
+  이번 보기 전환 UI 변경 대상에서 제외했으므로 동일 적용 여부 결정 필요
 - blockers: 선택적 DB CLI/MCP 연결 미복구
 - do_not_do: `states/*.md`의 다른 프로젝트 항목(flowerocr, jina_tts, project_registry 등)에는
   2026-08-11 기준 다른 에이전트의 미커밋 변경이 있으므로 임의 커밋 금지
