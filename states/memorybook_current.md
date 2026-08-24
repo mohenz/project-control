@@ -1,11 +1,11 @@
-# memorybook Current State
+﻿# memorybook Current State
 
 ## 기본 정보
 - project_key: memorybook
-- last_updated: 2026-08-15
+- last_updated: `2026-08-24`
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: 인증 상태 중복 갱신 방지, 설정·사이드바 UX 개선, 로그아웃 중앙 확인 모달, 아젠다 중요 일정 색상 강조를 커밋 `6d2462c`~`1977d7c`로 순차 배포하고 운영 커밋 검증 완료.
+- current_status: `memo_states` 단일 JSONB 저장을 `users`/`groups`/`notes`/`schedules`/`todos` 정규화 테이블로 전환(커밋 `a6cc5b5`)하고, 클라우드 로드 실패 시 빈 화면 대신 재시도 화면을 보여주도록 개선(커밋 `a7a3245`)해 배포. 운영 커밋 마커 검증 완료. **단, 신규 테이블에 `memo_states` 기존 데이터 백필이 없어 `notes`/`todos`가 사용자에게 빈 상태로 보일 수 있는 위험이 남아 있음 — 아래 리스크 참조.**
 
 ## 현재 목표
 - 배포된 인증·설정·사이드바·아젠다 UX를 안정 운영하고 다중 클라이언트 상태 저장 경합의 데이터 보호 방안을 검토.
@@ -19,6 +19,11 @@
 - **남은 작업**: memorybook에서 설정 탭 잘림 수정과 그룹 칩 → 선택형 변경을 수행.
 
 ## 완료 상태
+- 2026-08-24 로드가 실패해도 `authLoading`이 무조건 `false`가 되어 노트/일정/TO-DO가 빈 화면으로 보이던 문제를, `cloudLoadFailed` 상태와 전용 재시도 화면으로 분리해 "데이터 유실처럼 보이는" 오인을 방지. `src/App.tsx` 수정 후 커밋 `a7a3245`로 배포, 운영 `build-commit` 메타 태그로 반영 확인.
+- 2026-08-24 `memo_states` 단일 JSONB 저장을 `users`/`groups`/`notes`/`schedules`/`todos` 5개 테이블 + RLS 정책 + 신규 가입 자동 프로필 생성 트리거로 전환하는 마이그레이션(`supabase/migrations/202608241200_normalize_memo_tables.sql`)을 작성·적용하고, `App.tsx`/`archiveIntegration.ts`를 엔티티별 upsert/delete로 리팩터링해 한 엔티티 저장 실패가 다른 엔티티를 덮어쓰지 못하도록 구조적으로 격리. 커밋 `a6cc5b5`로 배포. **마이그레이션에 기존 `memo_states` 데이터 백필이 없어 신규 테이블은 빈 상태로 시작함(설계 의도, 파일 상단 주석에 명시)** — DB `verify` 결과 `notes=0`, `todos=0`, `groups=5`, `schedules=10`, 기존 `memo_states` 행은 1건 그대로 보존(수동 삭제 전까지 유지). 사용자의 실제 노트/할일이 화면에서 보이지 않게 될 수 있으므로 백필 필요 여부를 사용자와 확인해야 함.
+- 2026-08-23 모바일 캘린더 헤더의 `오늘`/`주간` 텍스트 버튼을 아이콘(Sun/CalendarRange)으로 바꾸고, 날짜와 무관하게 전체 일정을 정렬해 보여주는 `전체`(List 아이콘) 뷰를 신규 추가. TypeScript, Vitest 135건, Jest 13건, Playwright 4건, Vite build 통과 후 커밋 `1420334`로 배포.
+- 2026-08-23 배포 스크립트(`scripts/check-deployment.mjs`)가 미추적 파일 존재 시 배포를 거부하는 동작을 확인. 이전 세션부터 미추적 상태였던 `docs/azure_devops_adoption_checklist.md`(진아 작성 추정, 이번 작업과 무관)는 사용자에게 처리 방식을 확인한 뒤 커밋 `f09d82e`로 함께 포함해 배포.
+- 2026-08-23 Vercel CLI가 `Deploying memorybook` 이후 `"Not authorized"`를 출력하며 종료코드 1로 실패했지만, `vercel ls`/`vercel inspect`로 확인 결과 `memorybook-theta.vercel.app` 프로덕션 앨리어스는 정상적으로 새 배포(dpl_FQmjagTdnpNkCrWEqH2Yyj2duw5P)로 갱신되어 있었고 응답 HTML의 `build-commit` 메타 태그도 최신 커밋과 일치함. CLI 후처리 단계의 무해한 오류로 판단(원인 미상 — 필요 시 `vercel whoami`로 세션 유효성 재확인).
 - 2026-08-15 아젠다에서 중요도 `높음` 일정을 오류색 계열 배경·왼쪽 테두리·텍스트로 구분하고 커밋 `1977d7c`로 Vercel 프로덕션 배포. TypeScript, Vitest 135건, Jest 13건, Playwright 4건, Vite 빌드 및 운영 커밋 마커 검증 통과.
 - 2026-08-15 사이드바 하단의 넓은 새 폴더 버튼을 제거하고 도움말·설정·로그아웃을 아이콘 전용 버튼으로 정리. 로그아웃은 화면 중앙 확인 모달에서 확인 시에만 처리하도록 개선해 커밋 `b788f79`로 배포.
 - 2026-08-15 설정의 `확인 및 저장` 버튼이 모달을 닫지 않도록 변경하고 커밋 `d648103`으로 배포.
@@ -59,14 +64,14 @@
 - project_name: memorybook
 - project_ref: `bmvyiwnokuhbkjtimygy`
 - API URL: `https://bmvyiwnokuhbkjtimygy.supabase.co`
-- tables: `memo_states`, `archive_files`
-- RLS: 2개 테이블 활성화
-- policy_count: 11
+- tables: `memo_states`(구, 미삭제·미사용), `archive_files`, `users`, `groups`, `notes`, `schedules`, `todos` (2026-08-24 정규화 전환)
+- RLS: 7개 테이블 활성화
+- policy_count: 17
 - storage_bucket: `memorybook-files`, private, 50MB
 - realtime: `archive_files` 활성화
-- data_counts_at_verify: `memo_states=0`, `archive_files=0`
+- data_counts_at_verify (2026-08-24): `memo_states=1`(구 데이터 보존), `archive_files=10`, `users=1`, `groups=5`, `notes=0`, `schedules=10`, `todos=0`
 - auth_users_at_current: 1
-- migration: `supabase/migrations/202608050001_initial_memorybook.sql`
+- migration: `supabase/migrations/202608050001_initial_memorybook.sql`, `supabase/migrations/202608241200_normalize_memo_tables.sql`(2026-08-24 적용 완료, DB `verify`로 테이블·RLS·정책 반영 확인)
 - local_env: 필수 공개 변수 3개 설정 확인
 - db_cli: Transaction Pooler 비밀번호 인증 실패, 대시보드 SQL Editor로 마이그레이션 적용 완료
 - mcp: 이전 읽기 전용 연결 기록은 있으나 현재 독립 저장소 컨텍스트의 `codex mcp list`에는 미노출
@@ -75,8 +80,8 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `1977d7c 중요 일정 아젠다 색상 강조`
-- status_before_state_record: `main...origin/main`, 기능 변경은 동기화 완료. 별도 미추적 문서 1개는 배포에서 제외.
+- latest_commit: `a7a3245 클라우드 동기화 실패 시 빈 화면 대신 재시도 화면 표시`
+- status_before_state_record: `main...origin/main`, 동기화 완료. `main` 브랜치 clean, `origin/main`과 push 완료 상태(2026-08-24 `a6cc5b5`, `a7a3245` 포함).
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
 ## Vercel
@@ -85,7 +90,7 @@
 - SPA rewrite: 설정 완료
 - `.vercel/`: 로컬 연결 완료, `.gitignore` 제외
 - global_vercel_cli: `npx.cmd --yes vercel` 사용
-- production_url: `https://memorybook-theta.vercel.app` (2026-08-15 HTTP 200, commit `1977d7c9e5adae5dd0978356e286ac899cb96147`, 중요 일정 색상 강조 포함 확인)
+- production_url: `https://memorybook-theta.vercel.app` (2026-08-24 커밋 `a7a3245` 배포 확인 — curl 응답 HTML의 `build-commit` 메타 태그가 `a7a32452ded71c8d7eac4f6b585e4f81e44d3c1f`와 일치. 이전 세션에서 `npm run deploy:vercel` 종료코드 1과 실제 배포 반영이 어긋난 사례가 있었으므로 계속 `build-commit` 메타 태그로 재확인하는 습관 유지)
 - required_env: `VITE_DATA_BACKEND`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
 - deploy_command: `npm.cmd run deploy:vercel`
 - precheck_command: `npm.cmd run deploy:check`
@@ -99,11 +104,13 @@
 - deployment: `vercel.json`, `scripts/check-deployment.mjs`, `scripts/deploy-vercel.mjs`, `scripts/verify-deployment.mjs`
 
 ## 남은 작업
-1. TO-DO가 일시적으로 0건 저장된 동기화 경합 가능성을 재현하고 비파괴 저장 보호 로직 검토.
-2. 메모 사진 촬영·첨부 기능 작업계획에 따른 구현 여부 결정.
-3. 선택 작업: Transaction Pooler 비밀번호 교정, Supabase MCP 독립 저장소 범위 재등록.
+1. **(신규, 우선)** 2026-08-24 정규화 전환 후 `notes=0`/`todos=0`인 상태가 실제 사용자 데이터 손실인지, 원래도 비어 있었는지 사용자에게 확인. 필요 시 `memo_states`(보존됨, 1건)에서 신규 테이블로 수동 백필.
+2. TO-DO가 일시적으로 0건 저장된 동기화 경합 가능성을 재현하고 비파괴 저장 보호 로직 검토(2026-08-24 엔티티별 upsert 분리로 개선됐으나 다중 클라이언트 경합 자체는 미검증).
+3. 메모 사진 촬영·첨부 기능 작업계획에 따른 구현 여부 결정.
+4. 선택 작업: Transaction Pooler 비밀번호 교정, Supabase MCP 독립 저장소 범위 재등록, 옛 `memo_states` 테이블 정리 여부 결정(에이전트는 DROP 미실행 — 대시보드에서 사용자 확인 후 수동 삭제).
 
 ## 리스크 / 중단 조건
+- **2026-08-24 정규화 마이그레이션은 `memo_states` 백필 없이 적용됨(설계 의도)**. DB `verify` 기준 `notes=0`, `todos=0`이며 `memo_states`는 1행 그대로 보존되어 있어, 백필 전까지 해당 사용자는 노트·할일이 비어 보일 수 있음. 사용자 확인 전 `memo_states` 삭제 금지.
 - 2026-08-10 진단 중 Supabase 상태가 `notes=30`, `todos=0`, 기존 체크리스트 `0`으로 관찰됐으나 이후 새 브라우저 세션에서 TO-DO 7개가 다시 로딩됨. 다중 클라이언트의 마지막 쓰기 우선 저장 또는 초기 로딩 경합 가능성이 있어 데이터 보호 로직 확인 전 대규모 상태 변경을 주의한다.
 - CLI DB 작업은 Pooler 인증 복구 전 실행 불가.
 - 비밀값은 `.env.local`과 `config/memorybook.cfg` 밖에 기록 금지.
@@ -111,7 +118,7 @@
 - 테스트 실패, 환경변수 누락, Git dirty/divergent/no-upstream이면 배포 중단.
 
 ## Handoff
-- current_goal: 배포된 인증·설정·사이드바·아젠다 UX를 안정 운영하고 동기화 데이터 보호 확인
-- done_latest: 중요 일정 색상 강조 커밋 `1977d7c`까지 `origin/main`과 Vercel 프로덕션에 배포하고 HTTP 200·운영 커밋 일치 검증 완료
-- next_action: 다중 클라이언트 TO-DO 상태 저장 경합 재현 및 비파괴 저장 보호 로직 검토
-- blockers: 기능 배포 블로커 없음. DB CLI/MCP 연결은 선택적으로 미복구
+- current_goal: 배포된 인증·설정·사이드바·아젠다·모바일 캘린더 UX를 안정 운영하고 동기화 데이터 보호 확인
+- done_latest: `memo_states` → 정규화 테이블(`users`/`groups`/`notes`/`schedules`/`todos`) 전환 및 클라우드 로드 실패 재시도 화면 추가를 커밋 `a6cc5b5`, `a7a3245`로 배포 완료, DB `verify`로 반영 확인 (Updated 2026-08-24)
+- next_action: 정규화 전환 후 `notes=0`/`todos=0`이 실제 데이터 손실인지 사용자 확인 및 필요 시 `memo_states` 수동 백필(최우선). 이후 다중 클라이언트 저장 경합 재검토.
+- blockers: 기능 배포 블로커 없음. `notes`/`todos` 백필 여부는 사용자 판단 대기. DB CLI/MCP 연결은 선택적으로 미복구
