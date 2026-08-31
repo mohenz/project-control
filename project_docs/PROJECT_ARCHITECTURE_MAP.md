@@ -21,6 +21,7 @@
 | `makeyourtoday` | 문서 주도 제품/멀티에이전트 운영체계 기획 프로젝트 | runtime 없음 | 로컬 기획 문서 | local docs / TBD | `states/makeyourtoday_current.md` |
 | `trinity_room` | Electron 데스크톱 앱 계획/프로토타입 + Web preview | Web preview `http://127.0.0.1:4317`, Electron skeleton | 로컬 앱 상태/문서 | local desktop prototype / TBD | `states/trinity_room_current.md` |
 | `jina_writer` | Python Tkinter 데스크톱 소설 작성 앱 + Gemini 연동 구조 | Tkinter local desktop app | local-first storage, Gemini 2.5 Flash integration | local desktop app / installer TBD | `states/jina_writer_current.md` |
+| `jina_tts` | Coqui XTTS v2 기반 허가 음성 로컬 한국어 TTS | Python 3.10 전용 venv, CPU/GPU 자동 선택, port 없음 | 비공개 참조 음성 2개와 로컬 모델 캐시 | local only / no remote deploy | `states/jina_tts_current.md` |
 | `ui_code_helper` | Chrome MV3 side panel 확장 프로그램 | Chrome Extension MV3 / Side Panel | 브라우저 DOM 선택/Markdown change request 생성 | local unpacked extension / zip sync | `states/ui_code_helper_current.md` |
 | `unit_test` | 중앙 단위테스트 거버넌스/리포트 저장소 + Codex skill | runtime 없음 | 문서/스킬 저장소 | GitHub repo sync | `states/unit_test_current.md` |
 | `project_control` | 워크스페이스 중앙 프로젝트 레지스트리, 상태 파일, 전환 워크플로우 | runtime 없음 | `project_registry.md`, `states/*.md`, skill package | GitHub repository sync | `states/project_control_current.md` |

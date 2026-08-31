@@ -2,7 +2,7 @@
 
 ## 기본 정보
 - project_key: `flowerocr`
-- last_updated: `2026-07-19`
+- last_updated: `2026-08-10`
 - current_status: `PC Web 운영 개선 및 심플 전표관리 설계 완료 / Firestore App Check 접근 차단 확인 중`
 - firebase_project: `Flower-OCR`
 - firebase_project_id: `gen-lang-client-0981139133`
@@ -41,6 +41,7 @@
 - 프로토타입 전표·약어·거래처 및 고정 대시보드 수치 제거
 - Firebase 접근 오류를 컬렉션별로 분리하고 로그인 계정 진단 표시 추가
 - 심플 전표관리 타당성 분석 및 설계 완료
+- 루트 문서 5개를 내용 변경 없이 `docs/`로 이동하고 GitHub `main`에 커밋 `da5c4a2` 푸시 완료
 
 ## 현재 확인된 문제
 - 로컬 `mobile` 소스는 모바일 개발 측 최신 개선본과 아직 동기화되지 않았다.
@@ -76,6 +77,7 @@
 - deploy_command: `npx.cmd --yes firebase-tools deploy --only hosting --project gen-lang-client-0981139133 --non-interactive`
 - rules_deploy: `npx.cmd --yes firebase-tools deploy --only firestore:rules --project gen-lang-client-0981139133 --non-interactive`
 - hosting_verification: 메인 화면과 최종 전송 테스트 화면 `HTTP 200` 확인
+- latest_repository_sync: `2026-08-10`, commit `da5c4a2`, `origin/main` 일치 및 작업 트리 clean 확인
 
 ## 핵심 경로
 - project_root: `D:\Workspace\FlowerOCR`
@@ -98,8 +100,8 @@
 
 ## Handoff
 - current_goal: `Firestore 접근 정상화 후 심플 전표관리 공동 데이터 왕복 구현`
-- done_latest: `프로토타입 데이터 제거, Firebase 컬렉션별 진단 배포, 심플 전표관리 타당성 설계`
-- verification: `JavaScript 문법 검사, Hosting 배포 성공, 메인·테스트 화면 HTTP 응답 확인, Firestore 규칙 컴파일·릴리스 확인`
+- done_latest: `루트 문서 5개를 docs 디렉터리로 이동하고 GitHub main에 커밋 da5c4a2 푸시`
+- verification: `5개 파일 모두 100% rename, 내용 변경 없음, 로컬 HEAD와 origin/main 커밋 일치, FlowerOCR 작업 트리 clean`
 - next_action: `Firebase Console에서 Cloud Firestore App Check 적용 상태 확인 및 PC 조회 재검증`
 - primary_blocker: `운영자 로그인은 정상이나 Firestore 세 컬렉션 모두 권한 거부`
 - architecture_decision: `PC Web 송신 데이터 계약과 실제 브라우저 자동입력 어댑터를 분리`

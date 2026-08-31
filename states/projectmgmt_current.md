@@ -2,20 +2,42 @@
 
 ## 기본 정보
 - project_key: `projectmgmt`
-- last_updated: `2026-08-20`
+- last_updated: `2026-08-31`
 - owner_request: `요구사항 관리 고도화·엑셀 데이터 이관·공지사항 게시판 구현 후 GitHub/Supabase/Vercel 원격 배포`
-- current_status: `요구사항·공지사항·회의실/캘린더 초청함 통합·사용자 프로필 정비 완료. 캘린더 날짜 계산을 한국시간(KST) 기준으로 수정. GitHub main(0c3fa2b), Vercel production(https://pmotools.vercel.app) 배포 및 origin과 동기화 완료.`
+- current_status: `PMO Daily 공정현황 WBS 자동 채움, WBS 목록 날짜 필터 range 매칭, WBS 실적시작일/실적종료일 커스텀 컬럼 추가 배포 완료. GitHub main 2b2dfb6, Vercel Production – pmotools 성공(`/api/health` 200).`
 - design_standard: `project_control\design\bloom_ui_design_standard.md` — 이 프로젝트의 UI는 이 문서를 필수 표준으로 따른다 (임의 해석 금지, 문서 내용 그대로 적용)
 
 ## 현재 목표
 - (완료) 요구사항 관리 고도화, 요구사항 171건 production 이관, 공지사항 게시판 구축·배포.
 - (완료) 회의실/캘린더 초청 통합 발송·초청함 개편, 캘린더 날짜 계산 KST 보정.
+- (완료) PMO Daily 공정현황 WBS 연동, WBS 목록 날짜 range 필터, WBS 실적일자 커스텀 컬럼.
 - 다음 우선순위는 공지사항·요구사항 운영 UAT, 기존 P0 보안 조치, 8월 14일 회의실 참석자→비고 전환 작업의 현재 소스 반영 여부 재확인.
+
+## 최근 완료 작업 (2026-08-31 세션)
+- **PMO Daily 공정현황 WBS 자동 채움**: `/pmo-daily/new`에서 스냅샷이 아직 저장되지 않은 날짜는 계획/실적/전체/완료 TASK 건수를 WBS(오늘 기준)에서 가져와 기본값으로 채움. `lib/server/wbs.ts`에 `getWbsDailyTaskCounts(projectId, asOfDate)` 신규(계획=leaf의 dueDate<=기준일, 실적=그중 actualProgress 100%, 완료=전체 leaf 중 100%). `getPmoDailyDashboard`가 스냅샷 없을 때만 이 값을 기본값으로 사용, 저장된 스냅샷은 그대로 존중. 라벨 "계획 TASK 수"/"실적 TASK 수" → "계획 TASK"/"실적 TASK"로 변경(`3132b5e`).
+- **WBS 주간 통계 동작 확인(변경 없음)**: 사용자가 계획(건)/완료(건)이 전체 기간으로 조회되는지 문의 → 실제 배포본 직접 테스트(브라우저)로 이미 조회 기간(시작일~종료일)에 정상 스코프됨을 확인. "완료(건)"이 "그 주간에 실제 완료된 것"이 아니라 "마감일이 그 기간이면서 현재 시점 실적 100%"라는 기존 설계(2026-08-30 결정, `lib/server/wbs.ts` 주석)를 재확인. 완료 시점(`completedAt`) 트래킹 마이그레이션을 제안했으나 **사용자가 중단 지시 — 미구현**.
+- **WBS 목록 날짜 필터를 range로 변경**: `/wbs` 시작일/종료일 필터가 각 필드 정확일치였던 것을, Task의 startDate>=시작일 AND dueDate<=종료일(둘 다 구간 안에 포함)로 변경(`lib/server/wbs.ts` `listWbsItemsExcelColumns`)(`bdf1183`).
+- **WBS 실적시작일/실적종료일 추가**: `WbsItem`에 `actualStartDate`/`actualDueDate` 컬럼 신규(마이그레이션 `20260831100000_wbs_actual_dates`) — 기존 `startDate`/`dueDate`(계획일자)는 유지, 엑셀 47개 컬럼 서식은 건드리지 않음(사용자ID와 동일한 "웹 화면 전용 커스텀 컬럼" 패턴, 사용자 확인 후 결정). 등록/수정/상세/목록 필터 화면에서 "시작일/종료일" 라벨을 "계획시작일/계획종료일"로 바꾸고 "실적시작일/실적종료일" 입력·표시 추가(`2b2dfb6`).
+- **로컬 개발 환경 복구**: 로컬 Postgres(`.local-postgres`, 포트 55432)가 꺼져 있어 `db:local:start` 스크립트로 기동, 밀려있던 마이그레이션 8개(`prisma migrate deploy`)를 로컬 DB에 적용해 `/wbs` 500 에러(`table does not exist`) 해결.
+- **검증**: 매 커밋마다 `tsc --noEmit` 통과, `vitest run`(pmo-daily/wbs 도메인 테스트 27건) 통과. 배포 후 프로덕션 `/api/health` 200, `/wbs`·`/pmo-daily/new` 307(로그인 리다이렉트, 크래시 아님) 확인.
 
 ## 최근 완료 작업 (2026-08-20 세션)
 - **캘린더 날짜 KST 보정**: `app/calendar/page.tsx`·`lib/domain/calendar-layout.ts`의 "오늘" 계산이 서버 UTC 기준으로 어긋나던 문제를 한국시간 기준으로 수정(`5943ffd`). 이어서 주요 이벤트(마일스톤) 날짜와 D-Day 계산도 동일하게 KST 기준으로 보정(`lib/server/calendar.ts`, `0c3fa2b`).
 - **검증**: `lib/domain/calendar-layout.test.ts`에 경계 케이스 추가, Vitest 12개 테스트 파일 65건 전체 통과.
 - **원격 동기화**: GitHub `mohenz/pmotools` main이 origin과 완전히 동기화된 상태(`git status` clean, up to date).
+
+## 최근 완료 작업 (2026-08-21 세션)
+- **비로그인 공개 조회**: 로그인 화면에 `캘린더 조회`, `회의실 예약현황 조회` 링크 추가. `/calendar`, `/meetrooms`와 회의실 예약현황 GET API만 공개함.
+- **읽기 전용 경계**: 비로그인 상태에서 캘린더 등록·검색·주요 이벤트와 회의실 예약·수정·취소·내 예약·정기예약 기능을 비노출하고, 쓰기 API 인증 차단을 유지함.
+- **테스트 구성**: Jest/Playwright 실행 환경과 공개 접근 정책 단위 테스트 및 Chromium E2E 시나리오 추가.
+- **검증**: TypeScript, Vitest 65건, Jest 7건, Playwright 4건, Next.js production build 통과. 의존성 설치 시 고위험 취약점 4건 보고됨(자동 수정 미실행).
+- **공개 조회 모달 전환**: 로그인 화면의 두 공개 조회 버튼이 별도 `PublicReadOnlyModal`에서 동일 출처 iframe으로 캘린더·회의실 예약현황을 표시하도록 변경. 모달 내부 중복 로그인 버튼 비노출.
+- **설명 문구 정리**: `Project Management Tools`, `로그인 없이 조회`, 공개 화면의 반복 설명 문구 제거. 워크스페이스 `AGENTS.md`에 화면명·메뉴명·기능명을 반복 설명하는 보조 문구를 사용하지 않는 전역 UI 규칙 추가.
+- **추가 검증**: Vitest가 Playwright 파일을 수집하던 러너 충돌을 `vitest.config.ts` 제외 설정으로 해결. TypeScript 통과, Vitest 65건, Jest 7건, Playwright 모달 E2E 4건 통과. 로컬 `/api/health` 200.
+- **모달 로그인 버튼 제거 보강**: 캘린더 내부 기간·보기 이동 링크가 `embedded=1`을 유지하도록 수정해 탐색 후에도 로그인 버튼이 나타나지 않게 함. 회의실 모달도 로그인 버튼 비노출을 E2E로 고정. TypeScript 및 Playwright 4건 통과.
+- **원격 배포**: 커밋 `b2d0c20`을 GitHub main에 push. Vercel `Production – pmotools` deployment `6013732827` 성공, 고유 URL `https://pmotools-jr2vyd1fc-mohenzs-projects.vercel.app` 발급. 동일 저장소의 과거 `Production – projectmgmt` 중복 연결은 별도 deployment 실패 상태라 Vercel Git Integration 정리 필요.
+- **메시지 일정 요약 표시**: 일정 초청 행에 일정 제목과 KST 기준 일자·시작/종료 시간을 바로 표시하고, 모바일에서는 발신자·일정·수신 정보가 세로로 배치되도록 수정. TypeScript 및 Vitest 65건 통과.
+- **메시지 일정 요약 원격 배포**: 커밋 `20306f8`을 GitHub main에 push. Vercel `Production – pmotools` 배포 성공. 운영 URL `https://pmotools.vercel.app`.
 
 ## 최근 완료 작업 (2026-08-19 세션)
 - **일정 초청과 쪽지 즉시 열람**: 캘린더 일정 생성/수정 시 담당자에게 쪽지로 초청을 자동 발송하는 `calendar-invitations` 도메인·API·팝업(`CalendarInvitationPopup`) 신규 구현. 로그인 시 받은 초청을 즉시 팝업으로 표시(`b1367eb`, migration `20260819152000_add_calendar_invitations`).
@@ -94,11 +116,12 @@
 - verify_command: `npm.cmd run lint`(tsc --noEmit), `npm.cmd run test`(vitest run), `npm.cmd run build`
 - port_or_runtime: web `3020`
 - deploy_method: **GitHub `mohenz/pmotools` main push + 필요 시 `vercel deploy --prod --yes` → Vercel production 배포**. Vercel 프로젝트 `mohenzs-projects/pmotools`. 전제조건: `postinstall: prisma generate` 및 Vercel에서 `POSTGRES_URL_NON_POOLING` 우선 사용.
+- deploy_ignore_target: 레거시 Vercel 프로젝트 `mohenzs-projects/projectmgmt`는 배포·재시도·상태 모니터링 대상에서 제외하며, 해당 GitHub commit status 실패는 운영 배포 실패로 판단하지 않는다.
 - deploy_check_command: `curl https://<vercel-domain>/api/health`
 - deploy_post_check: 로그인(`pmo.admin`) → `/portfolio`, `/calendar`, `/settings/users` 등 핵심 라우트 200 확인
 - deploy_invariants: Supabase 연결 정상, Auth.js 로그인 가능, RLS로 anon 키 접근 차단 유지
 - deploy_abort_condition: Prisma/Postgres 연결 실패, 로그인 불가
-- latest_deployment: `https://pmotools.vercel.app` — GitHub main `0c3fa2b` push 기준 자동 배포(2026-08-20). 이전 확인 배포: `dpl_EkJhktWg5fZ9dvTrT6x29346qHfL`(2026-08-18, main `cfe0962`) `/api/health` 200, PostgreSQL 연결 정상. 이전 `projectmgmt-tau.vercel.app`은 운영 기준 주소가 아님.
+- latest_deployment: `https://pmotools.vercel.app` — GitHub main `2b2dfb6` push 기준 `Production – pmotools` 자동 배포(2026-08-31), `/api/health` 200·DB connected 확인. 과거 `Production – projectmgmt` 중복 연결 배포는 실패 상태이며 운영 기준이 아님.
 - 이전 배포: 2026-08-07 `vercel deploy --prod` CLI 수동 배포(당시 GitHub 트리거 배포는 실패 상태였음). 배포 직후 `AUTH_SECRET` 미등록으로 로그인 500 → `vercel env add AUTH_SECRET`(production/preview/development) 등록 후 해결.
 - 사전 조건: 로컬 Supabase 연결값은 `vercel env pull .env.local`로 받거나 `.env.example` 참고해 `.env.local` 구성. 최초 로그인 계정은 `prisma/seed.ts` 참고(**비밀번호를 이 파일에 기록하지 않는다 — 상태 파일 규칙**).
 
@@ -123,11 +146,11 @@
 - 운영 기준은 GitHub `mohenz/pmotools`, Vercel `mohenzs-projects/pmotools`, URL `https://pmotools.vercel.app`이다.
 
 ## Handoff
-- current_goal: 요구사항 관리·171건 이관·공지사항 게시판·회의실/캘린더 초청함 production 배포 완료. 다음은 운영 UAT와 P0 보안 조치.
-- done_latest: (08-19) 캘린더/회의실 초청 자동 발송과 통합 초청 팝업, 초청 전용 쪽지 화면 개편, 사용자 프로필 링크 추가. (08-20) 캘린더 오늘 날짜·주요 이벤트 D-Day 계산을 한국시간(KST) 기준으로 수정.
-- key_findings: 캘린더 "오늘"·D-Day 계산이 서버 UTC 기준이라 자정 전후 한국 사용자 화면과 어긋나는 문제가 있었음 — `lib/domain/calendar-layout.ts`, `lib/server/calendar.ts`에서 KST 오프셋을 명시적으로 적용해 해결. 원격 이관에서 로컬 `DATABASE_URL` 우선 문제를 발견해 `POSTGRES_PRISMA_URL` 우선으로 수정(`a4f82db`). 8월 14일 회의실 비고 전환 기록은 현재 소스 반영 여부 재확인 필요.
-- changed_files: `app/calendar/page.tsx`, `lib/domain/calendar-layout.ts`(+test), `lib/server/calendar.ts`, `lib/domain/calendar-invitations.ts`, `lib/domain/meeting-invitations.ts`, `lib/server/calendar-invitations.ts`, `lib/server/meeting-invitations.ts`, `lib/server/meeting-rooms.ts`, `lib/server/messages.ts`, `components/InvitationPopup.tsx`(신규, `CalendarInvitationPopup.tsx` 대체), `screens/MessagesScreen.tsx`, `screens/MyProfileScreen.tsx`, `components/UserMenu.tsx`, `prisma/schema.prisma`, migration 2개(`20260819152000_add_calendar_invitations`, `20260819180000_add_meeting_invitations`).
-- verification: `tsc --noEmit`, Vitest 12개 파일 65건 전체 통과. GitHub main `0c3fa2b`가 origin과 완전히 동기화(clean, up to date).
-- next_action: ① 초청함 UAT(캘린더/회의실 자동 발송·통합 팝업) ② 공지사항 UAT ③ 요구사항 UAT ④ 8월 14일 회의실 작업 반영 여부 확인 ⑤ P0 관리자 비밀번호/seed 평문 문제 조치 ⑥ 감사로그 actor 누락 점검.
-- risks_or_blockers: `required_decision` — 저장소 public 유지 여부 / production 접근 보호 / `Item.ownerUserId` 모델. `do_not_do` — 8월 14일 참석자 삭제 migration은 현재 상태 확인 없이 임의 적용 금지.
-- do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨)
+- current_goal: WBS 실적일자·PMO Daily WBS 연동 반영 완료. 다음은 이 기능들의 운영 UAT 및 기존 P0/P1 항목 처리.
+- done_latest: (08-31) 3개 커밋을 GitHub main에 순차 push — `3132b5e`(PMO Daily WBS 자동 채움) → `bdf1183`(WBS 날짜 필터 range 매칭) → `2b2dfb6`(WBS 실적시작일/실적종료일 + 마이그레이션 `20260831100000_wbs_actual_dates`). 매번 Vercel `Production – pmotools` 자동 배포, 최종 `/api/health` 200 확인.
+- key_findings: WBS 주간 통계의 "완료(건)"은 완료 "시점"을 추적하지 않고 "마감일이 조회 구간이면서 현재 실적 100%"로만 판정한다(기존 설계, 2026-08-30 결정) — 사용자가 완료 시점 추적(`completedAt` 마이그레이션)을 요청했다가 중단시킴, 미구현 상태로 남음. 로컬 개발 DB(`.local-postgres`, 55432)는 세션 시작 시 꺼져 있었고 마이그레이션도 8개 밀려 있었음 — 매 세션 시작 시 `db:local:status`/`migrate status` 확인 필요.
+- changed_files: `lib/server/pmo-daily.ts`, `lib/server/wbs.ts`, `screens/PmoDailyScreen.tsx`, `screens/WbsListScreen.tsx`, `screens/WbsCreateScreen.tsx`, `screens/WbsDetailScreen.tsx`, `features/wbs/WbsDetailActions.tsx`, `prisma/schema.prisma`, `prisma/migrations/20260831100000_wbs_actual_dates/migration.sql`; 상태 기록 `project_control/states/projectmgmt_current.md`.
+- verification: 매 커밋 `tsc --noEmit` 통과, `vitest run`(pmo-daily·wbs 도메인 27건) 통과. 배포 후 프로덕션 `/api/health` 200, `/wbs`·`/pmo-daily/new` 307(로그인 리다이렉트) 확인. 로컬은 `prisma migrate deploy`로 스키마 동기화 후 `/wbs` 500 해소 확인.
+- next_action: 운영 계정으로 `/pmo-daily/new`(WBS 자동 채움 값), `/wbs`(계획시작일/계획종료일/실적시작일/실적종료일 입력·표시, 날짜 range 필터), `/wbs/weekly-stats` UAT.
+- risks_or_blockers: `required_decision` — WBS 완료 시점(`completedAt`) 추적 여부(과거 이미 100%인 항목의 초기 completedAt 처리 포함, 사용자가 보류 지시). 기존 P0(저장소 public + seed 비밀번호 평문, production 접근 보호 없음)·npm 고위험 취약점 4건은 미해결로 이월.
+- do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨). 레거시 Vercel `projectmgmt`에 배포하거나 실패 상태를 운영 릴리스 블로커로 취급하지 말 것. WBS `completedAt` 마이그레이션을 사용자 재확인 없이 임의로 진행하지 말 것(직전 세션에서 중단 지시받음).

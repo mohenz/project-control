@@ -1,0 +1,46 @@
+{
+  "$schema": "https://aka.ms/winget-packages.schema.2.0.json",
+  "CreationDate": "2026-08-16T00:00:00.000-00:00",
+  "Sources": [
+    {
+      "Packages": [
+        { "PackageIdentifier": "Git.Git" },
+        { "PackageIdentifier": "GitHub.cli" },
+        { "PackageIdentifier": "GitHub.GitHubDesktop" },
+        { "PackageIdentifier": "Microsoft.VisualStudioCode" },
+        { "PackageIdentifier": "Microsoft.WindowsTerminal" },
+        { "PackageIdentifier": "OpenJS.NodeJS" },
+        { "PackageIdentifier": "Python.Python.3.10" },
+        { "PackageIdentifier": "Python.Python.3.12" },
+        { "PackageIdentifier": "Python.Launcher" },
+        { "PackageIdentifier": "astral-sh.uv" },
+        { "PackageIdentifier": "PostgreSQL.PostgreSQL.18" },
+        { "PackageIdentifier": "Microsoft.OpenJDK.17" },
+        { "PackageIdentifier": "Google.AndroidStudio" },
+        { "PackageIdentifier": "DBeaver.DBeaver.Community" },
+        { "PackageIdentifier": "Obsidian.Obsidian" },
+        { "PackageIdentifier": "StablyAI.Orca" },
+        { "PackageIdentifier": "Anthropic.Claude" },
+        { "PackageIdentifier": "Google.Chrome" },
+        { "PackageIdentifier": "NAVER.Whale" },
+        { "PackageIdentifier": "Google.GoogleDrive" },
+        { "PackageIdentifier": "Microsoft.OneDrive" },
+        { "PackageIdentifier": "Tailscale.Tailscale" },
+        { "PackageIdentifier": "Cloudflare.Warp" },
+        { "PackageIdentifier": "Google.ChromeRemoteDesktopHost" },
+        { "PackageIdentifier": "voidtools.Everything" },
+        { "PackageIdentifier": "Logitech.OptionsPlus" },
+        { "PackageIdentifier": "Notepad++.Notepad++" },
+        { "PackageIdentifier": "Foxit.FoxitReader" }
+      ],
+      "SourceDetails": {
+        "Argument": "https://cdn.winget.microsoft.com/cache",
+        "Identifier": "Microsoft.Winget.Source_8wekyb3d8bbwe",
+        "Name": "winget",
+        "Type": "Microsoft.PreIndexed.Package"
+      }
+    }
+  ],
+  "WinGetVersion": "1.11.430"
+}
+
