@@ -2,10 +2,10 @@
 
 ## 기본 정보
 - project_key: memorybook
-- last_updated: `2026-08-24`
+- last_updated: `2026-08-31`
 - project_root: `D:\workspace\memorybook`
 - owner_request: `personalMemo` 복제 소스를 Supabase 데이터 환경과 Vercel 배포 환경을 사용하는 독립 프로그램으로 리뉴얼
-- current_status: `memo_states` 단일 JSONB 저장을 `users`/`groups`/`notes`/`schedules`/`todos` 정규화 테이블로 전환(커밋 `a6cc5b5`)하고, 클라우드 로드 실패 시 빈 화면 대신 재시도 화면을 보여주도록 개선(커밋 `a7a3245`)해 배포. 운영 커밋 마커 검증 완료. **단, 신규 테이블에 `memo_states` 기존 데이터 백필이 없어 `notes`/`todos`가 사용자에게 빈 상태로 보일 수 있는 위험이 남아 있음 — 아래 리스크 참조.**
+- current_status: 메모 작성 편집기에 마크다운 서식 툴바(굵게/기울임/제목/목록/체크박스)와 상세 화면 마크다운 렌더링을 추가해 커밋 `39372cc`로 배포. `content`는 여전히 평문 문자열로 저장(DB 변경 없음). 이전에 남겨둔 정규화 전환 관련 `notes`/`todos` 백필 리스크는 아직 미해결 상태로 남아있음 — 아래 리스크 참조.
 
 ## 현재 목표
 - 배포된 인증·설정·사이드바·아젠다 UX를 안정 운영하고 다중 클라이언트 상태 저장 경합의 데이터 보호 방안을 검토.
@@ -19,6 +19,7 @@
 - **남은 작업**: memorybook에서 설정 탭 잘림 수정과 그룹 칩 → 선택형 변경을 수행.
 
 ## 완료 상태
+- 2026-08-31 메모 작성 데스크톱(`NoteEditor`)·모바일(`MobileNoteEditorScreen`) 편집기에 마크다운 서식 툴바를 추가하고, 상세 화면(`NoteDetail`, `MobileNoteDetailScreen`)은 `marked`+`DOMPurify`로 마크다운→HTML 렌더링, 목록/검색 미리보기는 마크다운 기호를 벗겨낸 텍스트로 표시하도록 개선. `content`는 계속 평문 문자열(마크다운)로 저장해 스키마 변경 없음. 신규 의존성 `marked`/`dompurify`/`@tailwindcss/typography`. TypeScript, Vitest 137건, Jest 13건, Playwright 4건, Vite build 통과 후 커밋 `39372cc`로 배포, 운영 `build-commit` 메타 태그로 반영 확인.
 - 2026-08-24 로드가 실패해도 `authLoading`이 무조건 `false`가 되어 노트/일정/TO-DO가 빈 화면으로 보이던 문제를, `cloudLoadFailed` 상태와 전용 재시도 화면으로 분리해 "데이터 유실처럼 보이는" 오인을 방지. `src/App.tsx` 수정 후 커밋 `a7a3245`로 배포, 운영 `build-commit` 메타 태그로 반영 확인.
 - 2026-08-24 `memo_states` 단일 JSONB 저장을 `users`/`groups`/`notes`/`schedules`/`todos` 5개 테이블 + RLS 정책 + 신규 가입 자동 프로필 생성 트리거로 전환하는 마이그레이션(`supabase/migrations/202608241200_normalize_memo_tables.sql`)을 작성·적용하고, `App.tsx`/`archiveIntegration.ts`를 엔티티별 upsert/delete로 리팩터링해 한 엔티티 저장 실패가 다른 엔티티를 덮어쓰지 못하도록 구조적으로 격리. 커밋 `a6cc5b5`로 배포. **마이그레이션에 기존 `memo_states` 데이터 백필이 없어 신규 테이블은 빈 상태로 시작함(설계 의도, 파일 상단 주석에 명시)** — DB `verify` 결과 `notes=0`, `todos=0`, `groups=5`, `schedules=10`, 기존 `memo_states` 행은 1건 그대로 보존(수동 삭제 전까지 유지). 사용자의 실제 노트/할일이 화면에서 보이지 않게 될 수 있으므로 백필 필요 여부를 사용자와 확인해야 함.
 - 2026-08-23 모바일 캘린더 헤더의 `오늘`/`주간` 텍스트 버튼을 아이콘(Sun/CalendarRange)으로 바꾸고, 날짜와 무관하게 전체 일정을 정렬해 보여주는 `전체`(List 아이콘) 뷰를 신규 추가. TypeScript, Vitest 135건, Jest 13건, Playwright 4건, Vite build 통과 후 커밋 `1420334`로 배포.
@@ -80,7 +81,7 @@
 - remote: `https://github.com/mohenz/memorybook.git`
 - branch: `main`
 - upstream: `origin/main`
-- latest_commit: `a7a3245 클라우드 동기화 실패 시 빈 화면 대신 재시도 화면 표시`
+- latest_commit: `39372cc 메모 작성에 마크다운 서식 툴바와 렌더링 추가` (그 사이 원격에서 들어온 `01e6eb8`까지의 7개 커밋 — 클라우드 동기화 실패 시 데이터 초기화 버그 수정, 초기 동기화 오류 진단 추가 등 — 도 fast-forward로 반영됨)
 - status_before_state_record: `main...origin/main`, 동기화 완료. `main` 브랜치 clean, `origin/main`과 push 완료 상태(2026-08-24 `a6cc5b5`, `a7a3245` 포함).
 - ignored_sensitive_paths: `.env.local`, `config/*.cfg`, `backups/`, `node_modules/`, `dist/`, `test-results/`
 
@@ -119,6 +120,6 @@
 
 ## Handoff
 - current_goal: 배포된 인증·설정·사이드바·아젠다·모바일 캘린더 UX를 안정 운영하고 동기화 데이터 보호 확인
-- done_latest: `memo_states` → 정규화 테이블(`users`/`groups`/`notes`/`schedules`/`todos`) 전환 및 클라우드 로드 실패 재시도 화면 추가를 커밋 `a6cc5b5`, `a7a3245`로 배포 완료, DB `verify`로 반영 확인 (Updated 2026-08-24)
-- next_action: 정규화 전환 후 `notes=0`/`todos=0`이 실제 데이터 손실인지 사용자 확인 및 필요 시 `memo_states` 수동 백필(최우선). 이후 다중 클라이언트 저장 경합 재검토.
+- done_latest: 메모 작성에 마크다운 서식 툴바 및 렌더링을 커밋 `39372cc`로 배포 완료, `build-commit` 메타 태그로 반영 확인 (Updated 2026-08-31)
+- next_action: 정규화 전환 후 `notes=0`/`todos=0`이 실제 데이터 손실인지 사용자 확인 및 필요 시 `memo_states` 수동 백필(최우선, 미해결). "최초 로그인 시 동기화 오류" 원인은 사용자가 관찰한 실제 진단 로그(`단계: X · 오류: 코드`) 확보 전까지 미확정 상태.
 - blockers: 기능 배포 블로커 없음. `notes`/`todos` 백필 여부는 사용자 판단 대기. DB CLI/MCP 연결은 선택적으로 미복구
