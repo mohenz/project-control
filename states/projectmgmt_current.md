@@ -2,16 +2,75 @@
 
 ## 기본 정보
 - project_key: `projectmgmt`
-- last_updated: `2026-08-31`
+- last_updated: `2026-09-04`
 - owner_request: `요구사항 관리 고도화·엑셀 데이터 이관·공지사항 게시판 구현 후 GitHub/Supabase/Vercel 원격 배포`
-- current_status: `PMO Daily 공정현황 WBS 자동 채움, WBS 목록 날짜 필터 range 매칭, WBS 실적시작일/실적종료일 커스텀 컬럼 추가 배포 완료. GitHub main 2b2dfb6, Vercel Production – pmotools 성공(`/api/health` 200).`
+- current_status: `이슈관리를 기존 이슈/리스크 통합(Item, 확률×영향 매트릭스) 기능에서 전용 이슈관리(MASTER=Issue/DETAIL=IssueProgress 풀스냅샷 구조)로 전면 재구축, 캘린더에 회의실 예약 연동·"내 일정 보기" 필터 추가, 포트폴리오 공지 배너 제거, PMO Daily 공정현황/지연TASK/이슈관리 정의 재정립, WBS 목록 컬럼 숨김·날짜 range 필터, 초청 목록 UI 다단계 개선까지 13개 커밋 전부 배포 완료. GitHub main b3d71db, Vercel Production – pmotools 성공(`/api/health` 200).`
 - design_standard: `project_control\design\bloom_ui_design_standard.md` — 이 프로젝트의 UI는 이 문서를 필수 표준으로 따른다 (임의 해석 금지, 문서 내용 그대로 적용)
 
 ## 현재 목표
 - (완료) 요구사항 관리 고도화, 요구사항 171건 production 이관, 공지사항 게시판 구축·배포.
 - (완료) 회의실/캘린더 초청 통합 발송·초청함 개편, 캘린더 날짜 계산 KST 보정.
 - (완료) PMO Daily 공정현황 WBS 연동, WBS 목록 날짜 range 필터, WBS 실적일자 커스텀 컬럼.
-- 다음 우선순위는 공지사항·요구사항 운영 UAT, 기존 P0 보안 조치, 8월 14일 회의실 참석자→비고 전환 작업의 현재 소스 반영 여부 재확인.
+- (완료) 사이드바 아이콘 커스텀화, 사용자 관리 화면 개선(아이디 변경 통합, 위험 작업 확인 모달, 반응형 전체폭), 요구사항관리 엑셀 다운로드/업로드.
+- (완료) 포트폴리오 차트 전면 chart.js 표준화, 파스텔 색상 팔레트, 요구사항 엑셀 업로드 요구사항ID 동기화 방식 재설계, 위클리리포트 인쇄보기 모달형 팝업 전환.
+- (완료, 09-04) 이슈관리를 리스크 매트릭스 통합형에서 전용 이슈관리(MASTER-DETAIL 풀스냅샷)로 전면 재구축, 캘린더 회의실 예약 연동·내 일정 필터, 포트폴리오 공지 배너 제거, PMO Daily 재정의, WBS 목록/필터 개선.
+- 다음 우선순위는 이번 세션 신규기능(이슈관리 재구축 포함) 운영 UAT, 집중관리업무 기능개선 사용자 결정 대기, 기존 P0 보안 조치.
+
+## 최근 완료 작업 (2026-09-04 세션)
+- **이슈관리 전면 개편(이 세션의 핵심 작업, 다수 회 재설계)**: 기존 이슈+리스크 통합 `Item` 모델(확률×영향 매트릭스, 에스컬레이션 자동제안, Track 연동, `/items`)을 완전히 제거하고 전용 이슈관리로 교체. 사용자가 명시적으로 확정한 범위: 리스크 기능은 별도로 유지하지 않고 이슈관리로 일원화, 기존 `Item` 데이터는 필드 구조가 호환되지 않고 운영에서 사용 중이지 않아 마이그레이션 없이 테이블째 DROP(사용자 승인 완료 — 뒤에 리스크 항목 참조), "변경이력(이력)"은 유지하되 자동 감사로그가 아니라 **MASTER(Issue, 항상 최신 상태 캐시)/DETAIL(IssueProgress, 등록 당시와 동일한 전체 필드를 갖춘 스냅샷) 구조**로 구현 — 진행 정보(IssueProgress) 추가가 이슈 데이터를 바꾸는 유일한 방법이며, 매 추가/수정/삭제 후 `syncIssueFromLatestProgress()`가 최신 진행 정보를 마스터에 반영한다. 이 설계에 도달하기까지 자동 `IssueEvent` 감사로그 → 단일 `history: String` 필드 → 날짜/상태/내용만 있는 경량 MASTER-DETAIL, 세 차례 방향을 바꿨고 최종적으로 "등록 시와 동일한 전체 필드 스냅샷"으로 확정했다(사용자: "최초 등록 때와 같은 전체 필드를... 다 갖춘 스냅샷이어야 한다는 뜻이야").
+  - 필드: 이슈번호(`ISU-0001` 시퀀스)/이슈관리번호/이슈구분(공통코드)/이슈명/이슈내용/중요도·우선순위(`ProbabilityLevel` 재사용)/상태(발생/진행/종결)/발생일자/해결기한/담당자(PersonPicker)/대응전략/에스컬레이션여부/보고라인(공통코드, 다중선택)/등록일자/비고 — 전부 `Issue`와 `IssueProgress` 양쪽에 동일하게 존재.
+  - 서버: `lib/server/issues.ts` — `createIssue`(Issue+최초 IssueProgress 트랜잭션 생성), `addProgressEntry`/`updateProgressEntry`/`deleteProgressEntry`(전부 sync 호출), `archiveIssue`(상태가 `CLOSED`가 아니면 거부). **직접 마스터를 수정하는 `updateIssue()`는 의도적으로 없음.**
+  - 화면: `screens/IssueListScreen.tsx`(엑셀 스타일 스프레드시트 테이블, 사용자 제공 엑셀 양식과 컬럼 순서 일치, 이력 컬럼 없음 — "이력은 목록이 아니라 개별 이슈 화면에만"이라는 사용자 지시), `features/issues/IssueFormActions.tsx`(재사용 가능한 `ProgressEntryForm`으로 신규 진행 추가/기존 진행 수정 두 모드 처리).
+  - 마이그레이션 6개(`prisma migrate deploy`로 적용, 상세는 리스크 절 참조): items/item_events/item_sequences DROP, issues/issue_sequences/issue_report_lines 생성 + `issue_type`/`report_line` 공통코드 프로젝트별 시딩, 이후 IssueProgress MASTER-DETAIL 구조로 3차례 스키마 조정(중간에 `IssueEvent` 생성했다가 다시 DROP).
+- **캘린더 회의실 예약 연동 + 내 일정 필터**: `lib/server/calendar.ts`가 `listMeetingReservations`를 가져와 `CalendarEvent.source`에 `"meeting"` 추가(그룹/우선순위 필터가 걸리면 회의실은 해당 개념이 없으므로 스킵). 캘린더 전 화면(월/주/일/목록)에 체크박스 `<CalendarMineToggle>`(신규, `mine=1` 쿼리 파라미터) 추가 — 체크 시 담당자 필터가 로그인 사용자로 좁혀짐. 범례에 "회의실 예약" 항목 추가.
+- **포트폴리오 공지 배너 제거**: 사용자가 스크린샷을 보며 "그 영역이 필요하지 않을 것 같은데?" → "제거해줘"로 확정. `components/AnnouncementBanner.tsx` 삭제, `AuthenticatedAppShell.tsx`/`app/layout.tsx` 배너 렌더링 제거, `lib/server/announcements.ts`의 `listDashboardAnnouncements()`(사용처 없어짐) 삭제.
+- **PMO Daily 재정의(사용자가 정확한 산식을 직접 지정)**: 계획TASK=오늘종료예정 TASK, 실적TASK=그 중 종료된 TASK 수, 지연TASK=그 중 미종료 TASK 수(기존엔 "오늘까지 누적"이었던 것을 "정확히 오늘"로 변경, `lib/server/wbs.ts` `getWbsDailyTaskCounts` `dueDate<=asOfDate`→`dueDate===asOfDate`). 지연TASK 목록에 계획시작일/계획종료일/실적시작일/실적종료일 4개 컬럼 추가. 이슈관리 위젯 컬럼을 이슈번호/이슈구분/발생일자/이슈명/이슈현황으로 교체.
+- **WBS 목록 개선**: 사용자가 지정한 약 32개 관리용/역할매트릭스 컬럼을 화면에서만 숨김(엑셀 다운로드/업로드용 `WBS_EXCEL_HEADERS` 원본은 그대로 — `screens/WbsListScreen.tsx`의 `HIDDEN_HEADERS`). 날짜 필터를 단일값에서 계획시작일/계획종료일/실적시작일/실적종료일 4개 range(from/to)로 전환.
+- **초청 목록 UI 다단계 개선(포트폴리오 `/portfolio`, 초청함 `/messages`)**: 사용자가 반복적으로 "UI 수정 요청" 티켓(페이지/URL/선택요소/DOM/변경요청 형식)을 보내며 세밀하게 조정 — 장소를 일정명 옆으로, 회의/일정 아이콘 표시, 초청 상세를 펼치기 없이 처음부터 노출, 여러 줄로 나뉘던 일정요약·장소·"일정 보기" 링크를 헤더 한 줄로 통합, 캘린더초청 본문에서 헤더와 중복되던 제목/기간 텍스트 제거. 최종 상태는 `screens/MessagesScreen.tsx`/`screens/PortfolioScreen.tsx`/`app/globals.css`(`.invitation-row*`, `.message-row-*` 다수) 참조.
+- **업무일지 폼 폭 확대**: `/work-logs/new` 패널만 20% 확대(`work-log-form-panel` 신규 클래스, 전역 `.form-panel`은 그대로 유지).
+- **로컬 개발 환경 복구**: 로컬 Postgres(55432)가 2026-09-03 13:40 이후 비정상 종료 상태로 방치되어 연결은 되지만 쿼리 중 끊기는 문제 발생 → `pg_ctl -D "D:/Workspace/projectmgmt/.local-postgres/data" -w restart`로 WAL 재생 복구 확인.
+- **마이그레이션 방식 확정**: `prisma migrate dev`가 기존 `20260812121500_seed_default_meeting_rooms`(신규 shadow DB에 FK 위반) 때문에 이 프로젝트에서 항상 실패함을 재확인 — 이후 신규 마이그레이션은 전부 `prisma migrate deploy`(shadow DB 미사용, production `vercel-build`와 동일 방식)로 적용하기로 확정.
+- **검증**: 매 스키마 변경마다 `tsc --noEmit`/`vitest run`/`next build` 재확인(빌드 검증 시 반드시 `next dev`를 먼저 종료 — 동시 실행 시 `.next` 청크가 깨져 `Cannot find module '../chunks/ssr/...'` 오류 발생하는 것을 이번 세션에 재확인). 배포 후 매번 Vercel CLI로 Ready 상태 확인 + `/api/health`, 로그인 후 핵심 라우트 200 확인.
+- **배포**: 13개 커밋(`f22d87e`~`b3d71db`) 각각 개별 push, GitHub 연동 자동배포 또는 `vercel --prod --yes`로 즉시 배포. 최종 커밋 `b3d71db`.
+
+## 최근 완료 작업 (2026-09-03 세션)
+- **요구사항관리 엑셀관리 메뉴얼 작성·연결**: 기존 메뉴얼 시스템(`lib/domain/manuals.ts`, `public/manuals/*.html`, WBS·업무일지 메뉴얼과 동일한 디자인 톤)에 `requirements-excel` 슬러그로 신규 메뉴얼 추가. `lib/server/requirements-excel.ts`의 실제 검증 로직(요구사항ID 매칭 동기화, 20개 컬럼, 공통코드 일치 오류 등)을 그대로 반영해 작성. `components/AppNavigation.tsx`의 요구사항관리 좌측 메뉴(관리자·운영자 전용)에 "사용 메뉴얼" 링크 추가, 전체 메뉴얼 목록에도 등록(`a015a94`).
+- **참고 — 이 세션 초입에 로컬 dev 서버 원인불명 캐시 문제 발생**: Turbopack·webpack 두 방식 모두, `.next` 완전 삭제 후 재시작해도 방금 수정한 소스 파일 내용을 전혀 반영하지 못하는 현상을 겪음(Node `fs.readFileSync`로는 디스크상 파일이 정확히 최신임을 확인했는데도 Next dev 프로세스만 못 읽는 상태). 원인은 못 찾았고, 이 워크스페이스가 Codex와 공유 중이라 다른 세션의 동시 파일 접근이 관련됐을 가능성도 배제 못 함 — 재현되면 `.next`뿐 아니라 dev 프로세스 자체를 완전히 새 PID로 띄웠는지, 다른 세션이 같은 파일을 동시에 건드리고 있지 않은지부터 확인할 것. 실제 배포(Vercel, 매번 클린 빌드)에는 영향 없었음 — 프로덕션에서 최종 검증 완료.
+- **배포**: 커밋 `a015a94` 푸시 → `vercel --prod --yes`로 즉시 배포(1차 시도 "Not authorized" 오류로 자동 재시도 후 성공). 프로덕션에서 메뉴얼 목록(8번째 항목)·메뉴얼 상세 페이지·`/requirements/excel` 사이드바 "사용 메뉴얼" 링크 클릭까지 실제 브라우저로 확인 완료.
+- **포트폴리오 초청 조회·WBS 현황 반복 개선(사용자 스크린샷 기반 다단계 요청)**:
+  - 초청 조회 목록을 1줄(제목·장소·일시·보낸사람) + 최대 5건으로 압축, 패널 제목 옆에 초청 아이콘(`/messages`로 이동) 추가(`1e2f3ab`). 이후 목록의 `<time>`이 실제로는 "초청 메시지 생성 시각"이라 사용자가 요청한 "일자·시간·장소"와 맞지 않는 문제를 발견 → 캘린더 초청은 `calendarInvitation.startAt`/`location`, 회의실 초청은 `meetingInvitation.startAt`(방 이름이 곧 제목이라 장소는 생략)을 쓰도록 수정(`56e1a40`).
+  - "나의 WBS 현황" 차트: 파이(전 세션) → 세로 막대(`1e2f3ab`) → 가로 막대(`f204c42`) → 완료/진행중/지연을 **한 막대에 이어붙인 누적 막대 1줄**로 재변경(`a357c13`, `indexAxis:"y"` + `stacked:true`). "WBS 진척"·"나의 WBS 현황" 패널을 2열 그리드에서 빼고 다른 패널과 동일한 전체 폭 1줄 배치로 변경(`1e2f3ab`, `.portfolio-domain-grid`를 1열로).
+- **회의실 정기예약 신청 폼 전면 개편(사용자 요청 다단계)**: 요일 체크박스가 항상 보이던 것을 "매주" 선택 시에만 노출, 토·일 제거(월~금 5개만), 가로 한 줄 정렬 + 체크박스·텍스트 라인 정렬(`f204c42`~). "매월 일자"도 "매월" 선택 시에만 노출. 시작/종료 시간을 30분 단위 `<select>`로(직접 타이핑으로 30분 단위를 벗어나는 값이 들어가는 것 방지) → 최종적으로 "기간 시작/종료"(날짜)와 "시작/종료"(시간) 4개 필드를 캘린더 일정 등록과 동일한 "날짜+시(09~19시)+분(00/30)" 통합 피커로 재구성. 이 과정에서 캘린더 폼(`CalendarEventForm.tsx`)에 있던 `DateTimePicker`를 `components/DateTimePicker.tsx`(공용, `hours`/`minutes` prop으로 파라미터화)로 추출해 두 화면이 공유(`56e1a40`).
+- **버그 수정 — `Cannot read properties of null (reading 'reset')`**: 정기예약 신청 제출 시 크래시 재현·수정. `async function submit(e){...; await api(...); e.currentTarget.reset(); ...}` 패턴에서 React가 `await` 이후 SyntheticEvent의 `currentTarget`을 null로 비우는 것이 원인 — `e.currentTarget`을 await 전에 지역변수로 캡처해 해결. 회의실 관리(`RoomManagementScreen.tsx`)의 "회의실 추가" 폼에도 동일 패턴이 있어 함께 수정(`303c6f5`). 로컬에서 실제 신청 성공까지 재현해 크래시 없음과 폼 리셋 확인, 테스트 데이터는 DB에서 직접 삭제.
+- **집중관리업무 기능개선 방안 분석**: 사용자가 제시한 개선 요구사항(업무모듈·담당자별 집중관리업무 등록 → 세부항목별 액션아이템 등록 → 액션아이템 상태로 평가, 액션아이템 필드 12개, 상태 5종, 액션아이템목록조회는 PM/PMO 전용, 등록은 업무그룹리더/PMO/담당자)을 현재 `ManagementTask`(5개 고정 평가항목 + 수동 퍼센트 입력, `assertManager` 전용) 구조와 대조 분석. `docs/집중관리업무_기능개선_방안_20260903.md`로 정리(현재 구조 요약, 신규 데이터모델 제안(`ActionItem`/`ManagementTaskDetailItem`), band 산출 규칙 3안, 권한 모델 변경표, 미해결 확인사항 6개, A~E TASK 목록). **코드 구현은 하지 않음 — 확인사항 6개에 대한 사용자 결정이 선행되어야 착수 가능.**
+- **배포**: 이번 절(위 4건) 커밋마다 개별 push + `vercel --prod --yes`로 즉시 배포, 매번 프로덕션에서 Claude in Chrome으로 실제 조작해 확인. 최종 커밋 `303c6f5`.
+
+## 최근 완료 작업 (2026-09-02 세션)
+- **포트폴리오 대시보드 차트 개편(다수 커밋, 사용자가 스크린샷 보며 반복 요청)**:
+  - "WBS 진척"·"요구사항관리" 타일을 1줄 막대그래프로(`c398f21`) → "WBS 진척"을 Stage 12개 전체를 한 줄씩 보여주는 불릿 막대로 확장하고 "WBS 현황" 표 섹션 삭제(`74d0102`) → 세로형 막대로 전환(`0ff53f8`) → 두 타일 세로 높이 정렬(`0adfb63`).
+  - "요구사항관리" 타일을 삭제하고 로그인 사용자 본인의 WBS 담당 현황(완료/진행중/지연)으로 교체(`43df3e0`) → 이후 사용자 요청으로 **파이 차트**로 재변경(`feb05c3`, `PieController` 신규 등록).
+  - **버그 수정**: `usePointStyle:true` 범례에서 커스텀 `generateLabels`가 반환하는 개별 항목에 `pointStyle`을 채우지 않으면 전역 설정("rect")과 무관하게 Chart.js 기본값(원)으로 그려지는 것을 발견·수정, Stage 축 라벨을 굵게/60도 고정 회전으로 가독성 개선(`861a196`). 이래도 사용자가 "다크모드에서 글씨 안 보임"을 재차 보고 → CSS 변수 계산값을 아예 거치지 않고 다크모드에서 리터럴 `#ffffff`/밝은 회색을 직접 쓰도록 변경(`c4c9968`, `components/chart-theme.ts`의 `themeColor()`).
+  - **"모든 차트는 chart.js로 그린다" 규칙 수립**: `docs/UI_CONVENTIONS.md`에 규칙·다크모드 리터럴 색·pointStyle 주의사항 기록. `DashboardScreen`(이슈 대시보드 유형별 분포)과 `RequirementStatisticsScreen`(기능구분 분포)이 쓰던 CSS `width:%` 막대를 신규 `components/DistributionBarChart.tsx`(chart.js 가로 막대, 행 클릭 시 필터링된 목록으로 이동하는 기능 보존)로 교체(`524fc96`). 공용 테마 헬퍼(`cssVar`/`themeColor`/`useThemedChart`)를 `components/chart-theme.ts`로 통합해 `PortfolioDomainCharts.tsx`·`WbsStageChart.tsx`가 공유. **예외**: 이슈 대시보드의 3×3 리스크 매트릭스 히트맵은 칸마다 `<Link>`로 개별 키보드/스크린리더 접근성이 있어 캔버스 전환 시 그게 사라짐을 사용자에게 설명 → **사용자가 현행 유지를 선택, 예외로 문서화**(`6970c2b`).
+  - **파스텔 색상 팔레트**: 사용자가 Chart.js 공식 문서 예제 색을 언급 → "정확히 그 값이 아니라 톤을 파스텔로"라는 의도 확인 후, 차트 채우기 전용 신규 변수 `--chart-success`/`--chart-warning`/`--chart-destructive`(파스텔)를 추가하고 `--chart-planned`/`--chart-actual`도 파스텔로 교체. 배지·버튼이 쓰는 기존 진한 `--success`/`--warning`/`--destructive`는 그대로 둬서 다른 화면에 영향 없음. 텍스트/눈금 색은 파스텔 적용 대상에서 제외(다크모드 가독성 유지)(`55fc1b7`).
+- **요구사항 엑셀 업로드 방식 재설계(사용자 요청으로 2회 반복)**:
+  1. 1차: 사용자가 "기존 데이터를 삭제하고 새로 등록하는 방식(WBS와 동일)"을 명시적으로 요청 → ID 열 제거, 반영 시 프로젝트의 요구사항을 전부 삭제 후 파일 내용으로 재생성하도록 변경, 위험 확인 모달 추가(`f1982b1`). **부작용**: `RequirementEvent`/`RequirementChange`가 `Requirement`에 `onDelete: Cascade`라 매번 이력·변경관리 데이터가 통째로 사라짐.
+  2. 사용자가 "이력을 꼭 삭제해야만 하냐"고 질문 → 원인 설명 후, **요구사항ID(수기 코드) 매칭 동기화 방식**으로 재구현: 파일의 요구사항ID가 기존과 일치하면 내부 UUID를 유지한 채 갱신(이력 보존), 파일에 없는 기존 요구사항ID는 삭제, 새 요구사항ID(또는 빈 값)는 신규 생성. 검증 리포트에 신규/수정 구분과 삭제 예정 건수를 표시, 확인 모달에 신규/수정/삭제 건수를 정확히 명시(`961f822`).
+  - **검증**: 로컬 DB에서 실제 업로드 3종 시나리오(매칭→UUID 보존 확인, 신규 생성, 미매칭 삭제)를 전부 직접 쿼리로 확인. 이 과정에서 로컬 dev DB의 요구사항 데이터가 (원래 프로덕션과 동일하게 171건 있었던 것이) 테스트 결과로 **현재 2건만 남음** — 로컬 전용이라 운영 데이터에는 영향 없음.
+- **위클리리포트 인쇄보기 개편(사용자 요청 3단계)**: "새 탭으로"(`8f6212b`) → "새 탭이 아니라 모달형 새 창으로"(요청 → `window.open`으로 화면 90% 크기, 가운데 정렬된 별도 팝업창, `aec8629`) → 팝업에 앱 상단메뉴/좌측 사이드바가 그대로 보이는 것을 지적받아 로그인 화면 공개 미리보기가 쓰던 기존 `embedded=1` 규약을 재사용해 제거(`53803f0`) → 팝업에서는 "리포트로 돌아가기"가 무의미하다는 지적으로 해당 버튼도 조건부 제거, 같은 탭에서 여는 "PDF 파일 생성" 플로우에는 유지(`420551e`).
+- **검증**: 매 커밋마다 `tsc --noEmit` 통과. 모든 UI 변경은 로컬 브라우저(Claude in Chrome)로 실제 조작해 스크린샷/aria-label/DOM 속성으로 확인 후 배포. 요구사항 엑셀은 DB 직접 쿼리로 3종 시나리오 전부 검증.
+- **배포**: 이번 세션 19개 커밋을 매번 개별 커밋 직후 `git push`(GitHub Actions/Vercel Git 연동 자동배포) 또는 `vercel --prod --yes`로 즉시 배포 — 세션 내내 로컬 main·GitHub origin/main·프로덕션이 매 커밋마다 동일 상태로 유지됨(다른 세션과의 충돌 없었음). 최종 커밋 `feb05c3`, 배포 `dpl_H1a3hEBRAEQMyg9hfVJHjnm4JKdN` Ready.
+
+## 최근 완료 작업 (2026-09-01 세션)
+- **사이드바 아이콘 교체**: `lucide-react` 아이콘을 `components/icons/PmoIcons.tsx`의 커스텀 SVG 세트로 교체(`AppNavigation`/`InvitationPopup`/`UserMenu`). 사이드바 메뉴의 영문 부제(Portfolio, Notice Board 등) 제거(`68d0623`, `e60a021`).
+- **업무일지 폼 레이아웃**: `WorkLogFormScreen`의 "목록으로" 버튼을 상단에서 폼 하단 `.form-actions`로 이동, 등록 버튼과 크기 통일(`5126cb5`).
+- **사용자 로그인 ID 변경 기능**: 관리자 이상 권한으로 `/settings/users`에서 사용자 로그인 ID(`User.userId`)를 변경하는 기능 추가(`4143236`) → 이후 사용자 요청으로 별도 버튼을 없애고 "정보 저장" 액션에 통합(`3a3446d`, `lib/server/admin.ts`의 `updateUserProfile`이 `userId`까지 함께 검증·저장, 중복 아이디 검사 유지).
+- **위험 작업 확인 모달**: `UserManagementScreen`의 정보 저장/계정 잠금/비밀번호 초기화 버튼에 Radix `AlertDialog` 확인 모달 추가(계정 삭제는 기존에 이미 있었음)(`4bcfa68`).
+- **사용자 관리 테이블 반응형**: 테이블이 컨테이너 100% 폭에 강제로 맞춰지며 이름/회사명 입력칸이 몇 글자로 눌리던 문제 수정(`width:auto`+개별 컬럼 최소폭 지정)(`dcc752d`). 이 화면만 `settings-content`의 1360px 폭 제한을 해제해 넓은 모니터에서 전체 폭 사용(`176822a`). 이메일 입력칸은 절반 폭으로 축소(`3a3446d`에 포함).
+- **요구사항관리 엑셀 다운로드/업로드**: `/requirements/excel`(관리자 이상 전용) 신규. WBS처럼 검증(Dry-run)→반영 2단계 플로우를 쓰되, WBS의 전체교체 방식 대신 **ID 열 기준 행 단위 생성/수정**(캘린더 엑셀 패턴 재사용) — 요구사항은 버전·변경이력이 FK로 걸려 있어 전체 삭제 후 재생성이 부적합하다고 판단. 요구사항구분/분류는 공통코드 미매칭 시 오류, 담당자는 로그인ID 미매칭 시 경고(WBS와 동일하게 관대한 처리)(`d963415`, `lib/server/requirements-excel.ts`).
+- **원격 프로덕션 DB 직접 변경(코드 배포 아님)**: 사용자 요청으로 6개 계정의 로그인 ID를 프로덕션 Supabase에서 직접 변경(유한동 hdy693→225362, 이수정 sujeong.lee→224740, 남현우 namppo→214218, 한새흰 hiin→q93w2h, 김재혁 re2volution→q93w3a, 이윤택 ytlee→q93w3h). `WbsItem`/`WorkLog`는 사용자 UUID로 연결되어 있어 데이터 연결에는 영향 없음을 사전 확인 후 진행, 변경 전/후 UUID 동일함 검증 완료.
+- **로컬 dev DB 재확인(중요 발견)**: 이번 세션에서 실제로 떠 있던 `npm run dev`(port 3020)가 `.env.local`(프로덕션 Supabase)이 아니라 **`.env`의 `DATABASE_URL`(로컬 Postgres, 55432)**을 쓰고 있음을 직접 검증(요구사항 엑셀 업로드 테스트 행을 생성한 뒤 프로덕션 커넥션 문자열로는 조회되지 않고, 로컬 커넥션 문자열로만 조회됨). 즉 08-14 세션에서 남긴 "로컬 dev가 운영 DB에 직접 붙는다"는 리스크는 **이 PC의 현재 실행 상태에서는 해당하지 않음** — 로컬 우선 구성이 유지되고 있다. 다만 `vercel env pull`을 다시 실행하거나 `DATABASE_URL`을 지우면 다시 프로덕션으로 붙을 수 있으니 여전히 주의는 필요.
+- **검증**: 매 커밋마다 `tsc --noEmit` 통과. 로컬 브라우저(Claude in Chrome)로 아이디 변경, 확인 모달 3종, 요구사항 엑셀 다운로드(200, 실데이터)/검증(정상 행·오류 행 모두 정확히 표시)/신규 등록/수정 전체 플로우를 실제 조작해 확인. 테스트로 만든 요구사항 1건은 로컬 DB에서 직접 삭제해 정리. 매 기능 완료 후 `vercel --prod --yes`로 개별 배포(총 9회, 최종 커밋 `d963415`).
+- **GitHub 동기화**: 세션 종료 시점에 `git push origin main`이 `origin/main`에 다른 세션(같은 워크스페이스, 다른 Claude Code 세션)이 먼저 push한 2개 커밋(`c08f61f` WBS 목록 헤더 안내문구 제거, `00f55e7` WBS 목록 헤더 행 상단 고정 — `app/globals.css`, `screens/WbsListScreen.tsx`)과 충돌해 1차 거부됨. `git fetch`로 확인 후 `git merge origin/main`(자동 병합, 충돌 없음, `app/globals.css` 한 곳만 자동 병합됨) → `tsc --noEmit` 재통과 확인 → `git push` 성공(병합 커밋 `596d85b`). Vercel GitHub 연동이 이 push로 자동 배포를 트리거해 `dpl_C4rfModGCKxGae5vpUVNrivRKrHR`가 Ready, `/api/health` 200 확인 — 로컬 저장소·GitHub·프로덕션이 모두 동일 커밋으로 일치한다.
 
 ## 최근 완료 작업 (2026-08-31 세션)
 - **PMO Daily 공정현황 WBS 자동 채움**: `/pmo-daily/new`에서 스냅샷이 아직 저장되지 않은 날짜는 계획/실적/전체/완료 TASK 건수를 WBS(오늘 기준)에서 가져와 기본값으로 채움. `lib/server/wbs.ts`에 `getWbsDailyTaskCounts(projectId, asOfDate)` 신규(계획=leaf의 dueDate<=기준일, 실적=그중 actualProgress 100%, 완료=전체 leaf 중 100%). `getPmoDailyDashboard`가 스냅샷 없을 때만 이 값을 기본값으로 사용, 저장된 스냅샷은 그대로 존중. 라벨 "계획 TASK 수"/"실적 TASK 수" → "계획 TASK"/"실적 TASK"로 변경(`3132b5e`).
@@ -100,6 +159,11 @@
 - **배포 정리**: Firebase App Hosting 백엔드는 Firebase CLI로 트리거만 분리할 방법이 없어(list/create/get/delete만 존재), 사용자가 Firebase 콘솔에서 `projectmgmt-e7dfd` 프로젝트 자체를 삭제함. 기존 라이브 URL `https://projectmgmt--projectmgmt-e7dfd.asia-east1.hosted.app`는 404 확인(서비스 종료).
 
 ## 다음 작업
+- **[P1] 09-04 세션 신규 기능 UAT**: 운영 계정으로 ① `/issues`(신규 이슈관리 — 목록/필터/등록/진행정보 추가·수정, 삭제된 이력 아닌 스냅샷 구조가 의도대로 보이는지) ② `/calendar`(회의실 예약이 이벤트로 표시되는지, "내 일정 보기" 체크박스 동작) ③ `/pmo-daily`(공정현황·지연TASK·이슈관리 위젯이 새 산식/컬럼대로 보이는지) ④ `/wbs`(컬럼 숨김·4개 날짜range 필터) ⑤ `/portfolio`·`/messages`(공지 배너 사라짐, 초청 목록 한 줄 레이아웃) 확인.
+- **[P1 확인 대기] 집중관리업무 기능개선**: `docs/집중관리업무_기능개선_방안_20260903.md`의 확인사항 6개(band 산출 규칙, 수정·삭제 권한 확대 여부, 세부항목 고정/커스텀 여부, 액션아이템구분 값 목록, 기존 데이터 이관 방식, 액션아이템목록조회 범위)에 대한 사용자 결정 필요. 결정 후 문서의 TASK A~E 순서대로 진행.
+- **[P1] 09-03 세션 신규 기능 UAT**: 초청 조회 목록의 일자/시간/장소 표시, "나의 WBS 현황" 누적 막대 그래프, 정기예약 신청 폼(요일 조건부 노출, 30분 단위 통합 시간 선택기) 실사용 확인.
+- **[P1] 09-02 세션 신규 기능 UAT**: 운영 계정으로 ① `/portfolio` 차트(WBS 진척 Stage별 세로 막대, 나의 WBS 현황 파이 차트, 다크모드에서 실제로 흰 텍스트인지) ② `/requirements/excel` 요구사항ID 매칭 동기화(같은 파일 재업로드 시 이력이 보존되는지 실제 확인) ③ 위클리리포트 상세 화면의 "리포트 인쇄보기" 팝업(헤더/사이드바 없이 뜨는지, 돌아가기 버튼이 없는지) 확인.
+- **[P1] 요구사항 엑셀·사용자 관리 UAT**: 운영 계정으로 `/requirements/excel` 다운로드→(수정한 파일)업로드→검증→반영 왕복 확인, `/settings/users`에서 아이디 변경 통합 확인 모달·반응형 레이아웃 확인.
 - **[P1] 공지사항 UAT**: 운영 계정으로 등록→중요 상단 고정→메인 배너→수정·삭제 흐름 확인. 실제 운영 공지는 별도 등록 필요.
 - **[P1] 요구사항 UAT**: 운영 화면에서 171건 목록·필터·통계·페이지 크기와 상세 화면 최종 확인.
 - **[P1] 초청함 UAT**: 캘린더/회의실 초청 자동 발송·로그인 시 통합 팝업·초청 전용 쪽지 화면을 운영 계정 기준으로 최종 확인.
@@ -121,18 +185,21 @@
 - deploy_post_check: 로그인(`pmo.admin`) → `/portfolio`, `/calendar`, `/settings/users` 등 핵심 라우트 200 확인
 - deploy_invariants: Supabase 연결 정상, Auth.js 로그인 가능, RLS로 anon 키 접근 차단 유지
 - deploy_abort_condition: Prisma/Postgres 연결 실패, 로그인 불가
-- latest_deployment: `https://pmotools.vercel.app` — GitHub main `2b2dfb6` push 기준 `Production – pmotools` 자동 배포(2026-08-31), `/api/health` 200·DB connected 확인. 과거 `Production – projectmgmt` 중복 연결 배포는 실패 상태이며 운영 기준이 아님.
+- latest_deployment: `https://pmotools.vercel.app` — 커밋 `b3d71db`(2026-09-04, 초청 목록 헤더 한 줄 레이아웃 최종 정리) 기준 `Production – pmotools` 배포 Ready, `/api/health` 200 확인(2026-09-04 재확인). 로컬 main·GitHub origin/main·프로덕션이 모두 동일 커밋으로 일치(`git status` clean, ahead/behind 0). 과거 `Production – projectmgmt` 중복 연결 배포는 실패 상태이며 운영 기준이 아님.
 - 이전 배포: 2026-08-07 `vercel deploy --prod` CLI 수동 배포(당시 GitHub 트리거 배포는 실패 상태였음). 배포 직후 `AUTH_SECRET` 미등록으로 로그인 500 → `vercel env add AUTH_SECRET`(production/preview/development) 등록 후 해결.
 - 사전 조건: 로컬 Supabase 연결값은 `vercel env pull .env.local`로 받거나 `.env.example` 참고해 `.env.local` 구성. 최초 로그인 계정은 `prisma/seed.ts` 참고(**비밀번호를 이 파일에 기록하지 않는다 — 상태 파일 규칙**).
 
 ## 핵심 경로
 - project_root: `D:\workspace\projectmgmt`
-- key_docs: `README.md`, `docs\PMS_캘린더기반_재개발계획서.md`(현재 기준, Phase 0~7 진행현황 기록), `docs\FIREBASE_FIRESTORE_ARCHITECTURE.md`/`SYSTEM_DESIGN.md`(보관 문서, 상단 배너로 구분), `project_control\design\bloom_ui_design_standard.md`
-- key_files: `prisma/schema.prisma`, `lib/server/db-pg.ts`, `lib/server/auth.ts`, `lib/server/calendar.ts`, `lib/domain/recurrence.ts`, `lib/domain/crypto.ts`, `lib/server/calendar-invitations.ts`, `lib/server/meeting-invitations.ts`, `middleware.ts`
+- key_docs: `README.md`, `docs\PMS_캘린더기반_재개발계획서.md`(현재 기준, Phase 0~7 진행현황 기록), `docs\집중관리업무_기능개선_방안_20260903.md`(구현 착수 전 사용자 결정 대기 중), `docs\FIREBASE_FIRESTORE_ARCHITECTURE.md`/`SYSTEM_DESIGN.md`(보관 문서, 상단 배너로 구분), `project_control\design\bloom_ui_design_standard.md`
+- key_files: `prisma/schema.prisma`(Issue/IssueProgress MASTER-DETAIL), `lib/server/issues.ts`(신규, 이슈관리), `lib/server/db-pg.ts`, `lib/server/auth.ts`, `lib/server/calendar.ts`, `lib/domain/recurrence.ts`, `lib/domain/crypto.ts`, `lib/server/calendar-invitations.ts`, `lib/server/meeting-invitations.ts`, `middleware.ts`
 
 ## 리스크 / 주의사항
+- **🟠 [사용자 승인 완료, 참고용] 이슈관리 재구축 과정에서 운영 DB의 `items`/`item_events`/`item_sequences` 테이블을 마이그레이션 없이 DROP했다.** 사용자에게 명시적으로 위험을 고지("운영 DB에서 완전히 삭제되며 복구 불가")했고, 사용자가 "운영에서 사용하지 않은 기능이라 문제는 없을 것 같아. 고마워"로 승인 후 진행했다. 과거 Item/이슈-리스크 관련 화면·API·데이터는 전부 사라졌으며 새 이슈관리(`Issue`/`IssueProgress`)와는 완전히 별개 구조다 — 옛 데이터를 복구해달라는 요청이 오면 DB 백업(있다면 Supabase PITR) 외에는 방법이 없다는 점을 먼저 안내할 것.
+- **🟡 [참고] 로컬 Postgres(55432)가 비정상 종료 상태로 방치되면 TCP 연결은 되지만 쿼리 중간에 끊긴다.** 2026-09-04 세션에서 실제로 겪었고 `pg_ctl -D "D:/Workspace/projectmgmt/.local-postgres/data" -w restart`로 WAL 재생 복구했다. 유사 증상(연결은 되는데 쿼리가 죽음) 재현 시 이 절차부터 시도할 것.
+- **🟡 [참고] 이 프로젝트에서 `prisma migrate dev`는 항상 실패한다** — 기존 마이그레이션 `20260812121500_seed_default_meeting_rooms`가 빈 shadow DB에 FK 위반을 일으킴(사전 데이터 없이 재생 불가한 시딩 스크립트). 신규 마이그레이션은 항상 `prisma migrate deploy`(로컬 실제 DB에 직접, shadow DB 미사용)로 적용할 것 — production `vercel-build`도 동일 방식이라 안전하다.
 - **🔴 [열림] 저장소가 public이고 `prisma/seed.ts`에 프로덕션 ADMIN 계정 비밀번호가 평문 커밋되어 있다. 프로덕션 URL에 Vercel Deployment Protection도 없어 누구나 관리자로 로그인 가능한 상태다** — "다음 작업" P0 참조. 2026-08-14 운영 DB 대조 결과 해당 계정은 **여전히 시드 초기 비밀번호로 로그인 가능**하다.
-- **🔴 [열림] 로컬 `.env.local`이 프로덕션 Supabase를 가리킨다.** `vercel env pull` 결과를 그대로 쓰면 로컬 개발이 운영 DB에 직접 붙는다. 테스트 데이터 입력·삭제 시 운영 데이터가 바뀐다. 로컬 PostgreSQL(55432) 구성 후 `DATABASE_URL`로 덮어쓸 것.
+- **🟡 [완화, 재확인 필요] `.env.local`(= `vercel env pull` 결과) 자체는 여전히 프로덕션 Supabase를 가리킨다.** 다만 2026-09-01 세션에서 이 PC의 실제 `npm run dev`는 `.env`의 로컬 `DATABASE_URL`(55432)을 우선 사용해 프로덕션과 분리되어 있음을 직접 검증했다(상세는 09-01 세션 로그). PC를 옮기거나 `.env`/`DATABASE_URL`을 건드리면 다시 프로덕션에 직접 붙을 수 있으니, 새 환경에서 작업을 시작할 때는 매번 재확인할 것.
 - **🟠 [열림] 작업 트리에 미커밋 변경 6개가 있고 로컬 스키마와 운영 DB 스키마가 어긋나 있다.** `/meetrooms`는 마이그레이션 적용 전까지 동작하지 않는다.
 - `lib/generated/prisma`는 `.gitignore` 대상 — 빌드 환경에서는 반드시 `prisma generate`가 선행돼야 한다(`postinstall`로 보장 중). **이 스크립트를 지우면 자동배포가 다시 깨진다.**
 - 이슈·리스크 키워드 검색이 필드별 검색으로 바뀌었다(기존: 제목+설명+담당자를 이어붙인 문자열 검색). 필드 경계를 걸치는 검색어는 매치되지 않는다.
@@ -140,17 +207,18 @@
 - Firebase 프로젝트(`projectmgmt-e7dfd`)가 삭제되어 기존 GitHub App Hosting 자동배포 연결도 함께 사라짐 — 배포 경로는 이제 Vercel이 유일하다.
 - RLS는 활성화했지만 정책(policy)은 만들지 않았다(anon/authenticated 기본 거부, 앱은 Postgres 소유자 커넥션으로 우회) — 향후 Supabase Auth 기반 클라이언트 접근을 추가한다면 RLS 정책을 별도로 설계해야 한다.
 - 아이콘 작업 필요 시 `project_control/docs/icon_workflow.md` 기준으로 `Font Awesome` 우선 검토
+- 로컬 dev DB(`.env`, 55432)의 `requirements` 테이블이 09-02 세션 엑셀 업로드 테스트로 171건 → 2건(`TEST-REPLACE-001` 수정본, `TEST-REPLACE-003`)으로 줄어든 상태다. 로컬 전용이라 운영 데이터에는 영향 없지만, 로컬에서 요구사항 관련 화면을 볼륨 있게 테스트하려면 프로덕션에서 다시 export해 재이관하거나 별도 시드가 필요하다.
 
 ## 인수인계 메모
 - 다음 시작 시 먼저 볼 것: 요구사항 `app/requirements`, `lib/server/requirements.ts`; 공지사항 `app/announcements`, `lib/server/announcements.ts`; 초청함 `components/InvitationPopup.tsx`, `lib/server/calendar-invitations.ts`, `lib/server/meeting-invitations.ts`; 최신 migration `20260819180000_add_meeting_invitations`.
 - 운영 기준은 GitHub `mohenz/pmotools`, Vercel `mohenzs-projects/pmotools`, URL `https://pmotools.vercel.app`이다.
 
 ## Handoff
-- current_goal: WBS 실적일자·PMO Daily WBS 연동 반영 완료. 다음은 이 기능들의 운영 UAT 및 기존 P0/P1 항목 처리.
-- done_latest: (08-31) 3개 커밋을 GitHub main에 순차 push — `3132b5e`(PMO Daily WBS 자동 채움) → `bdf1183`(WBS 날짜 필터 range 매칭) → `2b2dfb6`(WBS 실적시작일/실적종료일 + 마이그레이션 `20260831100000_wbs_actual_dates`). 매번 Vercel `Production – pmotools` 자동 배포, 최종 `/api/health` 200 확인.
-- key_findings: WBS 주간 통계의 "완료(건)"은 완료 "시점"을 추적하지 않고 "마감일이 조회 구간이면서 현재 실적 100%"로만 판정한다(기존 설계, 2026-08-30 결정) — 사용자가 완료 시점 추적(`completedAt` 마이그레이션)을 요청했다가 중단시킴, 미구현 상태로 남음. 로컬 개발 DB(`.local-postgres`, 55432)는 세션 시작 시 꺼져 있었고 마이그레이션도 8개 밀려 있었음 — 매 세션 시작 시 `db:local:status`/`migrate status` 확인 필요.
-- changed_files: `lib/server/pmo-daily.ts`, `lib/server/wbs.ts`, `screens/PmoDailyScreen.tsx`, `screens/WbsListScreen.tsx`, `screens/WbsCreateScreen.tsx`, `screens/WbsDetailScreen.tsx`, `features/wbs/WbsDetailActions.tsx`, `prisma/schema.prisma`, `prisma/migrations/20260831100000_wbs_actual_dates/migration.sql`; 상태 기록 `project_control/states/projectmgmt_current.md`.
-- verification: 매 커밋 `tsc --noEmit` 통과, `vitest run`(pmo-daily·wbs 도메인 27건) 통과. 배포 후 프로덕션 `/api/health` 200, `/wbs`·`/pmo-daily/new` 307(로그인 리다이렉트) 확인. 로컬은 `prisma migrate deploy`로 스키마 동기화 후 `/wbs` 500 해소 확인.
-- next_action: 운영 계정으로 `/pmo-daily/new`(WBS 자동 채움 값), `/wbs`(계획시작일/계획종료일/실적시작일/실적종료일 입력·표시, 날짜 range 필터), `/wbs/weekly-stats` UAT.
-- risks_or_blockers: `required_decision` — WBS 완료 시점(`completedAt`) 추적 여부(과거 이미 100%인 항목의 초기 completedAt 처리 포함, 사용자가 보류 지시). 기존 P0(저장소 public + seed 비밀번호 평문, production 접근 보호 없음)·npm 고위험 취약점 4건은 미해결로 이월.
-- do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨). 레거시 Vercel `projectmgmt`에 배포하거나 실패 상태를 운영 릴리스 블로커로 취급하지 말 것. WBS `completedAt` 마이그레이션을 사용자 재확인 없이 임의로 진행하지 말 것(직전 세션에서 중단 지시받음).
+- current_goal: 이슈관리 전면 재구축(MASTER-DETAIL)·캘린더 회의실 연동/내 일정 필터·PMO Daily 재정의·WBS 목록 개선·초청 목록 UI 다단계 개선 전부 배포 완료. 집중관리업무 기능개선은 여전히 분석 문서만 있고 구현은 사용자 결정 대기 중(변화 없음).
+- done_latest: (09-04) 커밋 `f22d87e`~`b3d71db` 13개를 로컬 main에 순차 커밋, 매번 push 직후 GitHub 연동 자동배포 또는 `vercel --prod --yes`로 즉시 배포(상세는 "최근 완료 작업 (2026-09-04 세션)" 참조). 핵심은 이슈관리 전면 개편 — 기존 Item(이슈+리스크 통합, 확률×영향 매트릭스) 완전 삭제 후 Issue(MASTER)/IssueProgress(DETAIL, 전체 필드 스냅샷) 구조로 재구축, "변경이력"의 의미를 세 번 재해석한 끝에 사용자가 원한 형태(등록 시와 동일한 전체 필드를 갖춘 진행 스냅샷)로 확정했다.
+- key_findings: 사용자가 "이력"을 요구할 때 자동 감사로그(누가/언제/무엇을 바꿨는지)와 "그 시점의 전체 상태 스냅샷"은 전혀 다른 요구사항이며, 모호하면 반드시 "최초 등록 때와 같은 전체 필드를 갖춘 스냅샷이 맞냐"처럼 구체적으로 되물어 확인해야 한다(이번 세션은 세 번 잘못 짚은 뒤에야 맞았다). `prisma migrate dev`가 이 프로젝트에서 항상 실패하므로 `prisma migrate deploy`를 표준으로 쓴다(리스크 절 참조). 로컬 Postgres가 "연결은 되는데 쿼리 중 끊김" 증상을 보이면 비정상 종료 후 미복구 상태일 수 있으니 `pg_ctl restart`부터 시도한다. `next build`와 `next dev`를 동시에 실행하면 `.next` 청크가 깨진다 — 빌드 검증 전 반드시 dev 서버를 내린다.
+- changed_files: `prisma/schema.prisma`(Item* 제거, Issue/IssueProgress 등 추가), `prisma/migrations/20260904*`(6개), `lib/server/issues.ts`(신규), `features/issues/IssueFormActions.tsx`(신규), `screens/IssueListScreen.tsx`(신규), `lib/server/calendar.ts`(회의실 소스 연동), `features/calendar/CalendarMineToggle.tsx`(신규), `app/calendar/page.tsx`, `lib/server/wbs.ts`/`screens/WbsListScreen.tsx`/`app/wbs/page.tsx`(날짜 range 필터·컬럼 숨김), `lib/server/pmo-daily.ts`/`screens/PmoDailyScreen.tsx`(재정의), `components/AnnouncementBanner.tsx`(삭제), `screens/MessagesScreen.tsx`/`screens/PortfolioScreen.tsx`/`app/globals.css`(초청 목록 다단계 개선), `screens/WorkLogFormScreen.tsx`(폼 폭 20%); 상태 기록 `project_control/states/projectmgmt_current.md`.
+- verification: 스키마 변경마다 `tsc --noEmit`/`vitest run`/`next build` 재확인. 매 배포 후 Vercel CLI로 Ready 확인 + `/api/health` 200 + 로그인 후 핵심 라우트 확인.
+- next_action: ① "다음 작업"의 09-04 신규 기능 UAT(이슈관리 최우선) ② 집중관리업무 개선 문서의 확인사항 6개에 대한 사용자 결정 확보 후 TASK A~E 진행 ③ 기존 P0/P1 이월 항목(보안, 09-03/09-02 UAT) 순차 처리.
+- risks_or_blockers: 이슈관리 재구축으로 운영 DB의 옛 `items`/`item_events`/`item_sequences` 데이터가 영구 삭제됐다(사용자 승인 완료, 되돌릴 수 없음 — 복구 요청 시 백업 없이는 불가함을 먼저 안내). 집중관리업무 개선은 설계 결정이 나기 전까지 착수 불가(`required_decision`). 기존 P0(저장소 public + seed 비밀번호 평문, production 접근 보호 없음)·npm 고위험 취약점 4건은 미해결로 이월.
+- do_not_do: `package.json`의 `postinstall` 제거 금지(자동배포 즉시 중단됨). 레거시 Vercel `projectmgmt`에 배포하거나 실패 상태를 운영 릴리스 블로커로 취급하지 말 것. 새 이슈관리에 `updateIssue()`(마스터 직접 수정) 같은 우회 경로를 추가하지 말 것 — 진행정보(IssueProgress) 추가/수정/삭제가 유일한 갱신 경로여야 한다는 것이 사용자가 확정한 설계다. `prisma migrate dev`를 이 프로젝트에서 다시 시도하지 말 것(항상 실패, `migrate deploy` 사용). 로그인 ID를 변경한 6개 계정(08-31 세션 본문 참조)의 예전 ID로 되돌리지 말 것. 이슈 대시보드의 3×3 리스크 매트릭스를 chart.js로 임의 전환하지 말 것(이미 삭제된 옛 이슈/리스크 대시보드라 해당 없음, 참고용으로만 유지). 집중관리업무 개선을 문서의 확인사항 6개에 대한 사용자 답변 없이 임의로 구현 착수하지 말 것.
