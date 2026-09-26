@@ -1,30 +1,24 @@
-﻿# defect_manage2 Current State
+# defect_manage2 Current State
 
 ## 기본 정보
 - project_key: `defect_manage2`
-- last_updated: `2026-06-24`
+- last_updated: `2026-09-26`
 - owner_request: `defect_manage` 운영본의 개선 및 추가 기능을 분석해 `defect_manage2`에 반영
-- current_status: Supabase 직접 연결에서 로컬 PostgreSQL + Node API 방식으로 전환 완료. `defects`는 사용자 지시에 따라 테스트 구분별 최근 100건 기준으로 이관 완료
+- current_status: Local PostgreSQL 18 + Node API 운영 유지. Vercel/Supabase 배포 준비 및 내부 서버 포팅 가이드 작성 완료; defect_manage 저장소 Preview 브랜치 push 완료.
 
 ## 현재 목표
-- `defect_manage` 원본은 유지하고 `defect_manage2`에서 실행 파일 경량화와 프론트엔드 구조 분해를 안전하게 진행한다.
-- 개선 완료 후 기존 `defect_manage` 소스는 `defect_manage_old` 기준으로 보관하고, 현재 `defect_manage` 저장소 파일을 정리한 뒤 `defect_manage2` 소스를 업로드하는 방식으로 GitHub Pages / Vercel 운영 대상을 교체한다.
-- 사전 배포 전략안으로는 GitHub Pages는 기존 `defect_manage`를 유지하고, Vercel은 `defect_manage2`를 테스트 운영 대상으로 연결해 검증 후 cutover 한다.
+- 내부 서버 포팅·운영을 준비하고 Supabase/Vercel Preview 연결을 검증한다.
+- 실제 내부 서버 설치는 OS·DNS/TLS·DB 위치·데이터 원본을 정한 뒤 진행한다.
 
 ## 진행 중 작업
-- `defect_manage` 운영본 최신 개선사항 분석 및 `defect_manage2` 반영 진행
-- `defect_manage` / `defect_manage2` 기능 차이 비교 및 누락 기능 보정 완료
-- 개선 범위와 초기 작업 기준 정리 완료
-- 파악된 사실과 운영 결정사항 문서 기록 완료
-- 1차 구조 개선 배치 완료
-- 2차 화면 분리 배치 완료
-- 3차 화면 분리 배치 완료
-- 4차 storage/query 유틸 정리 배치 완료
-- 5차 storage 도메인 서비스 분리 배치 완료
-- 6차 defect/history 도메인 분리 배치 완료
-- 7차 로컬 테스트 준비 배치 완료
+- Supabase 자격 증명 교체 및 Vercel Preview용 `DATABASE_URL` 등록 후 배포 확인
+- 내부 서버 대상 OS, 주소, PostgreSQL 위치와 데이터 이관 범위 확정
 
 ## 최근 완료 작업
+- 2026-09-26: 내부 서버 포팅·운영 가이드 `docs/internal_server_porting_guide.md` 작성. Node.js 22/PostgreSQL 18, 네트워크 경계, 제한 DB 권한, 데이터 이관, 환경 변수/비밀 관리, Linux systemd·Windows 서비스, HTTPS 프록시, 백업·복구·인수 점검을 정리하고 README 인덱스에 연결.
+- 2026-09-26: Supabase/GitHub/Vercel 구현 검증: syntax 통과, unit 22건, PostgreSQL 통합 3건, Vercel assets build 통과. 로컬 `/api/health` 정상, `auth_sessions`를 비파괴 적용.
+- 2026-09-26: `mohenz/defect_manage`의 `codex/vercel-supabase-deploy` 브랜치 push 완료. 커밋 `bf340255a88eae0b7249756267491f8ae96b2184`; 운영 `main` 미변경, Vercel Preview 상태 미확인.
+
 - 2026-06-24: 사용자메뉴얼에 화면 이미지 추가. Playwright로 로컬 앱 화면을 캡처해 `docs/images/user-manual/login.png`, `dashboard.png`, `defect-list.png`, `defect-register.png`, `user-manual.png` 생성. `docs/user_manual.md`에 섹션별 이미지를 삽입하고 섹션 번호 및 최종 수정일을 갱신. `js/app.js`의 간단 Markdown 렌더러가 이미지 문법 `![alt](path)`을 처리하도록 보강하고, `css/style.css`에 매뉴얼 이미지/캡션 스타일 추가. `.gitignore`에서 `docs/images/user-manual/*.png`는 추적 가능하도록 예외 추가. 검증 결과 `npm.cmd run check:syntax` 통과, Playwright 검증에서 매뉴얼 이미지 5개 로드 및 깨진 이미지 0건 확인.
 - 2026-06-24: 좌측 메뉴 최하단에 `사용자메뉴얼` 메뉴 추가. `index.html`에 `data-view="user-manual"` 메뉴를 추가하고, `js/app.js` 라우터에 `user-manual` 화면을 연결. 기존 `docs/user_manual.md`를 fetch로 불러와 앱 내부 화면에 렌더링하는 `renderUserManual()`/간단 Markdown 렌더러를 추가. `css/style.css`에는 좌측 최하단 배치와 매뉴얼 화면 스타일을 추가. 검증 결과 `npm.cmd run check:syntax` 통과, `http://127.0.0.1:3000/docs/user_manual.md` 200, `http://127.0.0.1:3000/#user-manual` 200, Playwright 세션 주입 검증으로 메뉴 텍스트 `사용자메뉴얼` 및 화면 제목 `DefectFlow 사용자 매뉴얼 (User Manual)` 렌더 확인.
 - 2026-06-24: `defect_manage2` 루트 정리 수행. 레거시/지원성 파일을 `support/`와 `local/` 하위로 이동해 루트에는 런타임/패키지/배포 진입점 중심으로 유지
@@ -127,27 +121,17 @@
 - 현재 `js/app.js`는 약 `1610` lines / `69.09KB`
 
 ## 다음 작업
-- 브라우저 수동 테스트에서 대시보드 `최종테스트` 전체 건수가 운영본과 동일하게 표시되는지 확인
-- Playwright E2E 실패 원인 분리: 홈 진입 시 로그인 heading 대신 `Loading...`이 유지되는 원인이 테스트 기대값 문제인지 초기화/라우팅 문제인지 확인
-- 브라우저에서 결함 목록, 일반 수정 폼, 조치 결과 입력, 엑셀 다운로드에 `조치예정일`이 정상 노출/저장되는지 수동 확인
-- `docs/local_test_execution_checklist.md` 기준으로 실제 수동 로컬 테스트 수행
-- 대시보드 상단 `조치 미완료` 카드 숫자 클릭 시 결함목록이 `조치 미완료` 필터 상태로 정상 조회되는지 수동 확인
-- 대시보드의 `결함 조치 현황 (테스트 구분별)` 조치완료율 열과 `심각도별 조치 현황` 완료율 표기를 브라우저에서 수동 확인
-- 결함목록 `10페이지` 단위 페이징과 담당자관리 `15명` 단위 페이징 수동 확인
-- 일반 수정 폼의 결함관리번호 표시/클릭 복사와 신규 등록·모바일 퀵 등록의 숨김 동작 수동 확인
-- 수동 테스트 중 발견 이슈 기록 및 정리
-- 특이사항이 없으면 `git` 반영 준비
-- Vercel 테스트 운영 방식을 별도 프로젝트로 둘지 기존 프로젝트 staged 배포로 둘지 확정
-- 이후 GitHub Pages / Vercel 서비스 전환 체크리스트 작성 및 cutover 준비
-- cutover 시 기존 `defect_manage`는 `defect_manage_old` 기준으로 보관하고, 운영 저장소에는 `defect_manage2` 소스를 업로드하는 전환 절차 반영
-- 커밋은 개선 작업 완료 및 로컬 테스트 검증 완료 후 수행
+- Supabase 비밀번호/비밀 키 교체 후 Vercel Preview 환경에 Transaction pooler `DATABASE_URL`, `PG_POOL_MAX=1` 등록
+- Vercel에서 `codex/vercel-supabase-deploy` Preview와 `/api/health`, 로그인, Test Bench, 모바일 등록 확인
+- Production `main` 반영 전 PR 검토, DB 데이터 원본·마이그레이션·복구 계획과 환경 변수 확정
+- 내부 서버 OS, DNS/TLS, DB·데이터 원본을 확정한 뒤 포팅 가이드로 스테이징 설치
 
 ## 실행 / 검증
 - run_command: `npm.cmd start`
-- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`, `npm.cmd run test:e2e`
-- latest_verification: [2026-06-24] 사용자메뉴얼 이미지 추가 후 `npm.cmd run check:syntax` 통과. Playwright 세션 주입 검증에서 `.manual-image img` 5개 로드, 깨진 이미지 0건, 첫 캡션 `로그인 화면`, 섹션 제목 `1. 로그인 및 계정 보안`~`4. 결함 조회 및 데이터 분석` 렌더 확인.
-- port_or_runtime: `manual localhost:3000`, `automated e2e localhost:3001`
-- deploy_method: `git push origin main` 기준, 실제 배포 방식은 별도 확정 예정
+- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`, `npm.cmd run test:integration`, `node scripts/build-vercel-assets.cjs`
+- latest_verification: [2026-09-26] syntax 통과, unit 22/22, PostgreSQL integration 3/3, Vercel asset build 통과, `/api/health` 정상. E2E 종료 결과는 미확정.
+- port_or_runtime: 로컬 API `127.0.0.1:3000`, PostgreSQL 18 `127.0.0.1:54323`
+- deploy_method: GitHub `mohenz/defect_manage`의 `codex/vercel-supabase-deploy` Preview 브랜치 push 완료; Vercel Preview 상태 확인 전. Production main 미변경.
 
 ## 핵심 경로
 - project_root: `D:\Workspace\defect_manage2`
@@ -190,20 +174,19 @@
   - `support/legacy-data/`
 
 ## 리스크 / 주의사항
-- 이번 개선 프로젝트 범위에는 데이터베이스 테이블 구조 변경, 컬럼 추가/삭제, 마이그레이션 적용이 포함되지 않음
-- DB 구조를 바꾸지 않는 전제이므로 개선은 프론트엔드 구조 분리, 패키징, 테스트 보강 중심으로 진행
-- 원격 저장소는 연결 완료 상태이나 첫 커밋과 실제 배포 연결은 아직 수행 전
-- GitHub Pages / Vercel 운영 교체 전에는 경로, 외부 연동 URL, rewrite 동작을 별도 점검해야 함
-- 수동 테스트는 `3000` 포트를 사용하므로 기존 `defect_manage` 서버가 떠 있으면 먼저 종료해야 함
-- cutover 방식은 기존 `defect_manage` 저장소명을 유지한 채 파일을 교체하는 방식이므로, `defect_manage_old` 보관본 확보와 업로드 순서 관리가 중요함
-- Vercel 테스트 운영을 위해 저장소를 바꿀 경우, 자동 프로덕션 반영을 피하도록 별도 프로젝트 또는 staged deployment 여부를 먼저 정해야 함
+- Supabase 자격 증명이 평문 작업 문서에 있었음. 작업 사본에서는 제거했으며 교체 후 새 값을 Vercel에 등록해야 함.
+- Preview `DATABASE_URL` 설정 전에는 DB API와 health 확인이 실패할 수 있음.
+- defect_manage `main`은 미변경. Preview, 데이터 백업/복구 계획 확인 전 Production 반영 금지.
+- 내부 서버 실설치/데이터 이관은 대상 OS·TLS·네트워크·원본 DB가 정해지지 않아 미실행.
+- `scripts/start_local_db.ps1 -Reset`은 데이터 삭제 동작이므로 운영에서 실행 금지.
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `docs/executable_size_structure_improvement_plan.md`, `docs/project_bootstrap_record_2026-04-02.md`, `js/app.js`, `js/storage.js`
-- 확인이 필요한 미결사항: 서비스 전환 시 URL 및 외부 연동 주소 점검, `defect_manage_old` 보관 및 운영 저장소 교체 순서 최종 점검
-
-
-
-
-
+- current_goal: 내부 서버 포팅 준비 및 Supabase/Vercel Preview 연결 검증
+- done_latest: 내부 서버 가이드 작성, defect_manage Preview 브랜치 push, 로컬 DB 세션 스키마 적용·검증
+- key_findings: 개발 origin은 `defect_manage2`; 배포 저장소 `mohenz/defect_manage`에 `codex/vercel-supabase-deploy`가 있음. Production main은 유지.
+- changed_files: `docs/internal_server_porting_guide.md`, `docs/supabase_github_deployment.md`, `local/schema.sql`, Supabase migration, `server.js`, 인증/API 테스트와 사용자 매뉴얼 관련 변경
+- verification: syntax 통과, unit 22건, PostgreSQL 통합 3건, Vercel assets build 통과, 로컬 health 정상
+- next_action: credentials rotation → Vercel Preview env 설정 → Preview 기능/로그 확인 → 내부 서버 대상 사양 확정
+- risks_or_blockers: Vercel Preview 미확인, Supabase 자격 증명 교체 필요, 내부 서버 구성이 미정
+- do_not_do: Preview/복구 검증 전 Production cutover 금지; 운영에서 로컬 DB Reset 금지
 
