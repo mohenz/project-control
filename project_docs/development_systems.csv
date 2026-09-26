@@ -16,3 +16,6 @@ bloom,translation-api,127.0.0.1,8787,http,http://127.0.0.1:8787,npm.cmd run star
 schedule_manager,database,local-file,,sqlite,,,,embedded,node:sqlite 파일 DB
 project_tool,web,127.0.0.1,3020,http,http://127.0.0.1:3020,npm.cmd run local,http://127.0.0.1:3020/api/health,dedicated,이슈·리스크 관리 Next.js
 project_tool,database,127.0.0.1,54326,tcp,,,,dedicated,이슈·리스크 관리 PostgreSQL 16
+secret_album,web,127.0.0.1,8090,http,http://127.0.0.1:8090,sa.cmd,http://127.0.0.1:8090,dedicated,비밀앨범 정적 웹
+secret_album,api,127.0.0.1,3051,http,http://127.0.0.1:3051,sa.cmd,http://127.0.0.1:3051/health,dedicated,비밀앨범 Python API
+secret_album,database,127.0.0.1,54328,tcp,,,,dedicated,비밀앨범 전용 PostgreSQL
