@@ -16,3 +16,11 @@ bloom,translation-api,127.0.0.1,8787,http,http://127.0.0.1:8787,npm.cmd run star
 schedule_manager,database,local-file,,sqlite,,,,embedded,node:sqlite 파일 DB
 project_tool,web,127.0.0.1,3020,http,http://127.0.0.1:3020,npm.cmd run local,http://127.0.0.1:3020/api/health,dedicated,이슈·리스크 관리 Next.js
 project_tool,database,127.0.0.1,54326,tcp,,,,dedicated,이슈·리스크 관리 PostgreSQL 16
+pmsystem,web,127.0.0.1,3040,http,http://127.0.0.1:3040,pnpm dev,http://127.0.0.1:3040/healthz,dedicated,pmsystem Next.js 화면
+pmsystem,api,127.0.0.1,3041,http,http://127.0.0.1:3041,pnpm dev,http://127.0.0.1:3041/api/v1/ready,dedicated,pmsystem Fastify API
+pmsystem,database,127.0.0.1,54327,tcp,,pnpm local:db start,,dedicated,pmsystem 전용 PostgreSQL 18 클러스터(.local/pgdata)
+secret_album,web,127.0.0.1,8090,http,http://127.0.0.1:8090,.\sa.cmd,http://127.0.0.1:8090/login.html,dedicated,비밀앨범 정적 화면(scripts/web_server.py)
+secret_album,api,127.0.0.1,3051,http,http://127.0.0.1:3051,.\sa.cmd,http://127.0.0.1:3051/ready,dedicated,비밀앨범 Python API
+secret_album,database,127.0.0.1,54328,tcp,,scripts\start_local_db.ps1,,dedicated,비밀앨범 전용 PostgreSQL 18 클러스터
+spot_diff,web,127.0.0.1,8095,http,http://127.0.0.1:8095,python -m http.server 8095,http://127.0.0.1:8095,dedicated,틀린그림찾기 웹 게임
+jian_chat,web,127.0.0.1,8085,http,http://127.0.0.1:8085,node scripts/dev-server.mjs,http://127.0.0.1:8085,dedicated,지안 1:1 모바일 PWA 메신저

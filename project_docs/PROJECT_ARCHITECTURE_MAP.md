@@ -22,6 +22,7 @@
 | `trinity_room` | Electron 데스크톱 앱 계획/프로토타입 + Web preview | Web preview `http://127.0.0.1:4317`, Electron skeleton | 로컬 앱 상태/문서 | local desktop prototype / TBD | `states/trinity_room_current.md` |
 | `jina_writer` | Python Tkinter 데스크톱 소설 작성 앱 + Gemini 연동 구조 | Tkinter local desktop app | local-first storage, Gemini 2.5 Flash integration | local desktop app / installer TBD | `states/jina_writer_current.md` |
 | `ui_code_helper` | Chrome MV3 side panel 확장 프로그램 | Chrome Extension MV3 / Side Panel | 브라우저 DOM 선택/Markdown change request 생성 | local unpacked extension / zip sync | `states/ui_code_helper_current.md` |
+| `image_downloader_extension` | 현재 페이지의 로드된 이미지를 선택·다운로드하는 Chrome MV3 확장 프로그램 | Chrome Extension MV3 / Popup | 활성 탭 DOM의 이미지 URL, 로컬 다운로드 | local unpacked extension | `states/image_downloader_extension_current.md` |
 | `unit_test` | 중앙 단위테스트 거버넌스/리포트 저장소 + Codex skill | runtime 없음 | 문서/스킬 저장소 | GitHub repo sync | `states/unit_test_current.md` |
 | `project_control` | 워크스페이스 중앙 프로젝트 레지스트리, 상태 파일, 전환 워크플로우 | runtime 없음 | `project_registry.md`, `states/*.md`, skill package | GitHub repository sync | `states/project_control_current.md` |
 | `archive_store` | React/Vite 개인용 아카이브 웹앱 + local API + Firebase-ready 구조 | app `5174`, API `5175`, DB `54324`, Firebase emulators `5176/9099/8080/9199/4001` | Local PostgreSQL 18.4, local uploads, Firebase project `archive-store-fae71` 준비 | GitHub `mohenz/archive-store`, Firebase Hosting/Firestore/Storage 준비 완료, Web App config 입력 대기 | `states/archive_store_current.md` |
@@ -31,8 +32,8 @@
 | `token_tracker` | Zero-dependency Python local server + HTML/JS dashboard | Python server, port `5000` | local JSON/DB tracker 구조 | local Python server | `states/token_tracker_current.md` |
 | `cinetube` | Static movie hub + local API + Local PostgreSQL | static `8080`, API `3001`, DB `54322` | Local PostgreSQL/API, 기존 Supabase 구조 참조 | Vercel from GitHub `origin/main` | `states/cinetube_current.md` |
 | `bloom` | Static prompt generator + Vercel API + Firebase 전환 구조 | Vercel dev `3000`, Firebase emulators Auth `9099`, Firestore `8080`, UI `4000` | Firebase Auth/Firestore/Emulators, Vercel API | `main` push 기반 Vercel 자동 배포 | `states/bloom_current.md` |
-| `jian_soul` | JIAN Unified Soul System & Autonomic Nervous System | Python 3.10+, vitals server port `8000` | persona/memory/state 파일, GCS sync | GCS `JIAN-soul` bucket | `states/jian_soul_current.md` |
 | `shadcn_ui` | shadcn/ui 공식 컴포넌트 Registry + CLI + 문서 모노레포 | pnpm/Turborepo, v4 dev server `localhost:4000` | 로컬 소스·Registry 참조용 | 배포 없음, upstream 추적 | `states/shadcn_ui_current.md` |
+| `jian_chat` | 모바일 우선 PWA 웹 메신저 + Vercel Serverless API + Gemini 2.5 Flash | local dev `8085` | Firebase Firestore (`persona-online`) + Gemini API | GitHub `mohenz/jina_chat` (`main`) -> Vercel | `states/jian_chat_current.md` |
 
 ## 상태 파일 기준 추가 프로젝트
 
@@ -48,15 +49,9 @@
 | `quickmemo` | React web app + Chrome extension + Vercel dev planned | Vercel dev, React dev server, Chrome Extension MV3 | 인증/세션/API 연동 불안정 | Vercel planned / local unpacked extension | `states/quickmemo_current.md` |
 | `scrum_board_platform` | Scrum board / daily meeting web platform | local `localhost:4173` | 정적/프론트엔드 앱 | GitHub Pages Actions | `states/scrum_board_platform_current.md` |
 | `security_management` | 보안 점검 운영 문서 프로젝트 | N/A | 보안 점검 문서/체크리스트 | 내부 운영 문서 | `states/security_management_current.md` |
-| `ui_coding_helper` | Chrome MV3 side panel 확장 프로그램 계열 | Chrome Extension MV3 / Side Panel | `D:\Workspace\ui_markdown_capture` | local unpacked extension | `states/ui_coding_helper_current.md` |
 | `web_capture_extension` | Manifest V3 웹 캡처 확장 프로그램 | Chrome/Chromium extension runtime | local extension files | local unpacked extension / zip TBD | `states/web_capture_extension_current.md` |
 | `web_perf_extension` | Chrome MV3 네트워크/성능 분석 확장 프로그램 | Chrome Extension MV3 Popup + Service Worker | GitHub 원격 저장 + local extension | GitHub remote + local unpacked extension | `states/web_perf_extension_current.md` |
-
-## Placeholder / 보류
-
-| project_key | status | reference |
-|---|---|---|
-| `project_04` | placeholder, path `TBD` | `states/project_04_placeholder.md` |
+| `pmsystem` | 다중 회사·팀 프로젝트 관리(PMO 통제) 플랫폼, 규모 프로파일 S/M/L·공통코드·공통 결재 엔진 설계 | Next.js web `3040` + Fastify api `3041` + pg-boss worker(pnpm 모노레포, 골격 구동 확인) | 로컬 PostgreSQL 18 전용 클러스터 `54327` + RLS 테넌트 격리(계획), S3 호환 객체 저장소(운영), pg-boss 작업 큐 | Linux VM + systemd 산출물 배포(Docker 미사용), 클라우드 우선(하이브리드 허용) | `states/pmsystem_current.md` |
 
 ## 공통 운영 기준
 
