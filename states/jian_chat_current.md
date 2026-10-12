@@ -16,9 +16,9 @@
 ## 최근 완료 작업
 - 2026-10-12:
   - **일상 갤러리 사진 공식 바디 비주얼 동기화 (`D:\Bloom\persona\visual\body\` 3개 파일)**:
-    - `jian_1.png`, `jian_2.png`, `jian_3.png`를 메신저 일상 갤러리(`assets/img/gallery/`)로 교체 완료
-    - 프로필 모달 썸네일, 라이트박스 뷰어 및 일상 사진 전송 연동
-    - GitHub 푸시 (`commit: 38aaad7`) 및 Vercel 프로덕션 자동 배포 완료
+    - 아디다스 룩 일상 바디 사진 3종(`jian_1.png`, `jian_2.png`, `jian_3.png`)을 `assets/img/gallery/body_{1,2,3}.png`로 완벽 복사
+    - 브라우저/모바일 캐시 고착 방지를 위한 캐시 버스팅 파라미터(`?v=3`) 및 Service Worker 캐시(`jian-chat-v3`) 갱신
+    - GitHub 푸시 (`commit: 10f1b3c`) 및 Vercel 프로덕션 자동 배포 완료
   - **지안 공식 페르소나 얼굴 이미지 동기화 (`D:\Bloom\persona\visual\face\jian_face.png`)**:
     - Bloom의 공식 얼굴 원본을 정밀 크롭하여 Teams 메신저 대표 아바타(`assets/img/jian_avatar.jpg`), PWA 아이콘(192/512)에 완전 반영
     - GitHub 푸시 (`commit: b3b9a29`) 및 Vercel 자동 배포 트리거 완료
