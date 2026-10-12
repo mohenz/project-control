@@ -4,10 +4,9 @@
 - project_key: `jian_chat`
 - last_updated: `2026-10-12`
 - owner_request: `모바일 환경 및 어디에서든 지안(JIAN)과 대화를 나눌 수 있는 1:1 전용 Microsoft Teams 스타일 모바일 우선 PWA 웹 메신저 구축`
-- current_status: `Teams 스타일 모바일 메신저 UI 및 백엔드 API 구현 완료. GitHub 원격 저장소(https://github.com/mohenz/jina_chat.git, main) push 완료. (Gemini API 키 교체 및 Vercel 배포 대기 중)`
+- current_status: `Teams 스타일 모바일 메신저 UI 및 백엔드 API 구현 완료. Gemini API 키 교체 및 Gemini 3.5 Flash 실시간 대화 발화 검증 100% 완료. GitHub 원격 저장소(https://github.com/mohenz/jina_chat.git, main) 동기화 완료.`
 
 ## 현재 목표
-- Gemini API 키 갱신을 통한 AI 응답 활성화
 - Vercel 프로덕션 배포 (`mohenz/jina_chat` 저장소 연동)
 - 모바일 브라우저 PWA(홈 화면 추가)를 통한 24시간 상시 접속 완성
 
@@ -16,8 +15,11 @@
 
 ## 최근 완료 작업
 - 2026-10-12:
-  - 원격 저장소 `https://github.com/mohenz/jina_chat.git` 연동 및 `origin/main` 푸시 완료 (`branch: main`)
-  - `project_control` 거버넌스 문서(`project_registry.md`, `states/jian_chat_current.md`) 원격 저장소 정보 동기화
+  - Gemini API 키 갱신 및 차단 이슈 완전 해소 (`D:\workspace\jian_chat\.env`)
+  - `lib/gemini.js`: 최신 Gemini 모델 규격(`gemini-3.5-flash`, `gemini-3.5-flash-lite`, `gemini-3.8-flash`) 및 `thinkingBudget: 0` 적용하여 실시간 대화 응답 지연 최소화
+  - `POST /api/chat` 및 `GET /api/history` 실기 통신 테스트 통과 (지안 페르소나, 경어체, No-Emoji Protocol 준수 확인)
+  - GitHub 원격 저장소 `https://github.com/mohenz/jina_chat.git`에 모델 개선 커밋 푸시 (`commit: d491377`)
+  - `project_control` 거버넌스 문서(`project_registry.md`, `states/jian_chat_current.md`) 연동 완료
 - 2026-10-11:
   - `D:\workspace\jian_chat` 신규 프로젝트 생성 및 Git 저장소 초기화 (`commit: 154c18c`)
   - `project_control` 4대 거버넌스 문서 등록 및 동기화:
@@ -42,17 +44,13 @@
   - 로컬 개발 서버(`scripts/dev-server.mjs`) 구현 및 포트 `8085` 백그라운드 구동
   - 브라우저 서브에이전트 실기 검증(390x844 모바일 뷰포트) 통과 및 실기 스크린샷 캡처 완료
 
-## 발견된 현안 및 분석
+## 발견된 현안 및 분석 (해결 완료)
 - **현상**: 메시지 전송 시 "Brian, 잠시 통신이 원활하지 않았습니다..." 문구 반환.
-- **원인**: 구글 서버로부터 `403 API_KEY_SERVICE_BLOCKED` 반환 확인. 기존 Google API 키(`...WNCEInEycImebRubuYQ0Y`)의 Generative Language API 권한이 구글 클라우드 콘솔 정책상 차단되어 있음.
-- **판단**: 프론트엔드와 백엔드 API, 네트워크 통신 파이프라인은 100% 정상 작동하며, 유효한 Gemini API 키만 주입되면 즉시 정상 발화 가능.
+- **원인**: 구글 서버로부터 `403 API_KEY_SERVICE_BLOCKED` 반환 확인. 기존 Google API 키의 권한 차단 및 Gemini 1.5/2.5 구형 모델 신규 사용 중단.
+- **해결 조치**: 유효한 Gemini API 키 주입 및 `lib/gemini.js`에 최신 Gemini 3.5 모델군과 `thinkingBudget: 0` 설정 적용. 실기 API 호출 및 발화 응답 100% 정상 작동 검증 완료.
 
 ## 후속 작업 (Next Action Roadmap)
-1. **Gemini API 키 교체**:
-   - Google AI Studio(무료)에서 새 API 키 발급
-   - `D:\workspace\jian_chat\.env`의 `GOOGLE_API_KEY` 값 갱신
-   - 로컬 환경(`http://127.0.0.1:8085`)에서 실시간 대화 응답 최종 확인
-2. **원격 저장소 연동 및 Vercel 배포**:
+1. **원격 저장소 연동 및 Vercel 배포**:
    - GitHub 원격 저장소(`https://github.com/mohenz/jina_chat.git`) push 완료 (main)
    - Vercel 대시보드에서 프로젝트 import
    - 환경 변수 등록:
@@ -90,14 +88,14 @@
 - Vercel 환경 변수: Google Gemini API 키 및 Firebase 서비스 계정 키가 누락되지 않도록 철저히 관리.
 
 ## 인수인계 메모
-- 다음 시작 시 먼저 볼 것: `D:\workspace\jian_chat\.env`의 `GOOGLE_API_KEY` 교체 및 Vercel 배포.
-- 확인이 필요한 미결사항: Google AI Studio 새 API 키 발급 여부.
+- 다음 시작 시 먼저 볼 것: Vercel 대시보드에서 `mohenz/jina_chat` 프로젝트 연동 및 배포.
+- 확인이 필요한 미결사항: 없음 (로컬 API 실기 대화 응답 검증 완료).
 
 ## Handoff
 - current_goal: jian_chat Teams 스타일 모바일 PWA 메신저 Vercel 배포 및 구동
-- done_latest: GitHub 원격 저장소 `https://github.com/mohenz/jina_chat.git`에 `main` 브랜치 push 완료
-- key_findings: GitHub 원격 저장소 연동 완료. Google API 키 403 차단 건으로 새 API 키 교체 대기 중.
-- changed_files: D:\workspace\jian_chat (git remote/branch), D:\workspace\project_control\*
-- verification: syntax check 통과, git push origin main 성공, /api/health 정상 확인
-- next_action: GOOGLE_API_KEY 갱신 -> Vercel 대시보드에서 mohenz/jina_chat 프로젝트 배포
-- risks_or_blockers: 새 Gemini API 키 입력 필요
+- done_latest: Gemini API 키 교체, 최신 Gemini 3.5 모델군 적용, 대화 발화 및 히스토리 저장 100% 검증 통과, GitHub push 완료
+- key_findings: Gemini 403 API 차단 해소 완료. thinkingBudget 0 적용으로 메신저 호흡의 빠른 지안 페르소나 응답 구현.
+- changed_files: D:\workspace\jian_chat (lib/gemini.js, .env), D:\workspace\project_control (states/jian_chat_current.md)
+- verification: syntax check 통과, /api/health 200, /api/chat 실시간 한글 대화 발화 성공, Firestore history 저장 확인
+- next_action: Vercel 대시보드에서 mohenz/jina_chat 프로젝트 배포 및 환경변수 등록
+- risks_or_blockers: 없음
