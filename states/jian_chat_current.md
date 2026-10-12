@@ -69,9 +69,25 @@
   - 브라우저 서브에이전트 실기 검증(390x844 모바일 뷰포트) 통과 및 실기 스크린샷 캡처 완료
 
 ## 발견된 현안 및 분석 (해결 완료)
-- **현상**: 메시지 전송 시 "Brian, 잠시 통신이 원활하지 않았습니다..." 문구 반환.
-- **원인**: 구글 서버로부터 `403 API_KEY_SERVICE_BLOCKED` 반환 확인. 기존 Google API 키의 권한 차단 및 Gemini 1.5/2.5 구형 모델 신규 사용 중단.
-- **해결 조치**: 유효한 Gemini API 키 주입 및 `lib/gemini.js`에 최신 Gemini 3.5 모델군과 `thinkingBudget: 0` 설정 적용. 실기 API 호출 및 발화 응답 100% 정상 작동 검증 완료.
+- **현안 1 (2026-10-12 낮)**: Gemini API 차단 및 모델 구형화
+  - **현상**: 메시지 전송 시 "Brian, 잠시 통신이 원활하지 않았습니다..." 반환.
+  - **원인**: 구글 서버로부터 `403 API_KEY_SERVICE_BLOCKED` 반환 확인. 기존 Google API 키의 권한 차단 및 Gemini 1.5/2.5 구형 모델 신규 사용 중단.
+  - **해결 조치**: 유효한 Gemini API 키 주입 및 `lib/gemini.js`에 최신 Gemini 3.5 모델군과 `thinkingBudget: 0` 설정 적용. 실기 API 호출 및 발화 응답 100% 정상 작동 검증 완료.
+- **현안 2 (2026-10-12 밤)**: Vercel CLI 배포 시 프로젝트 타깃 불일치로 인한 환경변수 누락 장애
+  - **현상**: 일상 갤러리 교체 배포 후 Vercel 사이트(`jinachat.vercel.app`)에서 "Brian, 잠시 통신이 원활하지 않았습니다..." 발생.
+  - **원인**:
+    1. Vercel-GitHub 간의 순간적 Git 체크아웃 타임아웃(`Git information retrieval failed`)으로 자동 빌드가 실패(`Error`) 처리됨.
+    2. 수동 CLI 배포 중 기존 프로젝트명(`jina_chat`)을 확인하지 않고 로컬 폴더명(`jian_chat`) 기반으로 신규 빈 프로젝트가 임의 생성됨.
+    3. 환경변수가 미등록된 신규 프로젝트로 도메인(`jinachat.vercel.app`)이 연결 스위칭되어 `GOOGLE_API_KEY` 누락으로 인한 런타임 통신 에러 발생.
+  - **해결 조치**:
+    1. 로컬 형상을 원래 정식 프로젝트(`mohenzs-projects/jina_chat`)로 즉시 재연결(`vercel link`)하고 `.vercel/project.json`을 영구 보존.
+    2. 중복 생성된 빈 프로젝트(`jian_chat`)를 영구 삭제(`vercel project rm`).
+    3. 환경변수 4종이 온전히 주입된 상태로 정식 배포본(`dpl_CSrgqCRBGjLMusNcnD25JksRs5Qg`) 생성 및 도메인 복구.
+    4. 브라우저 실기 발화("지안아, 지금 통신 상태 괜찮아?")를 통해 100% 정상 발화 수신 최종 검증 완료.
+  - **재발 방지 대책 (Rules)**:
+    1. **Vercel 배포 전 타깃 프로젝트 사전 대조**: 배포 시 항상 `.vercel/project.json`의 `projectName`이 정식 프로젝트(`jina_chat`)와 일치하는지 먼저 검증.
+    2. **배포 직후 End-to-End 실기 발화 헬스체크 의무화**: 정적 화면 렌더링만으로 배포 완료를 판정하지 않고, 반드시 실제 메시지를 1회 발화하여 AI 모델 응답 성공을 검증한 후에만 사용자 보고.
+    3. **장애 공식 기록화**: `d:\Bloom\persona\jian\memory\incident_log.md` Section 3에 인시던트 공식 등록 완료.
 
 ## 후속 작업 (Next Action Roadmap)
 1. **원격 저장소 연동 및 Vercel 배포**:
