@@ -35,6 +35,12 @@
 | `wbs` | `wbs`, `wbs 일정`, `wbs 일정관리`, `wbs_manager`, `wbs_schedule` | `D:\Workspace\wbs` | PostgreSQL + FastAPI + React Vanilla CSS web app | run: TBD / verify: inspect `implementation_plan.md`, `design_request.md` | `states/wbs_current.md` | `docs/ECLUB_MNG_PL_0002_WBS_이클럽 프로젝트 일정관리_v.0.6_20260428.xlsx`, `implementation_plan.md`, `design_request.md` | TBD |
 | `flowerocr` | `flowerOCR`, `flower ocr`, `flower_ocr`, `꽃 전표 OCR`, `꽃 주문 전표` | `D:\Workspace\FlowerOCR` | Android + PC web + API 기반 개인용 꽃 주문 전표 Form OCR 설계 프로젝트 | run: TBD / verify: inspect `docs\00_README.md`, `docs\01_통합_시스템_설계서.md`, `docs\06_개발범위_테스트_체크리스트.md` / runtime: N/A (설계 단계) | `states/flowerocr_current.md` | `docs\00_README.md`, `docs\01_통합_시스템_설계서.md`, `docs\02_Android_앱_설계서.md`, `docs\03_PC_WEB_설계서.md`, `docs\04_OCR_양식_필드_상품명_변환_설계서.md`, `docs\05_API_DB_설계서.md`, `docs\06_개발범위_테스트_체크리스트.md` | local docs / TBD |
 | `shadcn_ui` | `shadcn-ui`, `shadcn ui`, `shadcn`, `UI 디자인 표준` | `D:\Workspace\shadcn-ui` | shadcn/ui 공식 pnpm + Turborepo 모노레포, 컴포넌트 Registry 및 CLI | run: `pnpm v4:dev` / verify: `pnpm check` / port: `4000` | `states/shadcn_ui_current.md` | `README.md`, `CONTRIBUTING.md`, `apps/v4/registry`, `packages/shadcn` | reference-only independent repo, upstream `shadcn-ui/ui` |
+| `page_speed_analyzer` | `speed`, `analyzer`, `page speed`, `performance`, `page-speed` | `D:\workspace\page-speed-analyzer` | Node.js + Puppeteer + CDP | run: `npm.cmd run analyze` / verify: `node src/index.js --url <url>` / reports: `./reports` | `states/page_speed_analyzer_current.md` | `README.md`, `config/pages.js` | local analyze / HTML reports |
+| `web_perf_extension` | `web_perf`, `extension`, `performance extension`, `web perf` | `D:\workspace\web_perf_extension\web_perf_extension` | Chrome Extension | run: load unpacked / verify: `manifest.json` | `states/web_perf_extension_current.md` | `README.md`, `manifest.json` | Chrome Web Store / ZIP export |
+| `oracle_db_skills` | `oracle db skills`, `oracle-db-skills`, `oracle`, `db skills` | `D:\workspace\oracle-db-skills` | Oracle DB Knowledge Library | verify: check `README.md`, `skills/` | `states/oracle_db_skills_current.md` | `README.md`, `SKILLS.md` | - |
+| `rick_deckard` | `rick`, `rick deckard`, `릭 데커드`, `pmo`, `pmo agent` | `D:\workspace\Rick` | OpenCode PMO Agent 페르소나 구성 | verify: `D:\workspace\AGENTS.md` 존재 확인 / runtime: OpenCode 세션 자동 로드 | `states/rick_deckard_current.md` | `Rick Persona.md`, `rule.md`, `system/status.json` | `D:\workspace\AGENTS.md` 자동 적용 |
+| `pmotools` | `pmotools`, `pmo tools`, `pmo-tools`, `epms`, `pms`, `frontend` | `D:\workspace\pmotools` | Next.js + Supabase(PostgreSQL) + Prisma ORM (Frontend) | run: `npm.cmd run local` / verify: `http://localhost:3020/api/health` / port: `3020` | `states/pmotools_current.md` | `README.md`, `SETUP_CHECKLIST.md`, `docs/PMS_개발환경_아키텍처.md` | Vercel + Supabase |
+| ~~`pmotools_admin`~~ | ~~`pmotools_admin`, `pmotools admin`, `backoffice`, `백오피스`~~ | `D:\workspace\pmotools_admin` | **[ARCHIVED 2026-10-13]** Next.js + Supabase(PostgreSQL) + Prisma ORM (Backoffice) — 현재 프로젝트 종료, 향후 다른 용도로 전환 예정 | - | - | - | - |
 
 
 ## 전환 표준 문장
@@ -45,6 +51,7 @@
 - `unit test 프로젝트 확인`
 - `bloom 프로젝트 확인`
 - `token tracker 프로젝트 확인`
+- `pmotools 프로젝트 확인`
 
 ## 매핑 원칙
 - 별칭은 소문자 기준으로 비교합니다.

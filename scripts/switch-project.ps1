@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(Mandatory = $true)]
     [string]$ProjectName
 )
@@ -34,7 +34,6 @@ $registry = @(
         Port = '-'
         Docs = @('index.html', 'js\app.js', 'css\style.css')
     },
-    @{
         Key = 'makeyourtoday'
         Aliases = @('makeyourtoday', 'make your today', 'make-your-today')
         Path = 'D:\Workspace\makeyourtoday'
@@ -73,6 +72,16 @@ $registry = @(
         Verify = 'review README.md / docs / SKILL.md'
         Port = '-'
         Docs = @('README.md', 'docs\unit_test_workflow.md', 'docs\unit_test_rules.md', 'docs\common_checklist_master.md', 'SKILL.md')
+    },
+    @{
+        Key = 'pmotools'
+        Aliases = @('pmotools', 'pmo tools', 'pmo-tools', 'epms', 'pms')
+        Path = 'D:\workspace\pmotools'
+        StateFile = 'D:\workspace\project_control\states\pmotools_current.md'
+        Run = 'npm.cmd run local'
+        Verify = 'http://localhost:3020/api/health'
+        Port = '3020'
+        Docs = @('README.md', 'SETUP_CHECKLIST.md', 'docs\PMS_개발환경_아키텍처.md')
     }
 )
 
