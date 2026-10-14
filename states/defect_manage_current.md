@@ -15,9 +15,13 @@
 - Vitest 및 Playwright 기반 로컬 테스트 러너 환경 점검
 
 ## 최근 완료 작업
+- **2026-10-14 20:48**: 백업 데이터 복원 및 로컬 API 서버(Port 3001) 정상 구동 완수
+  - **백업 파일 복원**: `defect_manage2_full_20261014_174350.backup`을 PostgreSQL 18(`127.0.0.1:55432`, `defect_manage2`)에 무결성 복원 완료 (`defects` 328건, `users` 43명, `common_codes` 163건, `app_settings` 1건, `defect_save_error_logs` 21건).
+  - **포트 충돌 해소**: 사내 Gitea 서비스(Port 3000)와의 포트 충돌 방지를 위해 App/API 포트를 `3001`로 지정 (`server.js`, `start_local.bat`, `start_local_db.ps1`, `stop_local_db.ps1`).
+  - **서버 구동 검증**: `http://127.0.0.1:3001/api/health` 200 OK, `http://127.0.0.1:3001/api/defects/summary` 활성 결함 318건 수신 확인.
 - **2026-10-14 20:23**: 사내 Gitea 원격 배포 트리거 완료 (`3ff0689 deploy: trigger internal server workspace clone and deployment`)
 - **2026-10-14 20:06**: 로컬 PostgreSQL 18 및 모듈 분해 차세대 아키텍처 전면 컷오버 완수 (`ff577de feat: cutover to local PostgreSQL 18 and modular architecture`)
-  - **DB 레이어**: Cloud Supabase 종속성 완전 제거 ➔ 로컬 PostgreSQL 18 (`127.0.0.1:54323`, database: `defect_manage2`, user: `postgres`) 전환
+  - **DB 레이어**: Cloud Supabase 종속성 완전 제거 ➔ 로컬 PostgreSQL 18 (`127.0.0.1:55432`, database: `defect_manage2`, user: `postgres`) 전환
   - **백엔드 API**: Express/Node.js 기반 REST API 서버(`server.js`) 구축, `scripts/start_local_db.ps1`, `scripts/stop_local_db.ps1`, `scripts/migrate_supabase_to_local.ps1` 배치
   - **프론트엔드 모듈 분해**: 기존 3,780라인 모놀리식 `js/app.js` 및 `js/storage.js`를 23개 도메인 모듈로 완전 분리
     - `js/modules/`: `admin-module.js`, `admin-settings-module.js`, `assignee-status-module.js`, `auth-module.js`, `dashboard-module.js`, `form-module.js`, `list-module.js`
@@ -31,14 +35,14 @@
 - **2026-04-07**: `action_due_date` (조치예정일) 컬럼 및 목록/상세/엑셀 다운로드 연동 (`109e576`)
 
 ## 다음 작업
-- 브라우저를 통한 로컬 웹앱(`http://127.0.0.1:3000`) 대시보드 및 결함 목록/등록/수정 전체 기능 실동작 점검
+- 브라우저를 통한 로컬 웹앱(`http://127.0.0.1:3001`) 대시보드 및 결함 목록/등록/수정 전체 기능 실동작 점검
 - `npm install` 후 `npm.cmd run test:unit` 전체 테스트 스위트 정상 통과 검증
 - 결함 등록 시 첨부 이미지 및 화면 캡처 업로드 흐름의 로컬 파일 저장소 검증
 
 ## 실행 / 검증
-- run_command: `npm.cmd start` (또는 `start_local.bat`)
-- verify_command: `npm.cmd run check:syntax`, `npm.cmd run test:unit`
-- port_or_runtime: App `http://127.0.0.1:3000`, API `http://127.0.0.1:3000/api`, PostgreSQL `127.0.0.1:54323` (DB: `defect_manage2`)
+- run_command: `npm.cmd start` (또는 `start_local.bat`, `scripts\start_local_db.ps1`)
+- verify_command: `npm.cmd run check:syntax`, `Invoke-RestMethod -Uri "http://127.0.0.1:3001/api/health"`
+- port_or_runtime: App `http://127.0.0.1:3001`, API `http://127.0.0.1:3001/api`, PostgreSQL `127.0.0.1:55432` (DB: `defect_manage2`)
 - deploy_method: 사내 Gitea `http://127.0.0.1:3000/PMO/defect_manage.git` push
 - latest_deploy: `2026-10-14 20:23` / commit `3ff0689` pushed to `origin/main`
 
