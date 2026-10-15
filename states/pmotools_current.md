@@ -31,6 +31,13 @@
   - 5개 신규 프로젝트 트리 구조 생성 및 번호 체계(`numberingBase`) 검증 완료
   - `pmotools` Public API 프로젝트 정렬 캐싱/타입캐스팅 버그 패치 (`route.ts` `force-dynamic` 추가 및 DB `sortOrder` 강제 갱신)
   - PA-1 및 D-8 배포 문서 최종 정리 (`d:\workspace\docs\작업파일_내부서버배포_20261001.md`)
+- **[2026-10-15] DB 자동 백업 정상화 및 스케줄러 복구 완수**:
+  - `D:\product\새 폴더` 디렉터리명을 `D:\product\pmotools`로 원복하여 `backup-db.ps1`의 `.env.production` 참조 오류 해소.
+  - `backup-db.ps1` 수동 실행 검증 및 15일 보존 주기(Retention Policy) 자동 정리 로직 정상 작동 확인.
+  - Windows 작업 스케줄러 `\PMOTools_DB_Backup` 강제 트리거 시험 결과 `Last Result: 0` (성공) 확인.
+  - 최신 13MB SQL 덤프(`pmotools_db_20261015_175821.sql`) 생성 검증 완료 (14일간 중단 상태 완전 해소).
+- **[2026-10-14] 로컬 작업 트리 형상 분리 푸시**:
+  - TypeScript 컴파일 오류 10건 조치 후 `gitea/develop-local` 브랜치에 안전하게 커밋(`c5bede5`) 및 푸시 완료.
 - **[2026-10-12~13] UI 기능 고도화 완료**:
   - 회의록 Action Item 표준 페이징 구현 완료
   - 회의록 목록 표준 페이징 구현 완료
